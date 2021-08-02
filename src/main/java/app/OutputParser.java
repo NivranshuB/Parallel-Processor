@@ -26,8 +26,21 @@ public class OutputParser {
 
         try {
             FileWriter writer = new FileWriter(filename);
-            writer.write("test");
+            writer.write("digraph \"outputExample\" {\n");
+//            for (Node n : graph) {
+//                writer.write("\t" + n + " \t\t[Weight=" + n.getWeight()
+//                                    + ",Start=" + n.getStart()
+//                                    + ",Processor=" + n.getProcessor() + "];\n");
+//            }
+//            for (Edge e : graph) {
+//                writer.write("\t" + e.first() + "->" + e.second() + " \t[Weight=" + e.getWeight() + "];\n");
+//            }
+            writer.write("\ta \t\t[Weight=2,Start=0,Processor=1];\n");
+            writer.write("\ta -> b \t[Weight=1];\n");
+
+            writer.write("}");
             writer.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
