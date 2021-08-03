@@ -18,15 +18,19 @@ public class OutputParser {
 
     public void writeFile() { //Schedule schedule
         String filename = null;
+        String name = null;
         if (output_name == null) {
-            filename = input_name + "-output" + file_extension;
+            name = input_name + "-output";
         } else {
-            filename = output_name + file_extension;
+            name = output_name;
         }
+        filename = name + file_extension;
 
         try {
             FileWriter writer = new FileWriter(filename);
-            writer.write("digraph \"outputExample\" {\n");
+            writer.write("digraph \"" + name + "\" {\n");
+
+            // to be used when class structure is sorted
 //            for (Node n : graph) {
 //                writer.write("\t" + n + " \t\t[Weight=" + n.getWeight()
 //                                    + ",Start=" + n.getStart()
@@ -35,6 +39,8 @@ public class OutputParser {
 //            for (Edge e : graph) {
 //                writer.write("\t" + e.first() + "->" + e.second() + " \t[Weight=" + e.getWeight() + "];\n");
 //            }
+
+            //test output - will delete later
             writer.write("\ta \t\t[Weight=2,Start=0,Processor=1];\n");
             writer.write("\ta -> b \t[Weight=1];\n");
 
