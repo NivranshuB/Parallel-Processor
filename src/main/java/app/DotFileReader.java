@@ -30,6 +30,8 @@ public class DotFileReader {
         return graphName;
     }
 
+    public String getFilePath() { return filePath; }
+
     public HashMap<String, Node> getNodeMap() {
         return nodeMap;
     }
