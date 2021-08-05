@@ -2,6 +2,14 @@ package app;
 
 import java.util.List;
 
+/**
+ * Author: Team UNTESTED
+ * This class represents an instance of a schedule, both complete and partial.
+ * This class is used by the Scheduler class and is responsible for understanding
+ * its state and creating all possible schedules that can be created from this
+ * schedule by adding one more task. This class depends on the Scheduler class
+ * to the get the HashMap representation of the input graph.
+ */
 public class Schedule {
 
     public List<Processor> processor_list;
