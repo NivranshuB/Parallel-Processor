@@ -8,7 +8,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.ParseException;
 
-public class Argument_Parser {
+public class ArgumentParser {
 
 	public Config parse(String[] args) throws IllegalArgumentException {
 
