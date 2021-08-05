@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import model.Node;
@@ -79,6 +80,28 @@ public class Scheduler {
      * Method that merges two schedule lists, that are sorted, by their finish time. To be implemented...
      */
     private List<Schedule> merge(List<Schedule> x, List<Schedule> y) {
-        return null;
+        int countX = 0;
+        int countY = 0;
+        int maxX = x.size();
+        int maxY = y.size();
+        List<Schedule> mergedList = new ArrayList<Schedule>();
+
+        while ((countX < maxX) && (countY < maxY)) {
+            if ((x.get(countX).finishTime <= y.get(countY).finishTime)) {
+                mergedList.add(x.get(countX));
+                countX++;
+            } else {
+                mergedList.add(y.get(countY));
+                countY++;
+            }
+        }
+
+        if (countX == (x.size() - 1)) {
+            mergedList.addAll(x.subList(countX, x.size()-1));
+        } else {
+            mergedList.addAll(y.subList(countY, y.size()-1));
+        }
+        return mergedList;
     }
+
 }
