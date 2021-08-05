@@ -16,10 +16,10 @@ public class OutputParser {
 
     private final String file_extension = ".dot";
 
-    String output_name = null;
-    String input_name;
-    DotFileReader dfr;
-    Boolean newName = false;
+    private String output_name = null;
+    private String input_name;
+    private DotFileReader dfr;
+    private Boolean newName = false;
 
     public OutputParser() {}
 
@@ -37,14 +37,13 @@ public class OutputParser {
         graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
         graphName = graphName + "-output";
 
-        String filename = null;
         String name = null;
         if (!newName) { // if a new name from the CL args is present or not
             name = input_name + "-output"; // default output name
         } else {
             name = input_name;
         }
-        filename = name + file_extension;
+        String filename = name + file_extension;
 
         try {
             FileWriter writer = new FileWriter(filename);
