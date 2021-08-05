@@ -14,6 +14,7 @@ public class Main {
 			return;
 		}
 
+        // debugging
         System.out.println("input file = " + config.getInputFile());
 		System.out.println("number of processors = " + config.getNumOfProcessors());
 		System.out.println("number of cores = " + config.getNumOfCores());
