@@ -8,7 +8,7 @@ import java.io.File;
 public class Config {
 
     // static variable single_instance of type Singleton
-    private static Config single_instance = null;
+    private static Config singleInstance = null;
    
     private int numOfCores;
     private int numOfProcessors;
@@ -23,10 +23,10 @@ public class Config {
     // static method to create instance of Singleton class
     public static Config getInstance() {
     
-        if (single_instance == null)
-            single_instance = new Config();
+        if (singleInstance == null)
+            singleInstance = new Config();
   
-        return single_instance;
+        return singleInstance;
     }
 
     // getters and setters for config options
