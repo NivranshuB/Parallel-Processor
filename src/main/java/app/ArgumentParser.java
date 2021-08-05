@@ -47,6 +47,13 @@ public class ArgumentParser {
 			throw new IllegalArgumentException("P must be an integer.");
 		}
 
+		// set default optional args
+		config.setNumOfCores(1);
+		config.setVisualise(false);
+		String outputFilePath = inputFilePath.replace(".dot", "") + "-output.dot";
+		File outputFile = new File(outputFilePath);
+		config.setOutputFile(outputFile);
+
 		// get the optional arguments
 		String[] optionalArgs = new String[args.length - 2];
 
@@ -83,8 +90,8 @@ public class ArgumentParser {
 
 		// set the output file
 		if (cli.hasOption("o")) {
-			String outputFilePath = cli.getOptionValue("o");
-			File outputFile = new File(outputFilePath);
+			outputFilePath = cli.getOptionValue("o");
+			outputFile = new File(outputFilePath);
 			config.setOutputFile(outputFile);
 		}
 

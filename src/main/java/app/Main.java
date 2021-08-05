@@ -10,7 +10,7 @@ public class Main {
 		try {
 			config = parser.parse(args);
 		} catch (IllegalArgumentException e) {
-			System.out.println("Unable to parse arguments"+ e.getMessage());
+			System.out.println("Unable to parse arguments "+ e.getMessage());
 			return;
 		}
 
