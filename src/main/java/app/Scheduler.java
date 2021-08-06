@@ -100,12 +100,14 @@ public class Scheduler {
                 countY++;
             }
         }
-
-        if (countX == (x.size() - 1)) {
-            mergedList.addAll(x.subList(countX, x.size()-1));
-        } else {
-            mergedList.addAll(y.subList(countY, y.size()-1));
+        if (x.size() > 0){
+            if (countX == (x.size() - 1)) {
+                mergedList.addAll(x.subList(countX, x.size()-1));
+            } else {
+                mergedList.addAll(y.subList(countY, y.size()-1));
+            }
         }
+
         return mergedList;
     }
 

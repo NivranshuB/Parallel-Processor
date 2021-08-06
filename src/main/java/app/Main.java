@@ -38,12 +38,12 @@ public class Main {
 		//debugging
 		System.out.println("graph name = " + dotFileReader.getGraphName());
 
-        scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), 1);
+        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), 1);
 
         //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
-
+		String graphName = dotFileReader.getGraphName();
         //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(dotFileReader);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
 
         op.writeFile();
     }

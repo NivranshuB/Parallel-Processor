@@ -16,42 +16,24 @@ import java.util.Map;
 
 public class OutputParser {
 
-    private final String file_extension = ".dot";
-
-    private String output_name = null;
-    private String input_name;
-    private DotFileReader dfr;
+    private Config config;
+    private Schedule schedule;
+    private String graphName;
     private Boolean newName = false;
 
-    public OutputParser() {}
-
-    public OutputParser(String output_name){
-        this.output_name = output_name;
-    } // delete?
-
-    public OutputParser(DotFileReader dfr) { this.dfr = dfr; }
+    public OutputParser(String graphName, Config config, Schedule schedule) {
+        this.graphName = graphName;
+        this.config = config;
+        this.schedule = schedule;
+    }
 
     public void writeFile() {
 
-        input_name = dfr.getFilePath().split("\\.")[0];
-
-        String graphName = dfr.getGraphName();
-        graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
-        graphName = graphName + "-output";
-
-        String name = null;
-        if (!newName) { // if a new name from the CL args is present or not
-            name = input_name + "-output"; // default output name
-        } else {
-            name = input_name;
-        }
-        String filename = name + file_extension;
-
         try {
-            FileWriter writer = new FileWriter(filename);
+            FileWriter writer = new FileWriter(config.getOutputFile());
             writer.write("digraph \"" + graphName + "\" {\n");
 
-            HashMap<String, Node> nodeMap = dfr.getNodeMap();
+            HashMap<String, Node> nodeMap = schedule.nodeMap;
 
             Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
 
@@ -59,10 +41,23 @@ public class OutputParser {
                 Map.Entry<String, Node> entry = iterator.next();
                 String key = entry.getKey();
                 Node node = entry.getValue();
-                writer.write("\t" + key + "\t [Weight=" + node.getWeight() + ",Start=" + node.getStart() + ",Processor=" + node.getProcessor() + "];\n");
+                int start = 0;
+                int processor = 0;
+                for (Processor p : schedule.processorList) {
+                    int timeCount = 0;
+                    for (Node n : p.taskOrder) {
+                        if (node.equals(n)) {
+                            start = timeCount;
+                            processor = schedule.processorList.indexOf(p);
+                        } else {
+                            timeCount += n.getWeight();
+                        }
+                    }
+                }
+                writer.write("\t" + key + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processor + "];\n");
             }
 
-            HashMap<String, Edge> edgeMap = dfr.getEdgeMap();
+            HashMap<String, Edge> edgeMap = schedule.edgeMap;
 
             Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();
 
