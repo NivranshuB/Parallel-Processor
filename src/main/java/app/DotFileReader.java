@@ -16,14 +16,14 @@ import model.Node;
 
 public class DotFileReader {
 
-    private String filePath;
+    private File filename;
     private String graphName;
     private List<Node> rootNodeList = new ArrayList<Node>();
     private HashMap<String, Node> nodeMap = new HashMap<String, Node>();
     private HashMap<String, Edge> edgeMap = new HashMap<String, Edge>();
 
-    public DotFileReader(String filePath) {
-        this.filePath = filePath;
+    public DotFileReader(File filename) {
+        this.filename = filename;
         parseGraph();
     }
 
@@ -45,8 +45,7 @@ public class DotFileReader {
 
     private void parseGraph() {
         try {
-            File file = new File(filePath);
-            FileReader fr = new FileReader(file);
+            FileReader fr = new FileReader(filename);
             BufferedReader br = new BufferedReader(fr);
             StringBuffer sb = new StringBuffer();
             String currentLine = br.readLine();
