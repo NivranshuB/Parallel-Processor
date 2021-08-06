@@ -2,6 +2,9 @@ package app;
 
 import java.util.List;
 
+/**
+ * Not sure if we need this class if we are using the HashMap variation to represent the graph
+ */
 public class Task {
 
     public Boolean assigned;
