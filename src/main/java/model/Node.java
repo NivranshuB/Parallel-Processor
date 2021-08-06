@@ -13,6 +13,8 @@ public class Node {
     private List<Node> parent = new ArrayList<Node>();
     private List<Node> child = new ArrayList<Node>();
     private int weight;
+    private int start;
+    private int processor;
 
     public List<Node> getParent() {
         return parent;
@@ -37,4 +39,8 @@ public class Node {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    public int getStart(){ return start; }
+
+    public int getProcessor(){ return processor; }
 }

@@ -1,42 +1,75 @@
 package app;
 
+import model.Edge;
+import model.Node;
+
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * Author: Team Untested
+ * Utility class used to output graph representing task schedules in DOT format
+ */
 
 public class OutputParser {
 
-    private final String file_extension = ".dot";
+    private Config config;
+    private Schedule schedule;
+    private String graphName;
 
-    String output_name = null;
-    String input_name = "input";
-
-    public OutputParser() {}
-
-    public OutputParser(String output_name){
-        this.output_name = output_name;
+    public OutputParser(String graphName, Config config, Schedule schedule) {
+        this.graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
+        this.graphName = this.graphName + "-output";
+        this.config = config;
+        this.schedule = schedule;
     }
 
-    public void writeFile() { //Schedule schedule
-        String filename = null;
-        if (output_name == null) {
-            filename = input_name + "-output" + file_extension;
-        } else {
-            filename = output_name + file_extension;
-        }
+    public void writeFile() {
 
         try {
-            FileWriter writer = new FileWriter(filename);
-            writer.write("digraph \"outputExample\" {\n");
-//            for (Node n : graph) {
-//                writer.write("\t" + n + " \t\t[Weight=" + n.getWeight()
-//                                    + ",Start=" + n.getStart()
-//                                    + ",Processor=" + n.getProcessor() + "];\n");
-//            }
-//            for (Edge e : graph) {
-//                writer.write("\t" + e.first() + "->" + e.second() + " \t[Weight=" + e.getWeight() + "];\n");
-//            }
-            writer.write("\ta \t\t[Weight=2,Start=0,Processor=1];\n");
-            writer.write("\ta -> b \t[Weight=1];\n");
+            FileWriter writer = new FileWriter(config.getOutputFile());
+            writer.write("digraph \"" + graphName + "\" {\n");
+
+            HashMap<String, Node> nodeMap = schedule.nodeMap;
+
+            Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, Node> entry = iterator.next();
+                String key = entry.getKey();
+                Node node = entry.getValue();
+                int start = 0;
+                int processor = 0;
+                for (Processor p : schedule.processorList) {
+                    int timeCount = 0;
+                    for (Node n : p.taskOrder) {
+                        System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
+                        if (node.equals(n)) {
+                            start = timeCount;
+                            processor = schedule.processorList.indexOf(p);
+                        } else {
+                            timeCount += n.getWeight();
+                        }
+                    }
+                }
+                writer.write("\t" + key + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processor + "];\n");
+            }
+
+            HashMap<String, Edge> edgeMap = schedule.edgeMap;
+
+            Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();
+
+            while (edgeIterate.hasNext()) {
+                Map.Entry<String, Edge> entry = edgeIterate.next();
+                String[] keys = entry.getKey().split("_");
+                String parent = keys[0];
+                String child = keys[1];
+                Edge edge = entry.getValue();
+                writer.write("\t" + parent + " -> " + child + "\t [Weight=" + edge.getWeight() + "];\n");
+            }
 
             writer.write("}");
             writer.close();
