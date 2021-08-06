@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.EmptyNode;
@@ -20,7 +21,7 @@ public class Processor {
      * Default processor constructor that creates the initial empty Processor instance
      */
     public Processor() {
-        taskOrder = null;
+        taskOrder = new ArrayList<>();
         finishTime = 0;
     }
 
