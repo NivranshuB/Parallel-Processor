@@ -10,8 +10,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Author: Team Untested
  * Utility class used to output graph representing task schedules in DOT format
  */
+
 public class OutputParser {
 
     private final String file_extension = ".dot";

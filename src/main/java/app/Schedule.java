@@ -19,6 +19,8 @@ public class Schedule {
     public ScheduleState state;
     public int finishTime;
     public List<Node> unassignedTasks;
+    public HashMap<String, Node> nodeMap;
+    public HashMap<String, Edge> edgeMap;
 
     enum ScheduleState {
         PARTIAL,
@@ -30,9 +32,11 @@ public class Schedule {
     /**
      * Constructor creates an empty schedule -> This will be used for the first schedule
      */
-    public Schedule(HashMap<String, Node> nodeMap, int numberOfProcessors) {
+    public Schedule(HashMap<String, Node> nMap, HashMap<String, Edge> eMap, int numberOfProcessors) {
         state = ScheduleState.PARTIAL;
         finishTime = 0;
+        nodeMap = nMap;
+        edgeMap = eMap;
 
         for (Node curr : nodeMap.values()) {
             unassignedTasks.add(curr);
@@ -48,10 +52,15 @@ public class Schedule {
      * duplicated from the parent schedule except they will have one extra task allocated to one of their
      * processors. To be implemented...
      */
-    public Schedule() {
+    public Schedule(List<Processor> pList, ScheduleState st, List<Node> uTasks, HashMap<String, Node> nMap,
+                    HashMap<String, Edge> eMap) {
 
-        //need to underestimate the finish time of the new child schedule
-        finishTime = estimateFinishTime();
+        processorList = pList;
+        state = st;
+        unassignedTasks = uTasks;
+        nodeMap = nMap;
+        edgeMap = eMap;
+        finishTime = this.estimateFinishTime();
     }
 
     /**
@@ -63,27 +72,72 @@ public class Schedule {
      */
     public List<Schedule> create_children(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
 
-        List<Schedule> childrenSchedule;
+        List<Schedule> childrenSchedule = null;
 
         for (Node n : unassignedTasks) {
             //check if the all edge dependencies of the task have been fulfilled
+            List<Node> taskDependencies = findDependencies(n);
 
-            //if they do not have any edge dependencies that need to be fulfilled
-            for (Processor p : processorList) {
+            boolean noDependencies = true;
 
+            for (Node parentTask : taskDependencies) {
+                if (!taskFulfilled(parentTask)) {
+                    noDependencies = false;
+                    break;
+                }
+            }
 
+            if (noDependencies) {
+                for (Processor p : processorList) {
+                    childrenSchedule.add(create_child(p, n));
+                }
             }
         }
 
-        return null;
+        return sort(childrenSchedule);
     }
 
     /**
      * Create a new schedule with the task scheduled as early as possible on processor p [need to account for
      * any edge costs if this is on a different processor to its prior task. To be implemented...
      */
-    public Schedule create_child(Processor processor, Task task) {
-        return null;
+    public Schedule create_child(Processor processor, Node node) {
+
+        List<Processor> cProcessorList = null;
+        List<Node> cUnassignedTasks = null;
+        cUnassignedTasks.addAll(unassignedTasks);
+
+        for (Processor p : processorList) {
+            cProcessorList.add(new Processor(p.getTaskOrder(), p.finishTime));
+        }
+
+        List<Node> dependentTasks = findDependencies(node);
+        int earliestSTime = processor.finishTime;
+
+        for (Node n : dependentTasks) {
+            if (!processor.taskPresent(n)) {
+                for (Processor p : processorList) {
+                    if (p.taskPresent(n)) {
+                        int scheduleDelay = p.taskEndTime(n) + n.getWeight();
+                        if (scheduleDelay > earliestSTime) {
+                            earliestSTime = scheduleDelay;
+                        }
+                    }
+                }
+            }
+        }
+
+        int processorPos = processorList.indexOf(processor);
+        cProcessorList.get(processorPos).assignTask(node, earliestSTime - processor.finishTime);
+
+        cUnassignedTasks.remove(node);
+        ScheduleState cState = ScheduleState.PARTIAL;
+
+        if (cUnassignedTasks.size() > 0) {
+            cState = ScheduleState.COMPLETE;
+        }
+
+        return new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
     }
 
     /**
@@ -102,4 +156,39 @@ public class Schedule {
     public int getFinishTime() {
         return finishTime;
     }
+
+    /**
+     *
+     */
+    public List<Node> findDependencies(Node task) {
+        List<Node> dependentTasks = null;
+
+        for (Edge e : edgeMap.values()) {
+            if (e.getChildNode() == task) {
+                dependentTasks.add(e.getParentNode());
+            }
+        }
+        return dependentTasks;
+    }
+
+    public boolean taskFulfilled(Node task) {
+        boolean taskFulfilled = false;
+
+        for (Processor p : processorList) {
+            if (p.taskPresent(task)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Method to sort the schedule list. To be implemented...
+     * @param sList
+     * @return
+     */
+    private List<Schedule> sort(List<Schedule> sList) {
+        return sList;
+    }
+
 }
