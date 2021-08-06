@@ -12,9 +12,6 @@ public class Main {
         //SV's code to parse command line input arguments to extract the number of
         //processors, DOT file and other args
 
-        //Joe's code that uses the DOT filepath from the args to create a new
-        //DotFileReader object/graph representation
-
         ArgumentParser parser = new ArgumentParser();
 		Config config;
 		
@@ -32,7 +29,15 @@ public class Main {
 		System.out.println("visualise = " + config.getVisualise());
 		System.out.println("output file = " + config.getOutputFile());
       
-    Scheduler scheduler = Scheduler.getInstance();
+		Scheduler scheduler = Scheduler.getInstance();
+
+		//Joe's code that uses the DOT filepath from the args to create a new
+		//DotFileReader object/graph representation
+
+		DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+		//debugging
+		System.out.println("graph name = " + dotFileReader.getGraphName());
+
 
 
         //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
