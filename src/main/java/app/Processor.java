@@ -16,6 +16,28 @@ public class Processor {
     public List<Node> taskOrder;
     public int finishTime;
 
+    public Processor(List<Node> taskList, int fTime) {
+        taskOrder = taskList;
+        finishTime = fTime;
+    }
+
+    public Processor() {
+        taskOrder = null;
+        finishTime = 0;
+    }
+
+    public List<Node> getTaskOrder() {
+        return taskOrder;
+    }
+
+    public int getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(int fTime) {
+        finishTime = fTime;
+    }
+
     public void assignTask(Node node, int taskGap) {
         if (taskGap == 0) {
             taskOrder.add(node);
