@@ -47,7 +47,7 @@ public class Scheduler {
     public Schedule getOptimalSchedule(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap, int numberOfProcessors) {
 
 
-        Schedule emptySchedule = new Schedule(nodeMap, numberOfProcessors);
+        Schedule emptySchedule = new Schedule(nodeMap, edgeMap, numberOfProcessors);
 
         //initially just the empty schedule in the list
         openSchedules.add(emptySchedule);
