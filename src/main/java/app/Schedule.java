@@ -15,12 +15,12 @@ import model.Edge;
  */
 public class Schedule {
 
-    public List<Processor> processorList;
+    public List<Processor> processorList;//Each processor consists of the ordered list of Tasks scheduled on it
     public ScheduleState state;
-    public int finishTime;
+    public int finishTime;//If the schedule is not complete then this is an estimate
     public List<Node> unassignedTasks;
-    public HashMap<String, Node> nodeMap;
-    public HashMap<String, Edge> edgeMap;
+    public HashMap<String, Node> nodeMap;//All the tasks of the graph
+    public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
 
     enum ScheduleState {
         PARTIAL,
@@ -34,15 +34,15 @@ public class Schedule {
      */
     public Schedule(HashMap<String, Node> nMap, HashMap<String, Edge> eMap, int numberOfProcessors) {
         state = ScheduleState.PARTIAL;
-        finishTime = 0;
+        finishTime = 0;//Arbitrary placeholder value
         nodeMap = nMap;
         edgeMap = eMap;
 
-        for (Node curr : nodeMap.values()) {
+        for (Node curr : nodeMap.values()) {//Initially all tasks are unassigned
             unassignedTasks.add(curr);
         }
 
-        for (int i = 0; i < numberOfProcessors; i++) {
+        for (int i = 0; i < numberOfProcessors; i++) {//Create add new empty processors to procrocessorList
             processorList.add(new Processor());
         }
     }
@@ -68,28 +68,30 @@ public class Schedule {
      * to this schedule. To be implemented...
      * @param nodeMap
      * @param edgeMap
-     * @return
+     * @return List of all child schedules (these have exactly one more task scheduled on them compared to their parent)
      */
     public List<Schedule> create_children(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
 
         List<Schedule> childrenSchedule = null;
 
         for (Node n : unassignedTasks) {
-            //check if the all edge dependencies of the task have been fulfilled
+
+            //find all the task dependencies for a particular unassigned task Node
             List<Node> taskDependencies = findDependencies(n);
 
-            boolean noDependencies = true;
-
+            //For each task dependency check if the parent task has been fulfilled or not
+            boolean dependenciesFulfilled = true;
             for (Node parentTask : taskDependencies) {
-                if (!taskFulfilled(parentTask)) {
-                    noDependencies = false;
+                if (unassignedTasks.contains(parentTask)) {//check if parent task has been fulfilled
+                    dependenciesFulfilled = false;
                     break;
                 }
             }
 
-            if (noDependencies) {
-                for (Processor p : processorList) {
-                    childrenSchedule.add(create_child(p, n));
+            //If all task dependencies have been fulfilled then we can schedule this task
+            if (dependenciesFulfilled) {
+                for (Processor p : processorList) {//Create new schedules by scheduling this task on all processors
+                    childrenSchedule.add(create_child(p, n));//one at a time
                 }
             }
         }
@@ -103,40 +105,44 @@ public class Schedule {
      */
     public Schedule create_child(Processor processor, Node node) {
 
-        List<Processor> cProcessorList = null;
-        List<Node> cUnassignedTasks = null;
+        List<Processor> cProcessorList = null;//The processor list for the new child schedule and the list of
+        List<Node> cUnassignedTasks = null;//unassigned tasks are originally the same as the parent schedule
         cUnassignedTasks.addAll(unassignedTasks);
 
         for (Processor p : processorList) {
             cProcessorList.add(new Processor(p.getTaskOrder(), p.finishTime));
         }
 
+        //Find all the dependent tasks for the task we are about to schedule
         List<Node> dependentTasks = findDependencies(node);
-        int earliestSTime = processor.finishTime;
+        int earliestSTime = processor.finishTime;//This variable represents the earliest start time for this task in
+                                                 //this processor
 
+        //For loop that check if any of the dependent tasks were scheduled in a different processor to the current one
         for (Node n : dependentTasks) {
-            if (!processor.taskPresent(n)) {
+            if (!processor.taskPresent(n)) {//if a dependent task was scheduled on a different processor...
                 for (Processor p : processorList) {
-                    if (p.taskPresent(n)) {
-                        int scheduleDelay = p.taskEndTime(n) + n.getWeight();
+                    if (p.taskPresent(n)) {//Check what is the earliest time that we can schedule the current task by
+                        int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
                         if (scheduleDelay > earliestSTime) {
-                            earliestSTime = scheduleDelay;
+                            earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
                         }
                     }
                 }
             }
         }
 
-        int processorPos = processorList.indexOf(processor);
+        int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
         cProcessorList.get(processorPos).assignTask(node, earliestSTime - processor.finishTime);
 
-        cUnassignedTasks.remove(node);
+        cUnassignedTasks.remove(node);//Remove the task we just scheduled from the child's unassigned tasks list
         ScheduleState cState = ScheduleState.PARTIAL;
 
-        if (cUnassignedTasks.size() > 0) {
+        if (cUnassignedTasks.size() > 0) {//If the child does not have any unassigned tasks it will be labelled complete
             cState = ScheduleState.COMPLETE;
         }
 
+        //return a new Schedule instancte (the child schedule)
         return new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
     }
 
@@ -158,7 +164,9 @@ public class Schedule {
     }
 
     /**
-     *
+     *This method given a task t finds all the tasks that t depends on before it can be executed using edgeMap.
+     * @param task
+     * @return List of all the parent tasks
      */
     public List<Node> findDependencies(Node task) {
         List<Node> dependentTasks = null;
@@ -171,6 +179,11 @@ public class Schedule {
         return dependentTasks;
     }
 
+    /**
+     * Given a particular task, find if it has been fulfilled
+     * @param task
+     * @return
+     */
     public boolean taskFulfilled(Node task) {
         boolean taskFulfilled = false;
 
