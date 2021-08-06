@@ -1,6 +1,7 @@
 package app;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import model.Node;
@@ -14,7 +15,7 @@ import model.Edge;
  * schedule by adding one more task. This class depends on the Scheduler class
  * to the get the HashMap representation of the input graph.
  */
-public class Schedule {
+public class Schedule implements Comparable<Schedule> {
 
     public List<Processor> processorList = new ArrayList<>();//Each processor consists of the ordered list of Tasks scheduled on it
     public ScheduleState state;
@@ -22,6 +23,25 @@ public class Schedule {
     public List<Node> unassignedTasks = new ArrayList<>();
     public HashMap<String, Node> nodeMap;//All the tasks of the graph
     public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
+
+
+    /**
+     * Returns 1 if finish time of the current Schedule is greater than the Schedule being compared to, -1 if greater
+     * than the Schedule being compared to, and 0 if the finish times are equal.
+     * @param comparee
+     * @return
+     */
+    @Override
+    public int compareTo(Schedule comparee) {
+        if (this.finishTime < comparee.finishTime) {
+            return 1;
+        } else if (this.finishTime > comparee.finishTime) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
 
     enum ScheduleState {
         PARTIAL,
@@ -209,7 +229,10 @@ public class Schedule {
      * @return
      */
     private List<Schedule> sort(List<Schedule> sList) {
+        Collections.sort(sList);
         return sList;
     }
+
+
 
 }
