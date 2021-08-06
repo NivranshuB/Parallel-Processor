@@ -19,10 +19,10 @@ public class OutputParser {
     private Config config;
     private Schedule schedule;
     private String graphName;
-    private Boolean newName = false;
 
     public OutputParser(String graphName, Config config, Schedule schedule) {
-        this.graphName = graphName;
+        this.graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
+        this.graphName = this.graphName + "-output";
         this.config = config;
         this.schedule = schedule;
     }
@@ -46,6 +46,7 @@ public class OutputParser {
                 for (Processor p : schedule.processorList) {
                     int timeCount = 0;
                     for (Node n : p.taskOrder) {
+                        System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
                         if (node.equals(n)) {
                             start = timeCount;
                             processor = schedule.processorList.indexOf(p);
