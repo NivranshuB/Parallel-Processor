@@ -2,6 +2,7 @@ package app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import model.Node;
 import model.Edge;
@@ -28,7 +29,7 @@ public class Scheduler {
   
     // private constructor restricted to this class itself
     private Scheduler() {
-        openSchedules = null;
+        openSchedules = new ArrayList<>();
         optimalTime = MAX_VALUE;
         optimalSchedule = null;
     }
@@ -59,14 +60,18 @@ public class Scheduler {
             List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
             //get the list of all children schedules created by adding one task to this schedule
 
-            for (Schedule s : newSchedules) {
+            Iterator<Schedule> iterator = newSchedules.listIterator();
+
+            while (iterator.hasNext()) {
+                Schedule s = iterator.next();
+//            for (Schedule s : newSchedules) {
                 //if schedule is complete and has a better finish time than the current optimal schedule
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
-                    newSchedules.remove(s);
+                    iterator.remove();
                 } else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
-                    newSchedules.remove(s);                  //dump that schedule
+                    iterator.remove();                  //dump that schedule
                 }
             }
 

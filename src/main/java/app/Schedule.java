@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import model.Node;
@@ -15,10 +16,10 @@ import model.Edge;
  */
 public class Schedule {
 
-    public List<Processor> processorList;//Each processor consists of the ordered list of Tasks scheduled on it
+    public List<Processor> processorList = new ArrayList<>();//Each processor consists of the ordered list of Tasks scheduled on it
     public ScheduleState state;
     public int finishTime;//If the schedule is not complete then this is an estimate
-    public List<Node> unassignedTasks;
+    public List<Node> unassignedTasks = new ArrayList<>();
     public HashMap<String, Node> nodeMap;//All the tasks of the graph
     public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
 
@@ -72,21 +73,25 @@ public class Schedule {
      */
     public List<Schedule> create_children(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
 
-        List<Schedule> childrenSchedule = null;
+        List<Schedule> childrenSchedule = new ArrayList<>();
 
         for (Node n : unassignedTasks) {
 
             //find all the task dependencies for a particular unassigned task Node
-            List<Node> taskDependencies = findDependencies(n);
+//            taskDependencies;
+            List<Node>  taskDependencies = findDependencies(n);
 
             //For each task dependency check if the parent task has been fulfilled or not
             boolean dependenciesFulfilled = true;
-            for (Node parentTask : taskDependencies) {
-                if (unassignedTasks.contains(parentTask)) {//check if parent task has been fulfilled
-                    dependenciesFulfilled = false;
-                    break;
+            if (taskDependencies != null){
+                for (Node parentTask : taskDependencies) {
+                    if (unassignedTasks.contains(parentTask)) {//check if parent task has been fulfilled
+                        dependenciesFulfilled = false;
+                        break;
+                    }
                 }
             }
+
 
             //If all task dependencies have been fulfilled then we can schedule this task
             if (dependenciesFulfilled) {
@@ -105,8 +110,8 @@ public class Schedule {
      */
     public Schedule create_child(Processor processor, Node node) {
 
-        List<Processor> cProcessorList = null;//The processor list for the new child schedule and the list of
-        List<Node> cUnassignedTasks = null;//unassigned tasks are originally the same as the parent schedule
+        List<Processor> cProcessorList = new ArrayList<>();//The processor list for the new child schedule and the list of
+        List<Node> cUnassignedTasks = new ArrayList<>();//unassigned tasks are originally the same as the parent schedule
         cUnassignedTasks.addAll(unassignedTasks);
 
         for (Processor p : processorList) {
@@ -119,18 +124,21 @@ public class Schedule {
                                                  //this processor
 
         //For loop that check if any of the dependent tasks were scheduled in a different processor to the current one
-        for (Node n : dependentTasks) {
-            if (!processor.taskPresent(n)) {//if a dependent task was scheduled on a different processor...
-                for (Processor p : processorList) {
-                    if (p.taskPresent(n)) {//Check what is the earliest time that we can schedule the current task by
-                        int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
-                        if (scheduleDelay > earliestSTime) {
-                            earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
+        if (dependentTasks != null){
+            for (Node n : dependentTasks) {
+                if (!processor.taskPresent(n)) {//if a dependent task was scheduled on a different processor...
+                    for (Processor p : processorList) {
+                        if (p.taskPresent(n)) {//Check what is the earliest time that we can schedule the current task by
+                            int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
+                            if (scheduleDelay > earliestSTime) {
+                                earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
+                            }
                         }
                     }
                 }
             }
         }
+
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
         cProcessorList.get(processorPos).assignTask(node, earliestSTime - processor.finishTime);
@@ -169,7 +177,7 @@ public class Schedule {
      * @return List of all the parent tasks
      */
     public List<Node> findDependencies(Node task) {
-        List<Node> dependentTasks = null;
+        List<Node> dependentTasks = new ArrayList<>();
 
         for (Edge e : edgeMap.values()) {
             if (e.getChildNode() == task) {
