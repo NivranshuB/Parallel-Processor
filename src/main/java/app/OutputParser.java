@@ -3,6 +3,11 @@ package app;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Author: Team Untested
+ *
+ */
+
 public class OutputParser {
 
     private final String file_extension = ".dot";
