@@ -103,13 +103,5 @@ public class Processor {
 
         return nodeEndTime;
     }
-
-    /**
-     * Gets the finish time for this processor.
-     * @return int Finish time of this processor.
-     */
-    public int getFinishTime() {
-        return finish_time;
-    }
 }
 
