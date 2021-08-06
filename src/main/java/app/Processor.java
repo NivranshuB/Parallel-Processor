@@ -1,6 +1,8 @@
 package app;
 
 import java.util.List;
+
+import model.EmptyNode;
 import model.Node;
 
 /**
@@ -11,11 +13,44 @@ import model.Node;
  */
 public class Processor {
     
-    public List<Node> task_order;
-    public int finish_time;
+    public List<Node> taskOrder;
+    public int finishTime;
 
-    public void assign_task(Task task) {
-        
+    public void assignTask(Node node, int taskGap) {
+        if (taskGap == 0) {
+            taskOrder.add(node);
+        } else {
+            Node emptyNode = new EmptyNode();
+            emptyNode.addParent(taskOrder.get(taskOrder.size() - 1));
+            emptyNode.addChild(node);
+            emptyNode.setWeight(taskGap);
+
+            taskOrder.add(node);
+        }
+    }
+
+    public boolean taskPresent(Node task) {
+        for (Node n : taskOrder) {
+            if (n == task) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public int taskEndTime(Node task) {
+        int nodeEndTime = 0;
+        for (Node n : taskOrder) {
+            if (n == task) {
+                nodeEndTime += task.getWeight();
+                break;
+            } else {
+                nodeEndTime += n.getWeight();
+            }
+        }
+
+        return nodeEndTime;
     }
 
 }
