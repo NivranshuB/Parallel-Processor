@@ -20,6 +20,12 @@ public class OutputParser {
     private Schedule schedule;
     private String graphName;
 
+    /**
+     * Constructs the OutputParser object used to create an output graph DOT file.
+     * @param graphName Name of the output graph.
+     * @param config Config object with output file args.
+     * @param schedule Schedule to output.
+     */
     public OutputParser(String graphName, Config config, Schedule schedule) {
         this.graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
         this.graphName = this.graphName + "-output";
