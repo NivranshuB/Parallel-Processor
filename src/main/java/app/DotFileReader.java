@@ -22,6 +22,10 @@ public class DotFileReader {
     private HashMap<String, Node> nodeMap = new HashMap<String, Node>();
     private HashMap<String, Edge> edgeMap = new HashMap<String, Edge>();
 
+    /**
+     * Constructs a DotFileReader object with the DOT file provided.
+     * @param filename DOT file to be read.
+     */
     public DotFileReader(File filename) {
         this.filename = filename;
         parseGraph();
