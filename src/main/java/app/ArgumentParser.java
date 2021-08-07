@@ -8,6 +8,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.ParseException;
 
+/**
+ * Author: Team Untested
+ * Utility class used to parse command-line inputs from the user.
+ */
 public class ArgumentParser {
 
 	/**
