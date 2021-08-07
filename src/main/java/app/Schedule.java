@@ -155,17 +155,29 @@ public class Schedule implements Comparable<Schedule> {
         List<Node> dependentTasks = findDependencies(node);
         int earliestSTime = processor.finishTime;//This variable represents the earliest start time for this task in
                                                  //this processor
-
+        int commCost = 0;
         //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
         if (dependentTasks != null){
             for (Node n : dependentTasks) {
+                System.out.println("i am a dependency: " + n.getName());
                 if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
                     for (Processor p : processorList) {
                         if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
-                            int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
-                            if (scheduleDelay > earliestSTime) {
-                                earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
+
+                            for (Edge e : edgeMap.values()) {
+                                if (e.getParentNode().getName() == n.getName() && e.getChildNode().getName() == node.getName()) {
+//                                    commCost = e.getWeight();
+                                    if (e.getWeight() > commCost) {
+                                        commCost = e.getWeight();
+                                        System.out.println("this is commCost: " + commCost);
+                                    }
+                                }
                             }
+
+//                            int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
+//                            if (scheduleDelay > earliestSTime) {
+//                                earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
+//                            }
                         }
                     }
                 }
@@ -175,7 +187,13 @@ public class Schedule implements Comparable<Schedule> {
         Node childDuplicateExtraTask = node.duplicateNode();
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
-        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.finishTime);
+//        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.finishTime);
+        if (commCost != 0) {
+            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost + processor.finishTime);
+        } else {
+            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, 0);
+        }
+
 
         ScheduleState cState = ScheduleState.PARTIAL;
 

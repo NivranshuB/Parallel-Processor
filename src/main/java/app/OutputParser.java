@@ -40,6 +40,8 @@ public class OutputParser {
 
             Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
 
+            int criticalPath = 0;
+
             while (iterator.hasNext()) {
                 Map.Entry<String, Node> entry = iterator.next();
                 String key = entry.getKey();
@@ -47,6 +49,10 @@ public class OutputParser {
                 int start = 0;
                 int processor = 0;
                 for (Processor p : schedule.processorList) {
+                    int potentialCriticalPath = p.finishTime;
+                    if (potentialCriticalPath > criticalPath) {
+                        criticalPath = potentialCriticalPath;
+                    }
                     int timeCount = 0;
                     for (Node n : p.getTaskOrder()) {
                         System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
@@ -62,6 +68,8 @@ public class OutputParser {
                 }
                 writer.write("\t" + key + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processor + "];\n");
             }
+
+            System.out.println("Critical path: " + criticalPath);
 
             HashMap<String, Edge> edgeMap = schedule.edgeMap;
 
