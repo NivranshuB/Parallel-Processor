@@ -78,6 +78,7 @@ public class Scheduler {
             for (Schedule s : newSchedules) {
                 System.out.println("Schedule " + scheduleCounter);
                 System.out.println(s);
+                System.out.println("Schedule finish time: " + s.getFinishTime());
                 scheduleCounter++;
             }
 
@@ -137,7 +138,7 @@ public class Scheduler {
             }
         }
         if (x.size() > 0){
-            if (countX == (x.size() - 1)) {
+            if (countX == x.size()) {
                 mergedList.addAll(y.subList(countY, y.size()-1));
             } else {
                 mergedList.addAll(x.subList(countX, x.size()-1));
