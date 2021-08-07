@@ -79,6 +79,7 @@ public class DotFileReader {
         int nodeWeight = parseWeight(str);
         Node newNode = new Node();
 
+        newNode.setName(str);
         newNode.setWeight(nodeWeight);
         nodeMap.put(nodeName, newNode);
     }

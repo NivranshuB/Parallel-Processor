@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import model.EmptyNode;
 import model.Node;
 import model.Edge;
 
@@ -55,7 +57,6 @@ public class Schedule implements Comparable<Schedule> {
      */
     public Schedule(HashMap<String, Node> nMap, HashMap<String, Edge> eMap, int numberOfProcessors) {
         state = ScheduleState.PARTIAL;
-        finishTime = 0;//Arbitrary placeholder value
         nodeMap = nMap;
         edgeMap = eMap;
 
@@ -66,6 +67,8 @@ public class Schedule implements Comparable<Schedule> {
         for (int i = 0; i < numberOfProcessors; i++) {//Create add new empty processors to procrocessorList
             processorList.add(new Processor());
         }
+
+        finishTime = this.estimateFinishTime();
     }
 
     /**
@@ -105,9 +108,11 @@ public class Schedule implements Comparable<Schedule> {
             boolean dependenciesFulfilled = true;
             if (taskDependencies != null){
                 for (Node parentTask : taskDependencies) {
-                    if (unassignedTasks.contains(parentTask)) {//check if parent task has been fulfilled
-                        dependenciesFulfilled = false;
-                        break;
+                    for (Node ut : unassignedTasks) {
+                        if (ut.getName().equals(parentTask.getName())) {//check if parent task has been fulfilled
+                            dependenciesFulfilled = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -131,11 +136,17 @@ public class Schedule implements Comparable<Schedule> {
     public Schedule create_child(Processor processor, Node node) {
 
         List<Processor> cProcessorList = new ArrayList<>();//The processor list for the new child schedule and the list of
-        List<Node> cUnassignedTasks = new ArrayList<>();//unassigned tasks are originally the same as the parent schedule
-        cUnassignedTasks.addAll(unassignedTasks);
+        List<Node> cUnassignedTasks = new ArrayList<>();
+
+        //unassigned tasks are originally the same as the parent schedule
+        for (Node task : unassignedTasks) {
+            if (task.getName() != node.getName()) {
+                cUnassignedTasks.add(task.duplicateNode());
+            }
+        }
 
         for (Processor p : processorList) {
-            cProcessorList.add(new Processor(p.getTaskOrder(), p.finishTime));
+            cProcessorList.add(new Processor(p.getDuplicateTaskOrder(), p.finishTime));
         }
 
         //Find all the dependent tasks for the task we are about to schedule
@@ -143,12 +154,12 @@ public class Schedule implements Comparable<Schedule> {
         int earliestSTime = processor.finishTime;//This variable represents the earliest start time for this task in
                                                  //this processor
 
-        //For loop that check if any of the dependent tasks were scheduled in a different processor to the current one
+        //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
         if (dependentTasks != null){
             for (Node n : dependentTasks) {
-                if (!processor.taskPresent(n)) {//if a dependent task was scheduled on a different processor...
+                if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
                     for (Processor p : processorList) {
-                        if (p.taskPresent(n)) {//Check what is the earliest time that we can schedule the current task by
+                        if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
                             int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
                             if (scheduleDelay > earliestSTime) {
                                 earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
@@ -159,19 +170,24 @@ public class Schedule implements Comparable<Schedule> {
             }
         }
 
+        Node childDuplicateExtraTask = node.duplicateNode();
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
-        cProcessorList.get(processorPos).assignTask(node, earliestSTime - processor.finishTime);
+        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.finishTime);
 
-        cUnassignedTasks.remove(node);//Remove the task we just scheduled from the child's unassigned tasks list
         ScheduleState cState = ScheduleState.PARTIAL;
 
-        if (cUnassignedTasks.size() > 0) {//If the child does not have any unassigned tasks it will be labelled complete
+        if (cUnassignedTasks.size() < 1) {//If the child does not have any unassigned tasks it will be labelled complete
             cState = ScheduleState.COMPLETE;
         }
 
-        //return a new Schedule instancte (the child schedule)
-        return new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
+        System.out.print("I am scheduling task " + node.getName());
+        System.out.println("\n");
+
+        //return a new Schedule instance (the child schedule)
+        Schedule cSchedule = new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
+        //System.out.println(cSchedule);
+        return cSchedule;
     }
 
     /**
@@ -253,7 +269,7 @@ public class Schedule implements Comparable<Schedule> {
         List<Node> dependentTasks = new ArrayList<>();
 
         for (Edge e : edgeMap.values()) {
-            if (e.getChildNode() == task) {
+            if (e.getChildNode().getName().equals(task.getName())) {
                 dependentTasks.add(e.getParentNode());
             }
         }
@@ -269,7 +285,7 @@ public class Schedule implements Comparable<Schedule> {
         boolean taskFulfilled = false;
 
         for (Processor p : processorList) {
-            if (p.taskPresent(task)) {
+            if (p.taskPresent(task.getName())) {
                 return true;
             }
         }
@@ -286,6 +302,25 @@ public class Schedule implements Comparable<Schedule> {
         return sList;
     }
 
+    public String toString() {
+        String scheduleString = "";
+        for (Processor p : processorList) {
+            scheduleString = scheduleString + "Processor " + processorList.indexOf(p);
+            scheduleString = (scheduleString + "----------------------------\n");
+            List<Node> taskOrder = p.getTaskOrder();
+            int currTime = 0;
+            for (Node task : taskOrder) {
 
+                if (!(task instanceof EmptyNode)) {
+                    scheduleString = (scheduleString + "Task " + task.getName() + ":" + " Weight=" + task.getWeight() + " Start time=" + currTime + '\n');
+                } else {
+                    System.out.println("Task gap of " + task.getWeight());
+                }
+                currTime += task.getWeight();
+            }
+
+        }
+        return scheduleString;
+    }
 
 }
