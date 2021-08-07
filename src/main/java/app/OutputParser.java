@@ -27,6 +27,9 @@ public class OutputParser {
         this.schedule = schedule;
     }
 
+    /**
+     * Writes the output graph file in the required DOT format.
+     */
     public void writeFile() {
 
         try {
