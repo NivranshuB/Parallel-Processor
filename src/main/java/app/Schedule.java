@@ -54,6 +54,9 @@ public class Schedule implements Comparable<Schedule> {
 
     /**
      * Constructor creates an empty schedule -> This will be used for the first schedule
+     * @param nMap Mapping of nodes in the task graph.
+     * @param eMap Mapping of edges in the task graph.
+     * @param numberOfProcessors Number of processors to schedule tasks on.
      */
     public Schedule(HashMap<String, Node> nMap, HashMap<String, Edge> eMap, int numberOfProcessors) {
         state = ScheduleState.PARTIAL;
@@ -74,7 +77,12 @@ public class Schedule implements Comparable<Schedule> {
     /**
      * Need to decide how subsequent child schedules will be created. These child schedules need to be
      * duplicated from the parent schedule except they will have one extra task allocated to one of their
-     * processors. To be implemented...
+     * processors.
+     * @param pList List of processors with scheduled tasks.
+     * @param st Schedule status.
+     * @param uTasks List of unassigned tasks for the task graph.
+     * @param nMap Mapping of nodes in the task graph.
+     * @param eMap Mapping of edges in the task graph.
      */
     public Schedule(List<Processor> pList, ScheduleState st, List<Node> uTasks, HashMap<String, Node> nMap,
                     HashMap<String, Edge> eMap) {
