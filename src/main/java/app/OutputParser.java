@@ -48,9 +48,11 @@ public class OutputParser {
                 int processor = 0;
                 for (Processor p : schedule.processorList) {
                     int timeCount = 0;
-                    for (Node n : p.taskOrder) {
+                    for (Node n : p.getTaskOrder()) {
                         System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
-                        if (node.equals(n)) {
+                        System.out.println("timeCount: " + timeCount);
+                        if (node.getName() == n.getName()) {
+                            System.out.println("this is start inside all the loops: " + start);
                             start = timeCount;
                             processor = schedule.processorList.indexOf(p);
                         } else {
