@@ -43,16 +43,24 @@ public class Processor {
         return taskOrder;
     }
 
+    /**
+     * Sets the task order for this processor.
+     * @param tOrder List of task nodes in the order they would be executed.
+     */
+    public void setTaskOrder(List<Node> tOrder) {
+        taskOrder = tOrder;
+    }
+
+    /**
+     * Gets the duplicated task order for this processor.
+     * @return List of duplicated task nodes in the order they would be executed.
+     */
     public List<Node> getDuplicateTaskOrder() {
         List<Node> duplicateTaskOrder = new ArrayList<>();
         for (Node task : taskOrder) {
             duplicateTaskOrder.add(task.duplicateNode());
         }
         return duplicateTaskOrder;
-    }
-
-    public void setTaskOrder(List<Node> tOrder) {
-        taskOrder = tOrder;
     }
 
     /**
@@ -97,7 +105,7 @@ public class Processor {
 
     /**
      * Checks to see if a task has been scheduled on this processor.
-     * @param task Task node to check.
+     * @param taskName Task node to check.
      * @return True if the input task is scheduled on this processor, otherwise returns False.
      */
     public boolean taskPresent(String taskName) {
