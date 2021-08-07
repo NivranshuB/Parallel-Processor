@@ -35,18 +35,34 @@ public class Processor {
         finishTime = fTime;
     }
 
+    /**
+     * Gets the task order for this processor.
+     * @return List of task nodes in the order they would be executed.
+     */
     public List<Node> getTaskOrder() {
         return taskOrder;
     }
 
+    /**
+     * Sets the task order for the processor.
+     * @param tOrder List of task nodes in the order they would be executed.
+     */
     public void setTaskOrder(List<Node> tOrder) {
         taskOrder = tOrder;
     }
 
+    /**
+     * Gets the finish time for this processor.
+     * @return Finish time of this processor.
+     */
     public int getFinishTime() {
         return finishTime;
     }
 
+    /**
+     * Sets the finish time for this processor.
+     * @param fTime Finish time for this processor.
+     */
     public void setFinishTime(int fTime) {
         finishTime = fTime;
     }
@@ -56,8 +72,8 @@ public class Processor {
      * task, then create an empty Node object whose parent is the current last task and child is the new task. The
      * weight of the Node object will be the length of the time gap. This empty Node should be interpreted as a time
      * gap in the schedule.
-     * @param node
-     * @param taskGap
+     * @param node Task node to assign to this processor.
+     * @param taskGap If applicable, the time between two tasks where the processor is idle.
      */
     public void assignTask(Node node, int taskGap) {
         if (taskGap != 0) {//Create an empty Node instance to represent the time gap
@@ -71,9 +87,9 @@ public class Processor {
     }
 
     /**
-     * Method that returns true if the input task is scheduled on this processor otherwise returns false
-     * @param task
-     * @return
+     * Checks to see if a task has been scheduled on this processor.
+     * @param task Task node to check.
+     * @return True if the input task is scheduled on this processor, otherwise returns False.
      */
     public boolean taskPresent(Node task) {
         for (Node n : taskOrder) {
@@ -86,9 +102,9 @@ public class Processor {
     }
 
     /**
-     * Given a task Node object this method returns the time that this task will finish on this schedule
-     * @param task
-     * @return
+     * Returns the time this task will finish on this schedule, given a task Node object.
+     * @param task Task node to check end time for.
+     * @return End time of task node checked.
      */
     public int taskEndTime(Node task) {
         int nodeEndTime = 0;
