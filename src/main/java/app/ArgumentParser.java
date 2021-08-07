@@ -10,6 +10,12 @@ import org.apache.commons.cli.ParseException;
 
 public class ArgumentParser {
 
+	/**
+	 * Parses the command-line inputs provided by the user and alert the user to any problems.
+	 * @param args Arguments to parse from the user.
+	 * @return Config object containing the configuration options which the user selected.
+	 * @throws IllegalArgumentException Alert the user with regards to invalid arguments.
+	 */
 	public Config parse(String[] args) throws IllegalArgumentException {
 
 		Config config = Config.getInstance();
