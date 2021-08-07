@@ -331,6 +331,10 @@ public class Schedule implements Comparable<Schedule> {
         return sList;
     }
 
+    /**
+     * Outputs this schedule as a string.
+     * @return This schedule in string format.
+     */
     public String toString() {
         String scheduleString = "";
         for (Processor p : processorList) {

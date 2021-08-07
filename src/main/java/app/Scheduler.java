@@ -27,7 +27,10 @@ public class Scheduler {
     public int optimalTime;
     public Schedule optimalSchedule;
   
-    // private constructor restricted to this class itself
+    /**
+     * Private constructor restricted to the class itself ensures the
+     * class is not instantiated more than once.
+     */
     private Scheduler() {
         openSchedules = new ArrayList<>();
         optimalTime = MAX_VALUE;
