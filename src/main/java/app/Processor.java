@@ -18,7 +18,7 @@ public class Processor {
     public int finishTime;//The current finish time of this schedule
 
     /**
-     * Default processor constructor that creates the initial empty Processor instance
+     * Default processor constructor that creates the initial empty Processor instance.
      */
     public Processor() {
         taskOrder = new ArrayList<>();
@@ -26,9 +26,9 @@ public class Processor {
     }
 
     /**
-     * Processor constructor used when creating the processors of the child schedule
-     * @param taskList
-     * @param fTime
+     * Processor constructor used when creating the processors of the child schedule.
+     * @param taskList List of task nodes to schedule on this processor.
+     * @param fTime Current finish time of tasks scheduled on this processor.
      */
     public Processor(List<Node> taskList, int fTime) {
         taskOrder = taskList;
