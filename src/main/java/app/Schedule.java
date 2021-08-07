@@ -165,10 +165,11 @@ public class Schedule implements Comparable<Schedule> {
                         if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
 
                             for (Edge e : edgeMap.values()) {
-                                if (e.getParentNode().getName() == n.getName() && e.getChildNode().getName() == node.getName()) {
+                                if (e.getParentNode().getName().equals(n.getName()) && e.getChildNode().getName().equals(node.getName())) {
 //                                    commCost = e.getWeight();
-                                    if (e.getWeight() > commCost) {
-                                        commCost = e.getWeight();
+                                    if (e.getWeight() + p.getFinishTime() > commCost) {
+
+                                        commCost = e.getWeight() + p.getFinishTime();
                                         System.out.println("this is commCost: " + commCost);
                                     }
                                 }
@@ -188,11 +189,11 @@ public class Schedule implements Comparable<Schedule> {
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
 //        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.finishTime);
-        if (commCost != 0) {
-            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost + processor.finishTime);
-        } else {
-            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, 0);
-        }
+//        if (commCost != 0) {
+        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
+//        } else {
+//            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, 0);
+//        }
 
 
         ScheduleState cState = ScheduleState.PARTIAL;
