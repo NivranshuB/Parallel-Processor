@@ -76,14 +76,26 @@ public class Node {
      */
     public int getProcessor(){ return processor; }
 
+    /**
+     * Gets the name of this node as a string.
+     * @return Name of this node as a string.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of this node as a string.
+     * @param weight Name of this node as a string.
+     */
     public void setName(String nm) {
         name = nm;
     }
-
+    
+    /**
+     * Creates a duplicate of this current node.
+     * @param weight Duplicate of this node.
+     */
     public Node duplicateNode() {
         Node dupeNode = new Node();
         dupeNode.setWeight(weight);
