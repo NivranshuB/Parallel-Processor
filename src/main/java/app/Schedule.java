@@ -28,10 +28,10 @@ public class Schedule implements Comparable<Schedule> {
 
 
     /**
-     * Returns 1 if finish time of the current Schedule is greater than the Schedule being compared to, -1 if greater
-     * than the Schedule being compared to, and 0 if the finish times are equal.
-     * @param comparee
-     * @return
+     * Compares the finish time of this schedule and the schedule provided.
+     * @param comparee Other schedule to compare this schedule to.
+     * @return Returns 1 if finish time of the current Schedule is greater than the Schedule being compared to,
+     * -1 if greater than the Schedule being compared to, and 0 if the finish times are equal.
      */
     @Override
     public int compareTo(Schedule comparee) {
@@ -88,10 +88,9 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     /**
-     * This method is supposed to create all possible partial schedule that can result by adding another task
-     * to this schedule. To be implemented...
-     * @param nodeMap
-     * @param edgeMap
+     * Creates all possible partial schedules that can result by adding another task to this schedule.
+     * @param nodeMap Mapping of nodes in the task graph.
+     * @param edgeMap Mapping of edges in the task graph.
      * @return List of all child schedules (these have exactly one more task scheduled on them compared to their parent)
      */
     public List<Schedule> create_children(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
@@ -130,8 +129,11 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     /**
-     * Create a new schedule with the task scheduled as early as possible on processor p [need to account for
-     * any edge costs if this is on a different processor to its prior task. To be implemented...
+     * Creates a new schedule with the task scheduled as early as possible on processor p [need to account for
+     * any edge costs if this is on a different processor to its prior task.
+     * @param processor Processor to schedule task on.
+     * @param node Task node to schedule.
+     * @return Schedule with task node scheduled.
      */
     public Schedule create_child(Processor processor, Node node) {
 
@@ -192,7 +194,7 @@ public class Schedule implements Comparable<Schedule> {
 
     /**
      * This is the heuristic function that calculates the underestimate finish time of the current schedule.
-     * @return int Underestimate of the schedule's finish time.
+     * @return Underestimate of the schedule's finish time.
      */
     public int estimateFinishTime() {
         //Calculate the computation time for all unassigned nodes placed on one processor
@@ -216,7 +218,7 @@ public class Schedule implements Comparable<Schedule> {
      * Takes the processor list and adds the computation time for all the unassigned task nodes to each processor's
      * finish time as an estimated finish time for that processor.
      * @param unassignedTasksComputationTime Computation time for all unassigned task nodes.
-     * @return int[] Estimated finish times for each processor.
+     * @return Estimated finish times for each processor.
      */
     private int[] calculateProcessorEstimatedFinishTime(int unassignedTasksComputationTime) {
         int[] processorFinishTimes = new int[processorList.size()];
@@ -237,7 +239,7 @@ public class Schedule implements Comparable<Schedule> {
      * Calculates the maximum of all estimated finishing times provided, taking into account the current finish time
      * for this schedule.
      * @param processorFinishTimes Finish times for each processor.
-     * @return int Maximum of estimated finishing times.
+     * @return Maximum of estimated finishing times.
      */
     private int getMaxEstimateFinishTimes(int[] processorFinishTimes) {
         //Set the max finish time to be the current finish time for the schedule
@@ -253,17 +255,17 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     /**
-     * Getter method for finishTime
-     * @return
+     * Gets the finish time of this schedule.
+     * @return Finish time of this schedule.
      */
     public int getFinishTime() {
         return finishTime;
     }
 
     /**
-     *This method given a task t finds all the tasks that t depends on before it can be executed using edgeMap.
-     * @param task
-     * @return List of all the parent tasks
+     * This method, given a task t, finds all the tasks that t depends on before it can be executed using edgeMap.
+     * @param task Task node to find dependencies on.
+     * @return List of all the parent tasks.
      */
     public List<Node> findDependencies(Node task) {
         List<Node> dependentTasks = new ArrayList<>();
@@ -277,9 +279,9 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     /**
-     * Given a particular task, find if it has been fulfilled
-     * @param task
-     * @return
+     * Given a particular task, find if it has been fulfilled.
+     * @param task Task node to check if it has been fulfilled.
+     * @return True if task has been fulfilled, False otherwise.
      */
     public boolean taskFulfilled(Node task) {
         boolean taskFulfilled = false;
@@ -293,9 +295,9 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     /**
-     * Method to sort the schedule list. To be implemented...
-     * @param sList
-     * @return
+     * Sorts the schedule list.
+     * @param sList List of schedules to sort.
+     * @return Sorted list of schedules.
      */
     private List<Schedule> sort(List<Schedule> sList) {
         Collections.sort(sList);

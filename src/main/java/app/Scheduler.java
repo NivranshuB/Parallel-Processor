@@ -33,8 +33,11 @@ public class Scheduler {
         optimalTime = MAX_VALUE;
         optimalSchedule = null;
     }
-  
-    // static method to create instance of Singleton class
+
+    /**
+     * Static method to create/return a Singleton instance of Scheduler class.
+     * @return Singleton Scheduler instance.
+     */
     public static Scheduler getInstance() {
     
         if (single_instance == null)
@@ -44,7 +47,11 @@ public class Scheduler {
     }
 
     /**
-     *This method is called from the main class and is responsible for finding the optimal schedule.
+     * This method is called from the main class and is responsible for finding the optimal schedule.
+     * @param nodeMap Mapping of nodes in the task graph.
+     * @param edgeMap Mapping of edges in the task graph.
+     * @param numberOfProcessors Number of processors available for scheduling.
+     * @return Optimal schedule for given task graph.
      */
     public Schedule getOptimalSchedule(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap, int numberOfProcessors) {
 
@@ -108,7 +115,10 @@ public class Scheduler {
     }
 
     /**
-     * Method that merges two schedule lists, that are sorted, by their finish time. To be implemented...
+     * Method that merges two schedule lists, that are sorted, by their finish time.
+     * @param x First sorted schedule.
+     * @param y Second sorted schedule.
+     * @return Merged list of the two sorted schedules.
      */
     private List<Schedule> merge(List<Schedule> x, List<Schedule> y) {
         int countX = 0;

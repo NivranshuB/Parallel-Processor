@@ -27,22 +27,41 @@ public class DotFileReader {
         parseGraph();
     }
 
+    /**
+     * Gets the name of the task graph.
+     * @return Name of task graph.
+     */
     public String getGraphName() {
         return graphName;
     }
 
+    /**
+     * Gets the mapping of all nodes in the task graph.
+     * @return Mapping of all nodes in the task graph.
+     */
     public HashMap<String, Node> getNodeMap() {
         return nodeMap;
     }
 
+    /**
+     * Gets the mapping of all edges in the task graph.
+     * @return Mapping of all edges in the task graph.
+     */
     public HashMap<String, Edge> getEdgeMap() {
         return edgeMap;
     }
 
+    /**
+     * Gets a list of all the root nodes in the task graph.
+     * @return List of root nodes in the task graph.
+     */
     public List<Node> getRootNodeList() {
         return rootNodeList;
     }
 
+    /**
+     * Parses the graph from reading of the input task graph DOT file.
+     */
     private void parseGraph() {
         try {
             FileReader fr = new FileReader(filename);
@@ -68,11 +87,19 @@ public class DotFileReader {
         }
     }
 
+    /**
+     * Saves the task graph name as a String for future use.
+     * @param str Name of task graph to save.
+     */
     private void saveGraphName(String str) {
         String[] array = str.split(" ");
         graphName = array[1];
     }
 
+    /**
+     * Adds a node to the node mapping of the task graph.
+     * @param str Node in String that is to be added.
+     */
     private void addNode(String str) {
         String[] splitString = str.split("\\s+");
         String nodeName = splitString[1];
@@ -84,6 +111,10 @@ public class DotFileReader {
         nodeMap.put(nodeName, newNode);
     }
 
+    /**
+     * Adds an edge to the edge mapping of the task graph.
+     * @param str Edge in String that is to be added.
+     */
     private void addEdge(String str){
         String[] splitString = str.split("\\s+");
         String parentName = splitString[1];
@@ -102,6 +133,11 @@ public class DotFileReader {
         childNode.addParent(parentNode);
     }
 
+    /**
+     * Parsing the weight that is associated with a node or edge to an integer form.
+     * @param str Weight in String that is to be parsed.
+     * @return Weight of node or edge in integer form.
+     */
     private int parseWeight(String str) {
         Pattern p = Pattern.compile("weight=([0-9]+)");
         Matcher m = p.matcher(str.toLowerCase());
@@ -109,6 +145,9 @@ public class DotFileReader {
         return Integer.parseInt(m.group().split("=")[1]);
     }
 
+    /**
+     * Constructs the root node list for the task graph.
+     */
     private void constructRootNodeList() {
         for (Node curr : nodeMap.values()) {
             if (curr.getParent() == null) {
