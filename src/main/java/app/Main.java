@@ -38,7 +38,8 @@ public class Main {
 		//debugging
 		System.out.println("graph name = " + dotFileReader.getGraphName());
 
-        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), 1);
+        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), 2);
+		System.out.println(optimalSchedule);
 
         //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
 		String graphName = dotFileReader.getGraphName();

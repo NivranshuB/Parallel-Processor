@@ -43,10 +43,14 @@ public class Processor {
         return taskOrder;
     }
 
-    /**
-     * Sets the task order for the processor.
-     * @param tOrder List of task nodes in the order they would be executed.
-     */
+    public List<Node> getDuplicateTaskOrder() {
+        List<Node> duplicateTaskOrder = new ArrayList<>();
+        for (Node task : taskOrder) {
+            duplicateTaskOrder.add(task.duplicateNode());
+        }
+        return duplicateTaskOrder;
+    }
+
     public void setTaskOrder(List<Node> tOrder) {
         taskOrder = tOrder;
     }
@@ -78,10 +82,11 @@ public class Processor {
     public void assignTask(Node node, int taskGap) {
         if (taskGap != 0) {//Create an empty Node instance to represent the time gap
             Node emptyNode = new EmptyNode();
-            emptyNode.addParent(taskOrder.get(taskOrder.size() - 1));
+            if (taskOrder.size() > 0) {
+                emptyNode.addParent(taskOrder.get(taskOrder.size() - 1));
+            }
             emptyNode.addChild(node);
             emptyNode.setWeight(taskGap);
-
         }
         taskOrder.add(node);//Add the new task to this processor
     }
@@ -91,9 +96,9 @@ public class Processor {
      * @param task Task node to check.
      * @return True if the input task is scheduled on this processor, otherwise returns False.
      */
-    public boolean taskPresent(Node task) {
+    public boolean taskPresent(String taskName) {
         for (Node n : taskOrder) {
-            if (n == task) {
+            if (n.getName() == taskName) {
                 return true;
             }
         }

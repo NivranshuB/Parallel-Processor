@@ -61,28 +61,54 @@ public class Scheduler {
         //initially just the empty schedule in the list
         openSchedules.add(emptySchedule);
 
+        int iterationCounter = 0;
+
         while (openSchedules.size() > 0) {
+            System.out.println("\n\nWhile loop iteration number: " + iterationCounter);
+            System.out.println("===================================");
+            System.out.println("===================================");
 
             //pop off the first schedule which has the lowest finish time estimate
             List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
             //get the list of all children schedules created by adding one task to this schedule
 
+            //System.out.println("The number of new schedules is " + newSchedules.size());
+
+            int scheduleCounter = 0;
+            for (Schedule s : newSchedules) {
+                System.out.println("Schedule " + scheduleCounter);
+                System.out.println(s);
+                scheduleCounter++;
+            }
+
             Iterator<Schedule> iterator = newSchedules.listIterator();
 
             while (iterator.hasNext()) {
+                //System.out.println("In the inner while loop of Scheduler class");
                 Schedule s = iterator.next();
 //            for (Schedule s : newSchedules) {
                 //if schedule is complete and has a better finish time than the current optimal schedule
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
+                    System.out.println("First if condition satisfied");
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
                     iterator.remove();
                 } else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
                     iterator.remove();                  //dump that schedule
+                    System.out.println("Second if condition satisfied");
                 }
             }
 
-            openSchedules = merge(openSchedules, newSchedules);
+            //System.out.println("The number of new schedules is still " + newSchedules.size());
+            if (openSchedules.size() < 1) {
+                openSchedules = newSchedules;
+            } else if (newSchedules.size() > 1) {
+                openSchedules = merge(openSchedules, newSchedules);
+            }
+
+            //System.out.println("Number of open schedules is " + openSchedules.size());
+
+            iterationCounter++;
         }
 
         return optimalSchedule;
@@ -112,9 +138,9 @@ public class Scheduler {
         }
         if (x.size() > 0){
             if (countX == (x.size() - 1)) {
-                mergedList.addAll(x.subList(countX, x.size()-1));
-            } else {
                 mergedList.addAll(y.subList(countY, y.size()-1));
+            } else {
+                mergedList.addAll(x.subList(countX, x.size()-1));
             }
         }
 

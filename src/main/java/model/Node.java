@@ -11,6 +11,7 @@ public class Node {
 
     private List<Node> parent = new ArrayList<Node>();
     private List<Node> child = new ArrayList<Node>();
+    private String name;
     private int weight;
     private int start;
     private int processor;
@@ -74,4 +75,20 @@ public class Node {
      * @return Processor number this node is scheduled on.
      */
     public int getProcessor(){ return processor; }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String nm) {
+        name = nm;
+    }
+
+    public Node duplicateNode() {
+        Node dupeNode = new Node();
+        dupeNode.setWeight(weight);
+        dupeNode.setName(name);
+
+        return dupeNode;
+    }
 }
