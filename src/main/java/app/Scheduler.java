@@ -78,6 +78,7 @@ public class Scheduler {
             for (Schedule s : newSchedules) {
                 System.out.println("Schedule " + scheduleCounter);
                 System.out.println(s);
+                System.out.println("Schedule finish time: " + s.getFinishTime());
                 scheduleCounter++;
             }
 
