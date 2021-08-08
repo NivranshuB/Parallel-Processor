@@ -86,7 +86,7 @@ public class Node {
 
     /**
      * Sets the name of this node as a string.
-     * @param weight Name of this node as a string.
+     * @param nm Name of this node as a string.
      */
     public void setName(String nm) {
         name = nm;
@@ -94,7 +94,7 @@ public class Node {
     
     /**
      * Creates a duplicate of this current node.
-     * @param weight Duplicate of this node.
+     * @return  Duplicated node.
      */
     public Node duplicateNode() {
         Node dupeNode = new Node();
