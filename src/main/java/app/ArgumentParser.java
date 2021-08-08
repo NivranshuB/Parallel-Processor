@@ -29,17 +29,17 @@ public class ArgumentParser {
 
 		Options options = new Options();
 
-		// set up optional args
+		//Set up optional args
 		options.addOption("p", true, "use N cores for execution in parallel (default is sequential)");
 		options.addOption("v", "visualise the search");
 		options.addOption("o", true, "output file is named OUTPUT (default is INPUT−output.dot)");
 
-		// check for required arguments
+		//Check for required arguments
 		if (args.length < 2) {
 			throw new IllegalArgumentException("INPUT.dot and P are required.");
 		}
 
-		// get the input file
+		//Get the input file
 		String inputFilePath = args[0];
 		File inputFile = new File(inputFilePath);
 		if (!inputFile.exists()) {
@@ -47,7 +47,7 @@ public class ArgumentParser {
 		}
 		config.setInputFile(inputFile);
 
-		// get the number of processors
+		//Get the number of processors
 		try {
 			config.setNumOfProcessors(Integer.parseInt(args[1]));
 			if (Integer.parseInt(args[1]) <= 0) {
@@ -57,33 +57,33 @@ public class ArgumentParser {
 			throw new IllegalArgumentException("P must be an integer.");
 		}
 
-		// set default optional args
+		//Set default optional args
 		config.setNumOfCores(1);
 		config.setVisualise(false);
 		String outputFilePath = inputFilePath.replace(".dot", "") + "-output.dot";
 		File outputFile = new File(outputFilePath);
 		config.setOutputFile(outputFile);
 
-		// get the optional arguments
+		//Get the optional arguments
 		String[] optionalArgs = new String[args.length - 2];
 
 		for (int i = 0; i < optionalArgs.length; i++) {
 			optionalArgs[i] = args[i + 2];
 		}
 
-		// parse the optional arguments
+		//Parse the optional arguments
 		try {
 			cli = parser.parse(options, optionalArgs);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException("Can't parse the optional arguments.");
 		}
 
-		// ensure the arguments are valid
+		//Ensure the arguments are valid
 		if (cli.getArgList().size() != 0) {
 			throw new IllegalArgumentException("Invalid arguments.");
 		}
 
-		// get the number of cores
+		//Get the number of cores
 		if (cli.hasOption("p")) {
 			try {
 				config.setNumOfCores(Integer.parseInt(cli.getOptionValue("p")));
@@ -95,10 +95,10 @@ public class ArgumentParser {
 			}
 		}
 
-		// set visualise option
+		//Set visualise option
 		config.setVisualise(cli.hasOption("v"));
 
-		// set the output file
+		//Set the output file
 		if (cli.hasOption("o")) {
 			outputFilePath = cli.getOptionValue("o");
 			outputFile = new File(outputFilePath);
