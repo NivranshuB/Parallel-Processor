@@ -67,50 +67,30 @@ public class Scheduler {
         int iterationCounter = 0;
 
         while (openSchedules.size() > 0) {
-            System.out.println("\n\nWhile loop iteration number: " + iterationCounter);
-            System.out.println("===================================");
-            System.out.println("===================================");
-
             //pop off the first schedule which has the lowest finish time estimate
             List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
             //get the list of all children schedules created by adding one task to this schedule
 
-            //System.out.println("The number of new schedules is " + newSchedules.size());
-
-            int scheduleCounter = 0;
-            for (Schedule s : newSchedules) {
-                System.out.println("Schedule " + scheduleCounter);
-                System.out.println(s);
-                System.out.println("Schedule finish time: " + s.getFinishTime());
-                scheduleCounter++;
-            }
-
             Iterator<Schedule> iterator = newSchedules.listIterator();
 
             while (iterator.hasNext()) {
-                //System.out.println("In the inner while loop of Scheduler class");
                 Schedule s = iterator.next();
-//            for (Schedule s : newSchedules) {
+
                 //if schedule is complete and has a better finish time than the current optimal schedule
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
-                    System.out.println("First if condition satisfied");
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
                     iterator.remove();
                 } else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
                     iterator.remove();                  //dump that schedule
-                    System.out.println("Second if condition satisfied");
                 }
             }
 
-            //System.out.println("The number of new schedules is still " + newSchedules.size());
             if (openSchedules.size() < 1) {
                 openSchedules = newSchedules;
             } else if (newSchedules.size() > 1) {
                 openSchedules = merge(openSchedules, newSchedules);
             }
-
-            //System.out.println("Number of open schedules is " + openSchedules.size());
 
             iterationCounter++;
         }
