@@ -76,9 +76,9 @@ public class DotFileReader {
             saveGraphName(currentLine);
 
             while ((currentLine = br.readLine()) != null) {
-                //only read lines that contain nodes or edges
+                //Only read lines that contain nodes or edges
                if (currentLine.toLowerCase().contains("weight=")) {
-                   //check if the line describes an edge
+                   //Check if the line describes an edge
                    if (currentLine.toLowerCase().contains("->")) {
                        addEdge(currentLine);
                    } else {
