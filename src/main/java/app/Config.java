@@ -16,7 +16,9 @@ public class Config {
     private File outputFile;
     private boolean visualise;
 
-    // private constructor
+    /**
+     * Private constructor used to ensure a Singleton instance of Config class.
+     */
     private Config() {
     }
 
