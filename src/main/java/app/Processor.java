@@ -90,7 +90,6 @@ public class Processor {
     public void assignTask(Node node, int taskGap) {
         if (taskGap != 0) {//Create an empty Node instance to represent the time gap
             Node emptyNode = new EmptyNode();
-            System.out.println("new empty node! of size: " + taskGap);
             if (taskOrder.size() > 0) {
                 emptyNode.addParent(taskOrder.get(taskOrder.size() - 1));
             }
