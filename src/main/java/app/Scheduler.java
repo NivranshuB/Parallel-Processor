@@ -15,12 +15,11 @@ import model.Edge;
  * their weights while the other representing the different task dependencies of the
  * task graph and their weights.
  */
-
 public class Scheduler {
 
     private static final int MAX_VALUE = 2147483647;
 
-    // static variable single_instance of type Singleton
+    //Static variable single_instance of type Singleton
     private static Scheduler single_instance = null;
   
     public List<Schedule> openSchedules;
@@ -61,28 +60,28 @@ public class Scheduler {
 
         Schedule emptySchedule = new Schedule(nodeMap, edgeMap, numberOfProcessors);
 
-        //initially just the empty schedule in the list
+        //Initially just the empty schedule in the list
         openSchedules.add(emptySchedule);
 
         int iterationCounter = 0;
 
         while (openSchedules.size() > 0) {
-            //pop off the first schedule which has the lowest finish time estimate
+            //Pop off the first schedule which has the lowest finish time estimate
             List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
-            //get the list of all children schedules created by adding one task to this schedule
+            //Get the list of all children schedules created by adding one task to this schedule
 
             Iterator<Schedule> iterator = newSchedules.listIterator();
 
             while (iterator.hasNext()) {
                 Schedule s = iterator.next();
 
-                //if schedule is complete and has a better finish time than the current optimal schedule
+                //If schedule is complete and has a better finish time than the current optimal schedule
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
                     iterator.remove();
-                } else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
-                    iterator.remove();                  //dump that schedule
+                } else if (s.getFinishTime() > optimalTime) {//If schedule has a worse time than the current optimal time
+                    iterator.remove();                  //Remove that schedule
                 }
             }
 
