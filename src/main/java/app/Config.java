@@ -7,7 +7,7 @@ import java.io.File;
  */
 public class Config {
 
-    // static variable single_instance of type Singleton
+    //Static variable single_instance of type Singleton
     private static Config singleInstance = null;
    
     private int numOfCores;
@@ -31,8 +31,6 @@ public class Config {
   
         return singleInstance;
     }
-
-    // getters and setters for config options
 
     /**
      * Gets the input file stored.
