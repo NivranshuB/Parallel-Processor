@@ -27,7 +27,7 @@ public class OutputParser {
      * @param schedule Schedule to output.
      */
     public OutputParser(String graphName, Config config, Schedule schedule) {
-        this.graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
+        this.graphName = graphName.replaceAll("\"",""); //Removes quotation marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
         this.schedule = schedule;
