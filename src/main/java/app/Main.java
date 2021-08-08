@@ -1,7 +1,5 @@
 package app;
 
-
-
 /**
  * Author: Team UNTESTED
  * Main method where the implementation of the program begins.
@@ -21,13 +19,6 @@ public class Main {
 			System.out.println("Unable to parse arguments "+ e.getMessage());
 			return;
 		}
-
-        // debugging
-        System.out.println("input file = " + config.getInputFile());
-		System.out.println("number of processors = " + config.getNumOfProcessors());
-		System.out.println("number of cores = " + config.getNumOfCores());
-		System.out.println("visualise = " + config.getVisualise());
-		System.out.println("output file = " + config.getOutputFile());
       
 		Scheduler scheduler = Scheduler.getInstance();
 
@@ -35,14 +26,11 @@ public class Main {
 		//DotFileReader object/graph representation
 
 		DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
-		//debugging
-		System.out.println("graph name = " + dotFileReader.getGraphName());
 
         Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-		System.out.println("here is optimal: " + optimalSchedule);
 
-        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
 		String graphName = dotFileReader.getGraphName();
+
         //Corban's code to parse the optimal schedule to the output DOT file
         OutputParser op = new OutputParser(graphName, config, optimalSchedule);
 
