@@ -67,7 +67,7 @@ public class Schedule implements Comparable<Schedule> {
             unassignedTasks.add(curr);
         }
 
-        for (int i = 0; i < numberOfProcessors; i++) {//Create add new empty processors to procrocessorList
+        for (int i = 0; i < numberOfProcessors; i++) {//Create add new empty processors to processorList
             processorList.add(new Processor());
         }
 
@@ -107,7 +107,7 @@ public class Schedule implements Comparable<Schedule> {
 
         for (Node n : unassignedTasks) {
 
-            //find all the task dependencies for a particular unassigned task Node
+            //Find all the task dependencies for a particular unassigned task Node
             List<Node>  taskDependencies = findDependencies(n);
 
             //For each task dependency check if the parent task has been fulfilled or not
@@ -115,7 +115,7 @@ public class Schedule implements Comparable<Schedule> {
             if (taskDependencies != null){
                 for (Node parentTask : taskDependencies) {
                     for (Node ut : unassignedTasks) {
-                        if (ut.getName().equals(parentTask.getName())) {//check if parent task has been fulfilled
+                        if (ut.getName().equals(parentTask.getName())) {//Check if parent task has been fulfilled
                             dependenciesFulfilled = false;
                             break;
                         }
@@ -127,7 +127,7 @@ public class Schedule implements Comparable<Schedule> {
             //If all task dependencies have been fulfilled then we can schedule this task
             if (dependenciesFulfilled) {
                 for (Processor p : processorList) {//Create new schedules by scheduling this task on all processors
-                    childrenSchedule.add(create_child(p, n));//one at a time
+                    childrenSchedule.add(create_child(p, n));//One at a time
                 }
             }
         }
@@ -144,10 +144,10 @@ public class Schedule implements Comparable<Schedule> {
      */
     public Schedule create_child(Processor processor, Node node) {
 
-        List<Processor> cProcessorList = new ArrayList<>();//The processor list for the new child schedule and the list of
-        List<Node> cUnassignedTasks = new ArrayList<>();
+        List<Processor> cProcessorList = new ArrayList<>();//The processor list for the new child schedule
+        List<Node> cUnassignedTasks = new ArrayList<>();//List of unassigned tasks for the new child schedule
 
-        //unassigned tasks are originally the same as the parent schedule
+        //Unassigned tasks list is the same as the parent schedule, minus the current task
         for (Node task : unassignedTasks) {
             if (task.getName() != node.getName()) {
                 cUnassignedTasks.add(task.duplicateNode());
@@ -160,13 +160,13 @@ public class Schedule implements Comparable<Schedule> {
 
         //Find all the dependent tasks for the task we are about to schedule
         List<Node> dependentTasks = findDependencies(node);
-        int earliestSTime = processor.finishTime;//This variable represents the earliest start time for this task in
-                                                 //this processor
+        int earliestSTime = processor.finishTime;//Variable represents earliest start time for this task in this processor
         int commCost = 0;
+
         //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
         if (dependentTasks != null){
             for (Node n : dependentTasks) {
-                if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
+                if (!processor.taskPresent(n.getName())) {//If a dependent task was scheduled on a different processor...
                     for (Processor p : processorList) {
                         if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
 
@@ -192,11 +192,11 @@ public class Schedule implements Comparable<Schedule> {
 
         ScheduleState cState = ScheduleState.PARTIAL;
 
-        if (cUnassignedTasks.size() < 1) {//If the child does not have any unassigned tasks it will be labelled complete
+        if (cUnassignedTasks.size() < 1) {//If the child does not have any unassigned tasks it will be labelled COMPLETE
             cState = ScheduleState.COMPLETE;
         }
 
-        //return a new Schedule instance (the child schedule)
+        //Return a new Schedule instance (the child schedule)
         Schedule cSchedule = new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
         return cSchedule;
     }
