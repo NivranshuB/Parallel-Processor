@@ -27,8 +27,7 @@ java -jar scheduler.jar INPUT.dot P [OPTION]
 INPUT.dot &emsp;&emsp;a task graph with integer weights in .dot file format<br>
 P &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;the number of processors to schedule the INPUT.dot graph on
 
-|Optional:||
-|-----|----|
-| -p N | where N is the number of cores to execute in parallel (default is 1)
-| -v | enable visualisation of the search (default is disabled)
-| -o OUTPUT | output file name is OUTPUT.dot (default is INPUT-output.dot)
+Optional:<br>
+-p N &emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;where N is the number of cores to execute in parallel (default is 1)<br>
+-v &emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;enable visualisation of the search (default is disabled)<br>
+-o OUTPUT &emsp;output file name is OUTPUT.dot (default is INPUT-output.dot)<br>
