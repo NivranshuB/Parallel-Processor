@@ -108,7 +108,6 @@ public class Schedule implements Comparable<Schedule> {
         for (Node n : unassignedTasks) {
 
             //find all the task dependencies for a particular unassigned task Node
-//            taskDependencies;
             List<Node>  taskDependencies = findDependencies(n);
 
             //For each task dependency check if the parent task has been fulfilled or not
@@ -167,26 +166,18 @@ public class Schedule implements Comparable<Schedule> {
         //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
         if (dependentTasks != null){
             for (Node n : dependentTasks) {
-                System.out.println("i am a dependency: " + n.getName());
                 if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
                     for (Processor p : processorList) {
                         if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
 
                             for (Edge e : edgeMap.values()) {
                                 if (e.getParentNode().getName().equals(n.getName()) && e.getChildNode().getName().equals(node.getName())) {
-//                                    commCost = e.getWeight();
                                     if (e.getWeight() + p.getFinishTime() > commCost) {
 
                                         commCost = e.getWeight() + p.getFinishTime();
-                                        System.out.println("this is commCost: " + commCost);
                                     }
                                 }
                             }
-
-//                            int scheduleDelay = p.taskEndTime(n) + n.getWeight();//taking into account the communication cost
-//                            if (scheduleDelay > earliestSTime) {
-//                                earliestSTime = scheduleDelay;//Update the earliest start time of the task if required
-//                            }
                         }
                     }
                 }
@@ -196,13 +187,8 @@ public class Schedule implements Comparable<Schedule> {
         Node childDuplicateExtraTask = node.duplicateNode();
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
-//        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.finishTime);
-//        if (commCost != 0) {
-        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
-//        } else {
-//            cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, 0);
-//        }
 
+        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
 
         ScheduleState cState = ScheduleState.PARTIAL;
 
@@ -210,12 +196,8 @@ public class Schedule implements Comparable<Schedule> {
             cState = ScheduleState.COMPLETE;
         }
 
-        System.out.print("I am scheduling task " + node.getName());
-        System.out.println("\n");
-
         //return a new Schedule instance (the child schedule)
         Schedule cSchedule = new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
-        //System.out.println(cSchedule);
         return cSchedule;
     }
 
