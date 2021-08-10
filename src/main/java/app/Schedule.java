@@ -26,6 +26,7 @@ public class Schedule implements Comparable<Schedule> {
     public HashMap<String, Node> nodeMap;//All the tasks of the graph
     public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
 
+    private boolean printDebugOutput = true;
 
     /**
      * Compares the finish time of this schedule and the schedule provided.
@@ -36,9 +37,9 @@ public class Schedule implements Comparable<Schedule> {
     @Override
     public int compareTo(Schedule comparee) {
         if (this.finishTime < comparee.finishTime) {
-            return 1;
-        } else if (this.finishTime > comparee.finishTime) {
             return -1;
+        } else if (this.finishTime > comparee.finishTime) {
+            return 1;
         } else {
             return 0;
         }
@@ -72,6 +73,15 @@ public class Schedule implements Comparable<Schedule> {
         }
 
         finishTime = this.estimateFinishTime();
+
+        if (unassignedTasks.size() < 1) {
+            finishTime = 0;
+            for (Processor p : processorList) {
+                if (p.finishTime > finishTime) {
+                    finishTime = p.finishTime;
+                }
+            }
+        }
     }
 
     /**
@@ -167,7 +177,6 @@ public class Schedule implements Comparable<Schedule> {
         //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
         if (dependentTasks != null){
             for (Node n : dependentTasks) {
-                System.out.println("i am a dependency: " + n.getName());
                 if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
                     for (Processor p : processorList) {
                         if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
@@ -178,7 +187,6 @@ public class Schedule implements Comparable<Schedule> {
                                     if (e.getWeight() + p.getFinishTime() > commCost) {
 
                                         commCost = e.getWeight() + p.getFinishTime();
-                                        System.out.println("this is commCost: " + commCost);
                                     }
                                 }
                             }
@@ -210,12 +218,8 @@ public class Schedule implements Comparable<Schedule> {
             cState = ScheduleState.COMPLETE;
         }
 
-        System.out.print("I am scheduling task " + node.getName());
-        System.out.println("\n");
-
         //return a new Schedule instance (the child schedule)
         Schedule cSchedule = new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
-        //System.out.println(cSchedule);
         return cSchedule;
     }
 
@@ -253,7 +257,7 @@ public class Schedule implements Comparable<Schedule> {
 
         //For each processor, add the computation time for all the unassigned task nodes to the processor's current finish time
         for (Processor p: processorList) {
-            int estimatedFinishTime = p.getFinishTime() + unassignedTasksComputationTime;
+            int estimatedFinishTime = p.getFinishTime() + unassignedTasksComputationTime/processorList.size();
 
             processorFinishTimes[processorCount] = estimatedFinishTime;
             processorCount++;
@@ -347,7 +351,7 @@ public class Schedule implements Comparable<Schedule> {
                 if (!(task instanceof EmptyNode)) {
                     scheduleString = (scheduleString + "Task " + task.getName() + ":" + " Weight=" + task.getWeight() + " Start time=" + currTime + '\n');
                 } else {
-                    System.out.println("Task gap of " + task.getWeight());
+                    scheduleString = (scheduleString + "Task gap of " + task.getWeight() + '\n');
                 }
                 currTime += task.getWeight();
             }

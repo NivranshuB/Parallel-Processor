@@ -26,6 +26,9 @@ public class Scheduler {
     public List<Schedule> openSchedules;
     public int optimalTime;
     public Schedule optimalSchedule;
+
+    private boolean printDebugOutput = false;
+    private boolean printSchedules = false;
   
     /**
      * Private constructor restricted to the class itself ensures the
@@ -58,7 +61,6 @@ public class Scheduler {
      */
     public Schedule getOptimalSchedule(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap, int numberOfProcessors) {
 
-
         Schedule emptySchedule = new Schedule(nodeMap, edgeMap, numberOfProcessors);
 
         //initially just the empty schedule in the list
@@ -67,50 +69,51 @@ public class Scheduler {
         int iterationCounter = 0;
 
         while (openSchedules.size() > 0) {
-            System.out.println("\n\nWhile loop iteration number: " + iterationCounter);
-            System.out.println("===================================");
-            System.out.println("===================================");
-
             //pop off the first schedule which has the lowest finish time estimate
             List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
             //get the list of all children schedules created by adding one task to this schedule
 
-            //System.out.println("The number of new schedules is " + newSchedules.size());
-
             int scheduleCounter = 0;
-            for (Schedule s : newSchedules) {
-                System.out.println("Schedule " + scheduleCounter);
-                System.out.println(s);
-                System.out.println("Schedule finish time: " + s.getFinishTime());
-                scheduleCounter++;
-            }
 
             Iterator<Schedule> iterator = newSchedules.listIterator();
 
             while (iterator.hasNext()) {
-                //System.out.println("In the inner while loop of Scheduler class");
+
                 Schedule s = iterator.next();
-//            for (Schedule s : newSchedules) {
-                //if schedule is complete and has a better finish time than the current optimal schedule
+
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
-                    System.out.println("First if condition satisfied");
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
                     iterator.remove();
-                } else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
+                } /**else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
                     iterator.remove();                  //dump that schedule
                     System.out.println("Second if condition satisfied");
-                }
+                }**/
             }
 
-            //System.out.println("The number of new schedules is still " + newSchedules.size());
             if (openSchedules.size() < 1) {
                 openSchedules = newSchedules;
             } else if (newSchedules.size() > 1) {
                 openSchedules = merge(openSchedules, newSchedules);
             }
 
-            //System.out.println("Number of open schedules is " + openSchedules.size());
+            if (printDebugOutput) {
+                System.out.println("\n\n===================================");
+                System.out.println("===================================");
+                System.out.println("While loop iteration number: " + iterationCounter);
+                System.out.println("Number of open schedules: " + openSchedules.size());
+                System.out.println("===================================");
+            }
+
+            if (printSchedules) {
+                for (Schedule s : openSchedules) {
+                    System.out.println("Schedule " + scheduleCounter);
+                    System.out.println(s);
+                    System.out.println("Schedule finish time: " + s.getFinishTime());
+                    System.out.println("===================================");
+                    scheduleCounter++;
+                }
+            }
 
             iterationCounter++;
         }
@@ -142,9 +145,9 @@ public class Scheduler {
         }
         if (x.size() > 0){
             if (countX == x.size()) {
-                mergedList.addAll(y.subList(countY, y.size()-1));
+                mergedList.addAll(y.subList(countY, y.size()));
             } else {
-                mergedList.addAll(x.subList(countX, x.size()-1));
+                mergedList.addAll(x.subList(countX, x.size()));
             }
         }
 
