@@ -27,7 +27,7 @@ public class Scheduler {
     public int optimalTime;
     public Schedule optimalSchedule;
 
-    private boolean printDebugOutput = false;
+    private boolean printDebugOutput = true;
     private boolean printSchedules = false;
   
     /**
@@ -45,10 +45,10 @@ public class Scheduler {
      * @return Singleton Scheduler instance.
      */
     public static Scheduler getInstance() {
-    
+
         if (single_instance == null)
             single_instance = new Scheduler();
-  
+
         return single_instance;
     }
 
@@ -70,7 +70,7 @@ public class Scheduler {
 
         while (openSchedules.size() > 0) {
             //pop off the first schedule which has the lowest finish time estimate
-            List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
+            List<Schedule> newSchedules = openSchedules.remove(0).create_children();
             //get the list of all children schedules created by adding one task to this schedule
 
             int scheduleCounter = 0;

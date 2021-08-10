@@ -96,6 +96,7 @@ public class Processor {
             }
             emptyNode.addChild(node);
             emptyNode.setWeight(taskGap);
+            emptyNode.setName("empty");
             taskOrder.add(emptyNode);
             finishTime += emptyNode.getWeight();
         }
