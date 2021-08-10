@@ -127,7 +127,7 @@ public class Processor {
     public int taskEndTime(Node task) {
         int nodeEndTime = 0;
         for (Node n : taskOrder) {
-            if (n == task) {
+            if (n.getName().equals(task.getName())) {
                 nodeEndTime += task.getWeight();
                 break;
             } else {

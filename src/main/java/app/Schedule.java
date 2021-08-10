@@ -183,7 +183,6 @@ public class Schedule implements Comparable<Schedule> {
             }
         }
 
-
         Node childDuplicateExtraTask = node.duplicateNode();
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList

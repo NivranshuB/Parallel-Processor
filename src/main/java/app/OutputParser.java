@@ -61,10 +61,10 @@ public class OutputParser {
                     }
                     int timeCount = 0;
                     for (Node n : p.getTaskOrder()) {
-                        System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
-                        System.out.println("timeCount: " + timeCount);
-                        if (node.getName() == n.getName()) {
-                            System.out.println("this is start inside all the loops: " + start);
+//                        System.out.println(n + " in processor: " + p + " weight: " + n.getWeight());
+//                        System.out.println("timeCount: " + timeCount);
+                        if (node.getName().equals(n.getName())) {
+//                            System.out.println("this is start inside all the loops: " + start);
                             start = timeCount;
                             processor = schedule.processorList.indexOf(p);
                         } else {

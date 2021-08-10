@@ -27,7 +27,7 @@ public class Scheduler {
     public int optimalTime;
     public Schedule optimalSchedule;
 
-    private boolean printDebugOutput = true;
+    private boolean printDebugOutput = false;
     private boolean printSchedules = false;
   
     /**
@@ -62,6 +62,7 @@ public class Scheduler {
     public Schedule getOptimalSchedule(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap, int numberOfProcessors) {
 
         Schedule emptySchedule = new Schedule(nodeMap, edgeMap, numberOfProcessors);
+        int numberOfSchedules = 0;
 
         //initially just the empty schedule in the list
         openSchedules.add(emptySchedule);
@@ -80,6 +81,10 @@ public class Scheduler {
             while (iterator.hasNext()) {
 
                 Schedule s = iterator.next();
+
+                if (s.state == Schedule.ScheduleState.COMPLETE) {
+                    numberOfSchedules++;
+                }
 
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
                     optimalSchedule = s;
@@ -118,6 +123,7 @@ public class Scheduler {
             iterationCounter++;
         }
 
+        System.out.println("The total number of schedules found were " + numberOfSchedules);
         return optimalSchedule;
     }
 
