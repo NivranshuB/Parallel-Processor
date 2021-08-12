@@ -7,6 +7,9 @@
 .idea/
 *.iml
 *.iws
+
+# VSCode
+.vscode/
  
 # Mac
 .DS_Store
@@ -14,3 +17,5 @@
 # Maven
 log/
 target/
+
+*.class

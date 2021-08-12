@@ -1,13 +1,20 @@
 package app;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 /**
  * Author: Team UNTESTED
  * Main method where the implementation of the program begins.
  */
-public class Main {
+public class Main extends Application {
 
     public static void main(String[] args) {
         //Parses command line input arguments to extract the number of processors, DOT file and other args
+		launch(args);
         ArgumentParser parser = new ArgumentParser();
 	Config config;
 		
@@ -32,5 +39,14 @@ public class Main {
 
         op.writeFile();
     }
+
+	@Override
+	public void start(Stage arg0) throws Exception {
+		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+        arg0.setTitle("Task Scheduler");
+        arg0.setScene(new Scene(root));
+        arg0.show();
+		
+	}
 
 }
