@@ -13,7 +13,7 @@
    <children>
       <ImageView fitHeight="960.0" fitWidth="1300.0" pickOnBounds="true">
          <image>
-            <Image url="@../../../../../../../Downloads/gradient-wallpaper-5.jpg" />
+            <Image url="@background.jpg" />
          </image>
       </ImageView>
       <VBox layoutY="-1.0" prefHeight="960.0" prefWidth="1300.0">
