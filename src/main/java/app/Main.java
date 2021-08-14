@@ -35,18 +35,26 @@ public class Main {
 		//DotFileReader object/graph representation
 
 		DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+
 		//debugging
 		System.out.println("graph name = " + dotFileReader.getGraphName());
 
-        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-		System.out.println("Here is optimal: \n" + optimalSchedule);
+//        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
+//		System.out.println("Here is optimal: \n" + optimalSchedule);
 
-        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
-		String graphName = dotFileReader.getGraphName();
-        //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
+		BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
 
-        op.writeFile();
+		BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
+		System.out.println(optimalSchedule);
+		System.out.println("We reached here");
+		optimalSchedule.printSchedule();
+
+//        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
+//		String graphName = dotFileReader.getGraphName();
+//        //Corban's code to parse the optimal schedule to the output DOT file
+//        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
+
+//        op.writeFile();
     }
 
 }

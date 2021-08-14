@@ -19,6 +19,7 @@ public class OutputParser {
     private Config config;
     private Schedule schedule;
     private String graphName;
+    private BnBSchedule bnbschedule;
 
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
@@ -26,11 +27,11 @@ public class OutputParser {
      * @param config Config object with output file args.
      * @param schedule Schedule to output.
      */
-    public OutputParser(String graphName, Config config, Schedule schedule) {
+    public OutputParser(String graphName, Config config, BnBSchedule schedule) {
         this.graphName = graphName.replaceAll("\"",""); // removes quotaion marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
-        this.schedule = schedule;
+        this.bnbschedule = schedule;
     }
 
     /**
