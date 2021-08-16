@@ -23,8 +23,6 @@ public class Processor {
     //nodes and etc. No need to insert emptyNodes in between.
     private TreeMap<Integer, Node> taskOrderBnB = new TreeMap<Integer, Node>();
 
-
-
     /**
      * Default processor constructor that creates the initial empty Processor instance.
      */
@@ -66,6 +64,7 @@ public class Processor {
         taskOrderBnB.put(startTime, node);
         availableStartTime = Math.max((startTime + node.getWeight()), availableStartTime);
         bottomWeight = Math.max(node.getBottomWeight(), bottomWeight);
+        taskOrder.add(node);
     }
 
     /**

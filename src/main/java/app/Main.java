@@ -50,11 +50,11 @@ public class Main {
 		optimalSchedule.printSchedule();
 
 //        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
-//		String graphName = dotFileReader.getGraphName();
+		String graphName = dotFileReader.getGraphName();
 //        //Corban's code to parse the optimal schedule to the output DOT file
-//        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
 
-//        op.writeFile();
+        op.writeFile();
     }
 
 }

@@ -24,7 +24,6 @@ public class BnBSchedule {
             }
             stringStorage.add(p.toString());
             max = Math.max(max, p.getAvailableStartTime());
-
         }
     }
 
@@ -48,8 +47,12 @@ public class BnBSchedule {
      */
     public int getWeight() {return max;}
 
-    public void printSchedule() {
-        stringStorage.forEach(System.out::println);
+    public void printSchedule() {stringStorage.forEach(System.out::println); }
+
+    public List<String> getStringStorage() {return stringStorage; }
+
+    public Map<String, Node> getNodeMap() {
+        return nodeMap;
     }
 
 }

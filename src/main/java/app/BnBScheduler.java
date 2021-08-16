@@ -4,7 +4,6 @@ package app;
 import model.Edge;
 import model.Node;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -250,6 +249,11 @@ public class BnBScheduler {
         }
     }
 
+    public HashMap<String, Node> getNodeMap() {
+        return nodeMap;
+    }
 
-
-}
+    public HashMap<String, Edge> getEdgeMap() {
+        return edgeMap;
+    }
+    }
