@@ -10,6 +10,7 @@ public class Config {
     //Static variable single_instance of type Singleton
     private static Config singleInstance = null;
    
+    private int numOfTasks;
     private int numOfCores;
     private int numOfProcessors;
     private File inputFile;
@@ -48,6 +49,22 @@ public class Config {
      */
     public void setInputFile(File inputFile) {
         this.inputFile = inputFile;
+    }
+
+    /**
+     * Gets the number of cores to use when executing algorithm.
+     * @return Number of cores to use when executing algorithm.
+     */
+    public int getNumOfTasks() {
+        return numOfTasks;
+    }
+
+    /**
+     * Sets the number of cores to use when executing algorithm for storage.
+     * @param numOfCores Number of cores to use when executing algorithm.
+     */
+    public void setNumOfTasks(int numOfTasks) {
+        this.numOfTasks = numOfTasks;
     }
 
     /**

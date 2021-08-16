@@ -45,6 +45,8 @@ public class Main extends Application {
 
         //Uses the DOT filepath from the args to create a new DotFileReader object/graph representation
         DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+        
+        config.setNumOfTasks(dotFileReader.getNodeMap().size());
 
         launch(args);
 

@@ -41,9 +41,11 @@ public class MainController {
     public void initialize() {
         Config config = Config.getInstance();
 
+        int numOfT = config.getNumOfTasks();
         int numOfP = config.getNumOfProcessors();
         int numOfC = config.getNumOfCores();
 
+        numOfTasks.setText(String.valueOf(numOfT));
         numOfProcessors.setText(String.valueOf(numOfP));
         numOfCores.setText(String.valueOf(numOfC));
 
