@@ -28,6 +28,8 @@ public class Main extends Application {
 
     private static Stage primaryStage;
 
+    private static DotFileReader dotFileReader;
+
     public static void main(String[] args) {
         //Parses command line input arguments to extract the number of processors, DOT file and other args
 
@@ -44,20 +46,23 @@ public class Main extends Application {
         Scheduler scheduler = Scheduler.getInstance();
 
         //Uses the DOT filepath from the args to create a new DotFileReader object/graph representation
-        DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+//        DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+        dotFileReader = new DotFileReader(config.getInputFile());
         
         config.setNumOfTasks(dotFileReader.getNodeMap().size());
 
         launch(args);
 
-        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
+        // temporarily in MyThread
 
-        String graphName = dotFileReader.getGraphName();
-
-        //Parses the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
-
-        op.writeFile();
+//        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
+//
+//        String graphName = dotFileReader.getGraphName();
+//
+//        //Parses the optimal schedule to the output DOT file
+//        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
+//
+//        op.writeFile();
     }
 
     @Override
@@ -69,10 +74,15 @@ public class Main extends Application {
         arg0.setTitle("Task Scheduler");
         arg0.setScene(new Scene(root));
         arg0.show();
+
+        MyThread thread = new MyThread();
+        thread.start();
     }
 
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
+
+    public static DotFileReader getDotFileReader() { return dotFileReader; }
 
 }

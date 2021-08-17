@@ -1,6 +1,9 @@
 package app;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -10,6 +13,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceDOT;
@@ -22,9 +26,15 @@ import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.ViewerPipe;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainController {
+
+    public static Graph g;
 
     @FXML
     private Label numOfTasks;
@@ -38,6 +48,11 @@ public class MainController {
     @FXML
     private VBox graph;
 
+    @FXML
+    private Label status;
+
+
+
     public void initialize() {
         Config config = Config.getInstance();
 
@@ -50,9 +65,9 @@ public class MainController {
         numOfCores.setText(String.valueOf(numOfC));
 
         System.setProperty("org.graphstream.ui", "javafx");
-//        System.setProperty("org.graphstream.debug", "true");
 
-        Graph g = new SingleGraph("test");
+//        Graph g = new SingleGraph("test");
+        g = new SingleGraph("test");
 
         FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
@@ -60,18 +75,9 @@ public class MainController {
 
         FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
-//        ViewerPipe pipeIn = v.newViewerPipe();
-
-//        FxDefaultView view = (FxDefaultView)v.addView("view1", new FxGraphRenderer());
-
-//        DefaultApplication.init(view, g);
-//        new Thread(() -> Application.launch(DefaultApplication.class)).start();
-
         FileSource fs = new FileSourceDOT();
 
         fs.addSink(g);
-
-//        System.out.println(config.getInputFile().getName());
 
         try {
             fs.readAll(config.getInputFile().getName());
@@ -80,21 +86,23 @@ public class MainController {
         } finally {
             fs.removeSink(g);
         }
-//        GraphicGraph g = new GraphicGraph("test");
 
-//        FxViewer v = new FxViewer(g);
-//        Viewer viewer = new FxViewer(g, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        for (Node node : g) {
+            node.setAttribute("ui.label", node.getId());
+//            node.setAttribute("ui.class", "marked");
+        }
 
+        String styleSheet = "node {" +
+                "fill-color: red;" +
+                "}" +
+                "node.marked {" +
+                "fill-color: green;" +
+                "}";
 
-//        v.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
-//            v.close();
+        g.setAttribute("ui.stylesheet", styleSheet);
 
-//        Scene scene = new Scene(panel, 800, 600);
 
         Stage primaryStage = Main.getPrimaryStage();
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
-//        primaryStage.showAndWait();
 
         graph.getChildren().add(panel);
 
@@ -106,8 +114,42 @@ public class MainController {
             }
         });
 
-//        viewer.addDefaultView(true);
-//        g.display();
+        // everything below is temporary
+
+        Scheduler scheduler = Scheduler.getInstance();
+
+//        DotFileReader dotFileReader = Main.getDotFileReader();
+
+        scheduler.addChangeListener(evt -> {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    status.setText("COMPLETE");
+                }
+            });
+
+        });
+
+//        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
+//
+//        String graphName = dotFileReader.getGraphName();
+//
+//        //Parses the optimal schedule to the output DOT file
+//        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
+//
+//        op.writeFile();
+
+
+
+
+    }
+
+    public static Graph getVizGraph() {
+        return g;
+    }
+
+    public void setComplete() {
+        status.setText("COMPLETE");
     }
     
 }

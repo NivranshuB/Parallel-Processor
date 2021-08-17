@@ -1,5 +1,7 @@
 package app;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +27,8 @@ public class Scheduler {
     public List<Schedule> openSchedules;
     public int optimalTime;
     public Schedule optimalSchedule;
+
+    List<PropertyChangeListener> listeners = new ArrayList<>();
   
     /**
      * Private constructor restricted to the class itself ensures the
@@ -94,7 +98,17 @@ public class Scheduler {
             iterationCounter++;
         }
 
+        //temp
+        for (PropertyChangeListener l : listeners) {
+            l.propertyChange(new PropertyChangeEvent(this, "schedule", "old", "new"));
+//            System.out.println("does this bit work?");
+        }
+
         return optimalSchedule;
+    }
+
+    public void addChangeListener(PropertyChangeListener listener) {
+        listeners.add(listener);
     }
 
     /**

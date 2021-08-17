@@ -1,10 +1,13 @@
 package app;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
 import model.EmptyNode;
 import model.Node;
 import model.Edge;
@@ -25,7 +28,6 @@ public class Schedule implements Comparable<Schedule> {
     public List<Node> unassignedTasks = new ArrayList<>();
     public HashMap<String, Node> nodeMap;//All the tasks of the graph
     public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
-
 
     /**
      * Compares the finish time of this schedule and the schedule provided.
@@ -190,6 +192,20 @@ public class Schedule implements Comparable<Schedule> {
 
         cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
 
+        //temp viz that delays but updates node to green from red
+        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
+            if (node.getName().equals(vizNode.getId())) {
+                vizNode.setAttribute("ui.class", "marked");
+                try {
+//                    Thread.sleep(1);
+                } catch (Exception e){
+
+                }
+            }
+
+        }
+
+
         ScheduleState cState = ScheduleState.PARTIAL;
 
         if (cUnassignedTasks.size() < 1) {//If the child does not have any unassigned tasks it will be labelled COMPLETE
@@ -337,5 +353,4 @@ public class Schedule implements Comparable<Schedule> {
         }
         return scheduleString;
     }
-
 }
