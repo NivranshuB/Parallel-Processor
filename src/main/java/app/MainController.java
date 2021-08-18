@@ -1,9 +1,12 @@
 package app;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -12,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -29,7 +33,10 @@ import org.graphstream.ui.view.ViewerPipe;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainController {
@@ -38,6 +45,9 @@ public class MainController {
 
     @FXML
     private OutputParser outputParser;
+
+    @FXML
+    private Main main;
 
     @FXML
     private Label numOfTasks;
@@ -55,8 +65,10 @@ public class MainController {
     private Label status;
 
     @FXML
-    private Label bestTime;
+    private Label time;
 
+    @FXML
+    private Label bestTime;
 
 
     public void initialize() {
@@ -120,21 +132,69 @@ public class MainController {
             }
         });
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                DateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss");
+
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+//                        System.out.println("called every 1 second");
+                        final String timeNow = timeFormat.format(new Date());
+//                        time.setText(timeNow);
+                    }
+                }));
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+            }
+        });
+
+
+
         // everything below is temporary
 
-        Scheduler scheduler = Scheduler.getInstance();
+        DotFileReader dotFileReader = Main.getDotFileReader();
+
+//        Scheduler scheduler = Scheduler.getInstance();
+        BnBScheduler scheduler = BnBScheduler.getInstance(dotFileReader, config);
 
         scheduler.addChangeListener(evt -> {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    status.setText("COMPLETE");
+                    if (evt.getPropertyName().equals("update node")) {
+                        model.Node searchedNode = (model.Node) evt.getNewValue();
+                        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
+                            if (searchedNode.getName().equals(vizNode.getId())) {
+                                vizNode.setAttribute("ui.class", "marked");
+                                try {
+//                                  Thread.sleep(1);
+                                } catch (Exception e) {
+                                }
+                            }
+                        }
 
-                    bestTime.setText(String.valueOf(outputParser.max));
+                    } else {
+                        status.setText("COMPLETE");
+
+                        bestTime.setText(String.valueOf(evt.getNewValue()));
+                    }
                 }
             });
 
         });
+
+        //temp viz that delays but updates node to green from red
+//        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
+//            if (n.getName().equals(vizNode.getId())) {
+//                vizNode.setAttribute("ui.class", "marked");
+//                try {
+////                    Thread.sleep(1);
+//                } catch (Exception e){
+//                }
+//            }
+//        }
 
 //        DotFileReader dotFileReader = Main.getDotFileReader();
 //
@@ -157,5 +217,5 @@ public class MainController {
     public void setComplete() {
         status.setText("COMPLETE");
     }
-    
+
 }

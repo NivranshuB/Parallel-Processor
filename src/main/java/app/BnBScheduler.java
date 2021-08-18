@@ -4,6 +4,8 @@ package app;
 import model.Edge;
 import model.Node;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 /**
@@ -22,6 +24,8 @@ public class BnBScheduler {
     private List<Processor> listOfProcessors = new ArrayList<Processor>();
     private BnBSchedule optimalSchedule;
     private Set<Node> availableToSchedule = new HashSet<Node>();
+
+    private List<PropertyChangeListener> listeners = new ArrayList<>();
 
 
     private BnBScheduler(DotFileReader dotFileReader, Config config) {
@@ -67,6 +71,12 @@ public class BnBScheduler {
     public BnBSchedule getSchedule() {
         System.out.println(availableToSchedule.size());
         optimalScheduleSearch(availableToSchedule);
+
+        //temp
+        for (PropertyChangeListener l : listeners) {
+            l.propertyChange(new PropertyChangeEvent(this, "optimal schedule", "old", optimalSchedule.getWeight()));
+        }
+
         return optimalSchedule;
     }
 
@@ -208,7 +218,6 @@ public class BnBScheduler {
             for (Node n : freeNodes) {
                 if (!checkInterchangeableNode(n, uniqueNodes)) {
                     uniqueNodes.add(n);
-
                     //Check if processors are equivalent
                     Set<Processor> uniqueProcessors = new HashSet<Processor>();
                     for (Processor p : listOfProcessors) {
@@ -255,5 +264,9 @@ public class BnBScheduler {
 
     public HashMap<String, Edge> getEdgeMap() {
         return edgeMap;
+    }
+
+    public void addChangeListener(PropertyChangeListener listener) {
+        listeners.add(listener);
     }
     }
