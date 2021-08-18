@@ -37,6 +37,9 @@ public class MainController {
     public static Graph g;
 
     @FXML
+    private OutputParser outputParser;
+
+    @FXML
     private Label numOfTasks;
 
     @FXML
@@ -50,6 +53,9 @@ public class MainController {
 
     @FXML
     private Label status;
+
+    @FXML
+    private Label bestTime;
 
 
 
@@ -118,18 +124,20 @@ public class MainController {
 
         Scheduler scheduler = Scheduler.getInstance();
 
-//        DotFileReader dotFileReader = Main.getDotFileReader();
-
         scheduler.addChangeListener(evt -> {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     status.setText("COMPLETE");
+
+                    bestTime.setText(String.valueOf(outputParser.max));
                 }
             });
 
         });
 
+//        DotFileReader dotFileReader = Main.getDotFileReader();
+//
 //        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
 //
 //        String graphName = dotFileReader.getGraphName();
@@ -138,8 +146,6 @@ public class MainController {
 //        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
 //
 //        op.writeFile();
-
-
 
 
     }

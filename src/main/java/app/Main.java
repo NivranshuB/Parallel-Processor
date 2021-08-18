@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.graphstream.graph.Graph;
@@ -29,6 +30,8 @@ public class Main extends Application {
     private static Stage primaryStage;
 
     private static DotFileReader dotFileReader;
+
+    private Schedule optimalSchedule;
 
     public static void main(String[] args) {
         //Parses command line input arguments to extract the number of processors, DOT file and other args
@@ -68,6 +71,8 @@ public class Main extends Application {
     @Override
     public void start(Stage arg0) throws Exception {
         primaryStage = arg0;
+//        arg0.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
+//        arg0.getIcons().add(new Image("file:logo.png"));
         URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
         Parent root = FXMLLoader.load(url);
 //		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
@@ -84,5 +89,4 @@ public class Main extends Application {
     }
 
     public static DotFileReader getDotFileReader() { return dotFileReader; }
-
 }

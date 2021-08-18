@@ -20,6 +20,8 @@ public class OutputParser {
     private Schedule schedule;
     private String graphName;
 
+    public static int max = 0;
+
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
      * @param graphName Name of the output graph.
@@ -73,6 +75,8 @@ public class OutputParser {
             }
 
             System.out.println("Critical path: " + criticalPath);
+
+            max = criticalPath;
 
             HashMap<String, Edge> edgeMap = schedule.edgeMap;
 
