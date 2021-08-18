@@ -29,6 +29,8 @@ public class Schedule implements Comparable<Schedule> {
     public HashMap<String, Node> nodeMap;//All the tasks of the graph
     public HashMap<String, Edge> edgeMap;//All the task dependencies of the graph
 
+    private boolean printDebugOutput = false;
+
     /**
      * Compares the finish time of this schedule and the schedule provided.
      * @param comparee Other schedule to compare this schedule to.
@@ -38,9 +40,9 @@ public class Schedule implements Comparable<Schedule> {
     @Override
     public int compareTo(Schedule comparee) {
         if (this.finishTime < comparee.finishTime) {
-            return 1;
-        } else if (this.finishTime > comparee.finishTime) {
             return -1;
+        } else if (this.finishTime > comparee.finishTime) {
+            return 1;
         } else {
             return 0;
         }
@@ -95,45 +97,34 @@ public class Schedule implements Comparable<Schedule> {
         nodeMap = nMap;
         edgeMap = eMap;
         finishTime = this.estimateFinishTime();
+
+        if (unassignedTasks.size() < 1) {
+            finishTime = 0;
+            for (Processor p : processorList) {
+                if (p.finishTime > finishTime) {
+                    finishTime = p.finishTime;
+                }
+            }
+        }
     }
 
     /**
      * Creates all possible partial schedules that can result by adding another task to this schedule.
-     * @param nodeMap Mapping of nodes in the task graph.
-     * @param edgeMap Mapping of edges in the task graph.
      * @return List of all child schedules (these have exactly one more task scheduled on them compared to their parent)
      */
-    public List<Schedule> create_children(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
+    public List<Schedule> create_children() {
 
         List<Schedule> childrenSchedule = new ArrayList<>();
 
         for (Node n : unassignedTasks) {
 
-            //Find all the task dependencies for a particular unassigned task Node
-            List<Node>  taskDependencies = findDependencies(n);
-
-            //For each task dependency check if the parent task has been fulfilled or not
-            boolean dependenciesFulfilled = true;
-            if (taskDependencies != null){
-                for (Node parentTask : taskDependencies) {
-                    for (Node ut : unassignedTasks) {
-                        if (ut.getName().equals(parentTask.getName())) {//Check if parent task has been fulfilled
-                            dependenciesFulfilled = false;
-                            break;
-                        }
-                    }
-                }
-            }
-
-
             //If all task dependencies have been fulfilled then we can schedule this task
-            if (dependenciesFulfilled) {
+            if (dependenciesFulfilled(n)) {
                 for (Processor p : processorList) {//Create new schedules by scheduling this task on all processors
                     childrenSchedule.add(create_child(p, n));//One at a time
                 }
             }
         }
-
         return sort(childrenSchedule);
     }
 
@@ -147,11 +138,13 @@ public class Schedule implements Comparable<Schedule> {
     public Schedule create_child(Processor processor, Node node) {
 
         List<Processor> cProcessorList = new ArrayList<>();//The processor list for the new child schedule
-        List<Node> cUnassignedTasks = new ArrayList<>();//List of unassigned tasks for the new child schedule
 
-        //Unassigned tasks list is the same as the parent schedule, minus the current task
+        List<Node> cUnassignedTasks = new ArrayList<>();
+
+        //unassigned tasks are originally the same as the parent schedule except for the task being scheduled
+
         for (Node task : unassignedTasks) {
-            if (task.getName() != node.getName()) {
+            if (!task.getName().equals(node.getName())) {
                 cUnassignedTasks.add(task.duplicateNode());
             }
         }
@@ -162,25 +155,35 @@ public class Schedule implements Comparable<Schedule> {
 
         //Find all the dependent tasks for the task we are about to schedule
         List<Node> dependentTasks = findDependencies(node);
-        int earliestSTime = processor.finishTime;//Variable represents earliest start time for this task in this processor
-        int commCost = 0;
+
+        int earliestSTime = processor.finishTime;//This variable represents the earliest start time for this task in
+                                                 //this processor
+
+        int commCost;
 
         //For loop that checks if any of the dependent tasks were scheduled in a different processor to the current one
-        if (dependentTasks != null){
+        if (dependentTasks != null) {
             for (Node n : dependentTasks) {
-                if (!processor.taskPresent(n.getName())) {//If a dependent task was scheduled on a different processor...
+                if (!processor.taskPresent(n.getName())) {//if a dependent task was scheduled on a different processor...
+                    commCost = 0;
+
+                    int processorCounter = 0;
                     for (Processor p : processorList) {
-                        if (p.taskPresent(n.getName())) {//Check what is the earliest time that we can schedule the current task by
-
-                            for (Edge e : edgeMap.values()) {
-                                if (e.getParentNode().getName().equals(n.getName()) && e.getChildNode().getName().equals(node.getName())) {
-                                    if (e.getWeight() + p.getFinishTime() > commCost) {
-
-                                        commCost = e.getWeight() + p.getFinishTime();
-                                    }
-                                }
-                            }
+                        if (p.taskPresent(n.getName())) {
+                            break;
                         }
+                        processorCounter++;
+                    }
+                    Processor processorParentTask = processorList.get(processorCounter);
+
+                    for (Edge e : edgeMap.values()) {
+                        if (e.getParentNode().getName().equals(n.getName()) && e.getChildNode().getName().equals(node.getName())) {
+                            commCost = e.getWeight();
+                        }
+                    }
+
+                    if (commCost + processorParentTask.taskEndTime(n) > earliestSTime) {
+                        earliestSTime = commCost + processorParentTask.taskEndTime(n);
                     }
                 }
             }
@@ -190,7 +193,8 @@ public class Schedule implements Comparable<Schedule> {
 
         int processorPos = processorList.indexOf(processor);//Update the right processor of the cProcessorList
 
-        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
+
+//        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, commCost);
 
         //temp viz that delays but updates node to green from red
         for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
@@ -205,6 +209,7 @@ public class Schedule implements Comparable<Schedule> {
 
         }
 
+        cProcessorList.get(processorPos).assignTask(childDuplicateExtraTask, earliestSTime - processor.getFinishTime());
 
         ScheduleState cState = ScheduleState.PARTIAL;
 
@@ -212,9 +217,47 @@ public class Schedule implements Comparable<Schedule> {
             cState = ScheduleState.COMPLETE;
         }
 
-        //Return a new Schedule instance (the child schedule)
+        //return a new Schedule instance (the child schedule)
+
         Schedule cSchedule = new Schedule(cProcessorList, cState, cUnassignedTasks, nodeMap, edgeMap);
         return cSchedule;
+    }
+
+    /**
+     * This method, given a task t, finds all the tasks that t depends on before it can be executed using edgeMap.
+     * @param task Task node to find dependencies on.
+     * @return List of all the parent tasks.
+     */
+    public List<Node> findDependencies(Node task) {
+        List<Node> dependentTasks = new ArrayList<>();
+
+        for (Edge e : edgeMap.values()) {
+            if (e.getChildNode().getName().equals(task.getName())) {
+                dependentTasks.add(e.getParentNode());
+            }
+        }
+        return dependentTasks;
+    }
+
+    /**
+     * For each task dependency check if the parent task has been fulfilled or not
+     * @param task
+     * @return
+     */
+    private boolean dependenciesFulfilled(Node task) {
+        //find all the task dependencies for a particular unassigned task Node
+        List<Node>  taskDependencies = findDependencies(task);
+
+        if (taskDependencies != null){
+            for (Node parentTask : taskDependencies) {
+                for (Node ut : unassignedTasks) {
+                    if (ut.getName().equals(parentTask.getName())) {//check if parent task has been fulfilled
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -251,7 +294,7 @@ public class Schedule implements Comparable<Schedule> {
 
         //For each processor, add the computation time for all the unassigned task nodes to the processor's current finish time
         for (Processor p: processorList) {
-            int estimatedFinishTime = p.getFinishTime() + unassignedTasksComputationTime;
+            int estimatedFinishTime = p.getFinishTime() + unassignedTasksComputationTime/processorList.size();
 
             processorFinishTimes[processorCount] = estimatedFinishTime;
             processorCount++;
@@ -285,22 +328,6 @@ public class Schedule implements Comparable<Schedule> {
      */
     public int getFinishTime() {
         return finishTime;
-    }
-
-    /**
-     * This method, given a task t, finds all the tasks that t depends on before it can be executed using edgeMap.
-     * @param task Task node to find dependencies on.
-     * @return List of all the parent tasks.
-     */
-    public List<Node> findDependencies(Node task) {
-        List<Node> dependentTasks = new ArrayList<>();
-
-        for (Edge e : edgeMap.values()) {
-            if (e.getChildNode().getName().equals(task.getName())) {
-                dependentTasks.add(e.getParentNode());
-            }
-        }
-        return dependentTasks;
     }
 
     /**
@@ -343,9 +370,10 @@ public class Schedule implements Comparable<Schedule> {
             for (Node task : taskOrder) {
 
                 if (!(task instanceof EmptyNode)) {
-                    scheduleString = (scheduleString + "Task " + task.getName() + ":" + " Weight=" + task.getWeight() + " Start time=" + currTime + '\n');
+                    scheduleString = (scheduleString + "Task " + task.getName() + ":" + " Weight=" + task.getWeight()
+                            + " Start time=" + currTime + '\n');
                 } else {
-                    System.out.println("Task gap of " + task.getWeight());
+                    scheduleString = (scheduleString + "Task gap of " + task.getWeight() + '\n');
                 }
                 currTime += task.getWeight();
             }

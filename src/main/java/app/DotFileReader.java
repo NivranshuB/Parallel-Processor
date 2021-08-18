@@ -29,6 +29,7 @@ public class DotFileReader {
     public DotFileReader(File filename) {
         this.filename = filename;
         parseGraph();
+
     }
 
     /**
@@ -86,6 +87,7 @@ public class DotFileReader {
                    }
                 }
             }
+            constructRootNodeList();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,7 +156,7 @@ public class DotFileReader {
      */
     private void constructRootNodeList() {
         for (Node curr : nodeMap.values()) {
-            if (curr.getParent() == null) {
+            if (curr.getParent().size() == 0) {
                 rootNodeList.add(curr);
             }
         }

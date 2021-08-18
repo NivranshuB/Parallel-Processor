@@ -2,6 +2,7 @@ package app;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import model.EmptyNode;
 import model.Node;
@@ -16,6 +17,11 @@ public class Processor {
     
     public List<Node> taskOrder;//Ordered list of tasks scheduled on this processor
     public int finishTime;//The current finish time of this schedule
+    private int availableStartTime; //Earliest time the processor is available. Used by BnBScheduler
+    private int bottomWeight; //Used by BnBScheduler
+    //Used by BnBScheduler to store schedules in ascending order, and to be able to use in-built methods to retrieve last
+    //nodes and etc. No need to insert emptyNodes in between.
+    private TreeMap<Integer, Node> taskOrderBnB = new TreeMap<Integer, Node>();
 
     /**
      * Default processor constructor that creates the initial empty Processor instance.
@@ -23,6 +29,8 @@ public class Processor {
     public Processor() {
         taskOrder = new ArrayList<>();
         finishTime = 0;
+        availableStartTime = 0;
+        bottomWeight = 0;
     }
 
     /**
@@ -34,6 +42,64 @@ public class Processor {
         taskOrder = taskList;
         finishTime = fTime;
     }
+
+    /**
+     * Getter used by BnBScheduler
+     * @return earliest available start time of the current processor
+     */
+    public int getAvailableStartTime() { return availableStartTime; }
+
+    /**
+     * Getter used by BnBScheduler
+     * @return bottom weight of the schedule.
+     */
+    public int getBottomWeight() { return bottomWeight; }
+
+    /**
+     * Method to add new Node (task) to this Processor and update the bottom weight after addition of Node.
+     * @param node
+     * @param startTime
+     */
+    public void scheduleNode(Node node, int startTime) {
+        taskOrderBnB.put(startTime, node);
+        availableStartTime = Math.max((startTime + node.getWeight()), availableStartTime);
+        bottomWeight = Math.max(node.getBottomWeight(), bottomWeight);
+        taskOrder.add(node);
+    }
+
+    /**
+     * Method to remove a node from the current Processor schedule at the specified time, then recalculate Processor's weight
+     * @param startTime start time of the task to be removed
+     */
+    public void unscheduleNodeAtTime(int startTime) {
+        taskOrderBnB.remove(startTime);
+        if (taskOrderBnB.size() > 0) {
+            Node newLastNode = taskOrderBnB.lastEntry().getValue();
+            availableStartTime = newLastNode.getStart() + newLastNode.getWeight();
+        } else {
+            availableStartTime = 0;
+        }
+    }
+
+    /**
+     * Gets the task order for the BnB version of this processor
+     * @return taskOrderBnB
+     */
+    public TreeMap<Integer,Node> getTaskOrderBnB() { return taskOrderBnB; }
+
+    /**
+     * Returns the string representation of the TaskOrderBnB, showing the time periods when tasks are scheduled on it,
+     * omitting free time. The format is "startTime-taskName, startTime-taskName..."
+     * @return String representing time periods with tasks scheduled.
+     */
+    public String toString() {
+        String str = "";
+        for (int startTime : taskOrderBnB.keySet()) {
+            str = str + startTime + "-" + taskOrderBnB.get(startTime).getName() + ", ";
+        }
+        return str;
+    }
+
 
     /**
      * Gets the task order for this processor.
@@ -90,11 +156,15 @@ public class Processor {
     public void assignTask(Node node, int taskGap) {
         if (taskGap != 0) {//Create an empty Node instance to represent the time gap
             Node emptyNode = new EmptyNode();
+
+            //System.out.println("new empty node! of size: " + taskGap);
+
             if (taskOrder.size() > 0) {
                 emptyNode.addParent(taskOrder.get(taskOrder.size() - 1));
             }
             emptyNode.addChild(node);
             emptyNode.setWeight(taskGap);
+            emptyNode.setName("empty");
             taskOrder.add(emptyNode);
             finishTime += emptyNode.getWeight();
         }
@@ -109,7 +179,7 @@ public class Processor {
      */
     public boolean taskPresent(String taskName) {
         for (Node n : taskOrder) {
-            if (n.getName() == taskName) {
+            if (n.getName().equals(taskName)) {
                 return true;
             }
         }
@@ -125,7 +195,7 @@ public class Processor {
     public int taskEndTime(Node task) {
         int nodeEndTime = 0;
         for (Node n : taskOrder) {
-            if (n == task) {
+            if (n.getName().equals(task.getName())) {
                 nodeEndTime += task.getWeight();
                 break;
             } else {

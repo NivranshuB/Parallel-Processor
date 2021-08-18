@@ -5,9 +5,7 @@ import model.Node;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author: Team Untested
@@ -19,20 +17,25 @@ public class OutputParser {
     private Config config;
     private Schedule schedule;
     private String graphName;
+    private BnBSchedule bnbschedule;
+    private BnBScheduler bnBScheduler;
 
     public static int max = 0;
 
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
+     *
      * @param graphName Name of the output graph.
-     * @param config Config object with output file args.
-     * @param schedule Schedule to output.
+     * @param config    Config object with output file args.
+     * @param schedule  Schedule to output.
      */
-    public OutputParser(String graphName, Config config, Schedule schedule) {
-        this.graphName = graphName.replaceAll("\"",""); //Removes quotation marks from graph name
+
+    public OutputParser(String graphName, Config config, BnBSchedule schedule, BnBScheduler scheduler) {
+        this.graphName = graphName.replaceAll("\"", ""); // removes quotation marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
-        this.schedule = schedule;
+        this.bnbschedule = schedule;
+        this.bnBScheduler = scheduler;
     }
 
     /**
@@ -44,41 +47,53 @@ public class OutputParser {
             FileWriter writer = new FileWriter(config.getOutputFile());
             writer.write("digraph \"" + graphName + "\" {\n");
 
-            HashMap<String, Node> nodeMap = schedule.nodeMap;
+            Map<String, Node> nodeMap = bnbschedule.getNodeMap();
 
-            Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
+            List<String> stringSchedule = bnbschedule.getStringStorage();
 
+            int processorCount = 0;
             int criticalPath = 0;
+            int start = 0;
 
-            while (iterator.hasNext()) {
-                Map.Entry<String, Node> entry = iterator.next();
-                String key = entry.getKey();
-                Node node = entry.getValue();
-                int start = 0;
-                int processor = 0;
-                for (Processor p : schedule.processorList) {
-                    int potentialCriticalPath = p.finishTime;
-                    if (potentialCriticalPath > criticalPath) {
-                        criticalPath = potentialCriticalPath;
-                    }
-                    int timeCount = 0;
-                    for (Node n : p.getTaskOrder()) {
-                        if (node.getName() == n.getName()) {
-                            start = timeCount;
-                            processor = schedule.processorList.indexOf(p);
-                        } else {
-                            timeCount += n.getWeight();
+            for (String string : stringSchedule) {
+                String[] stringArray;
+
+                stringArray = string.split(",");
+                for (String splitString : stringArray) {
+                    String[] attributes = splitString.split("-");
+
+                    if (attributes.length >= 2) {
+                        Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
+
+                        while (iterator.hasNext()) {
+                            Map.Entry<String, Node> entry = iterator.next();
+                            Node node = entry.getValue();
+                            if (node.getName().equals(attributes[1])) {
+                                start = Integer.parseInt(attributes[0].replaceAll("\\s+",""));
+                                int potentialCriticalPath = start + node.getWeight();
+                                if (potentialCriticalPath > criticalPath) {
+                                    criticalPath = potentialCriticalPath;
+                                }
+//                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
+                                writer.write("\t" + attributes[1] + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processorCount + "];\n");
+                            }
                         }
                     }
                 }
-                writer.write("\t" + key + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processor + "];\n");
+                processorCount++;
             }
 
-            System.out.println("Critical path: " + criticalPath);
+            System.out.println("Critical path = " + criticalPath);
+
+//            List<Processor> processorList = bnBScheduler.getListOfProcessors();
+
 
             max = criticalPath;
 
-            HashMap<String, Edge> edgeMap = schedule.edgeMap;
+//            HashMap<String, Edge> edgeMap = schedule.edgeMap;
+
+            HashMap<String, Edge> edgeMap = bnBScheduler.getEdgeMap();
+
 
             Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();
 

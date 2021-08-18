@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import model.Node;
 import model.Edge;
 
@@ -23,13 +24,16 @@ public class Scheduler {
 
     //Static variable single_instance of type Singleton
     private static Scheduler single_instance = null;
-  
+
     public List<Schedule> openSchedules;
     public int optimalTime;
     public Schedule optimalSchedule;
 
     List<PropertyChangeListener> listeners = new ArrayList<>();
-  
+
+    private boolean printDebugOutput = false;
+    private boolean printSchedules = false;
+
     /**
      * Private constructor restricted to the class itself ensures the
      * class is not instantiated more than once.
@@ -42,27 +46,29 @@ public class Scheduler {
 
     /**
      * Static method to create/return a Singleton instance of Scheduler class.
+     *
      * @return Singleton Scheduler instance.
      */
     public static Scheduler getInstance() {
-    
+
         if (single_instance == null)
             single_instance = new Scheduler();
-  
+
         return single_instance;
     }
 
     /**
      * This method is called from the main class and is responsible for finding the optimal schedule.
-     * @param nodeMap Mapping of nodes in the task graph.
-     * @param edgeMap Mapping of edges in the task graph.
+     *
+     * @param nodeMap            Mapping of nodes in the task graph.
+     * @param edgeMap            Mapping of edges in the task graph.
      * @param numberOfProcessors Number of processors available for scheduling.
      * @return Optimal schedule for given task graph.
      */
     public Schedule getOptimalSchedule(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap, int numberOfProcessors) {
 
-
         Schedule emptySchedule = new Schedule(nodeMap, edgeMap, numberOfProcessors);
+        int numberOfSchedules = 0;
 
         //Initially just the empty schedule in the list
         openSchedules.add(emptySchedule);
@@ -70,23 +76,32 @@ public class Scheduler {
         int iterationCounter = 0;
 
         while (openSchedules.size() > 0) {
-            //Pop off the first schedule which has the lowest finish time estimate
-            List<Schedule> newSchedules = openSchedules.remove(0).create_children(nodeMap, edgeMap);
-            //Get the list of all children schedules created by adding one task to this schedule
+
+            //pop off the first schedule which has the lowest finish time estimate
+            List<Schedule> newSchedules = openSchedules.remove(0).create_children();
+            //get the list of all children schedules created by adding one task to this schedule
+
+            int scheduleCounter = 0;
 
             Iterator<Schedule> iterator = newSchedules.listIterator();
 
             while (iterator.hasNext()) {
+
                 Schedule s = iterator.next();
 
-                //If schedule is complete and has a better finish time than the current optimal schedule
+                if (s.state == Schedule.ScheduleState.COMPLETE) {
+                    numberOfSchedules++;
+                }
+
                 if (s.state == Schedule.ScheduleState.COMPLETE && s.getFinishTime() < optimalTime) {
                     optimalSchedule = s;
                     optimalTime = s.getFinishTime();
                     iterator.remove();
-                } else if (s.getFinishTime() > optimalTime) {//If schedule has a worse time than the current optimal time
-                    iterator.remove();                  //Remove that schedule
-                }
+
+                } /**else if (s.getFinishTime() > optimalTime) {//if schedule has a worse time than the current optimal time
+                 iterator.remove();                  //dump that schedule
+                 System.out.println("Second if condition satisfied");
+                 }**/
             }
 
             if (openSchedules.size() < 1) {
@@ -95,14 +110,35 @@ public class Scheduler {
                 openSchedules = merge(openSchedules, newSchedules);
             }
 
+
+            //temp
+            for (PropertyChangeListener l : listeners) {
+                l.propertyChange(new PropertyChangeEvent(this, "schedule", "old", "new"));
+//            System.out.println("does this bit work?");
+            }
+
+            if (printDebugOutput) {
+                System.out.println("\n\n===================================");
+                System.out.println("===================================");
+                System.out.println("While loop iteration number: " + iterationCounter);
+                System.out.println("Number of open schedules: " + openSchedules.size());
+                System.out.println("===================================");
+            }
+
+            if (printSchedules) {
+                for (Schedule s : openSchedules) {
+                    System.out.println("Schedule " + scheduleCounter);
+                    System.out.println(s);
+                    System.out.println("Schedule finish time: " + s.getFinishTime());
+                    System.out.println("===================================");
+                    scheduleCounter++;
+                }
+            }
+
             iterationCounter++;
         }
 
-        //temp
-        for (PropertyChangeListener l : listeners) {
-            l.propertyChange(new PropertyChangeEvent(this, "schedule", "old", "new"));
-//            System.out.println("does this bit work?");
-        }
+        System.out.println("The total number of schedules found were " + numberOfSchedules);
 
         return optimalSchedule;
     }
@@ -113,6 +149,7 @@ public class Scheduler {
 
     /**
      * Method that merges two schedule lists, that are sorted, by their finish time.
+     *
      * @param x First sorted schedule.
      * @param y Second sorted schedule.
      * @return Merged list of the two sorted schedules.
@@ -133,11 +170,11 @@ public class Scheduler {
                 countY++;
             }
         }
-        if (x.size() > 0){
+        if (x.size() > 0) {
             if (countX == x.size()) {
-                mergedList.addAll(y.subList(countY, y.size()-1));
+                mergedList.addAll(y.subList(countY, y.size()));
             } else {
-                mergedList.addAll(x.subList(countX, x.size()-1));
+                mergedList.addAll(x.subList(countX, x.size()));
             }
         }
 
