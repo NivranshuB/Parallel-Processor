@@ -1,5 +1,6 @@
 package app;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -70,7 +71,6 @@ public class MainController {
     @FXML
     private Label bestTime;
 
-
     public void initialize() {
         Config config = Config.getInstance();
 
@@ -132,25 +132,23 @@ public class MainController {
             }
         });
 
+        final Timeline[] timeline = new Timeline[1];
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                DateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss");
-
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                timeline[0] = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                    int timeCurrent = 0;
                     @Override
                     public void handle(ActionEvent actionEvent) {
-//                        System.out.println("called every 1 second");
-                        final String timeNow = timeFormat.format(new Date());
-//                        time.setText(timeNow);
+                        time.setText(String.valueOf(timeCurrent) + " seconds");
+                        timeCurrent++;
                     }
                 }));
-                timeline.setCycleCount(Timeline.INDEFINITE);
-                timeline.play();
+                timeline[0].setCycleCount(Timeline.INDEFINITE);
+                timeline[0].play();
             }
         });
-
-
 
         // everything below is temporary
 
@@ -179,6 +177,8 @@ public class MainController {
                         status.setText("COMPLETE");
 
                         bestTime.setText(String.valueOf(evt.getNewValue()));
+
+                        timeline[0].stop();
                     }
                 }
             });
