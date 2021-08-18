@@ -1,6 +1,7 @@
 package app;
 
 
+import java.util.concurrent.ExecutionException;
 
 /**
  * Author: Team UNTESTED
@@ -41,10 +42,23 @@ public class Main {
 
 //        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
 //		System.out.println("Here is optimal: \n" + optimalSchedule);
+		BnBSchedule optimalSchedule = null;
 
-		BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
+		if (config.getNumOfCores() > 1) {
+			ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
+			try {
+				optimalSchedule = parallel.checkBestSchedule();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		} else {
+			BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
+			optimalSchedule = optimalScheduler.getSchedule();
+		}
 
-		BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
+
 		System.out.println(optimalSchedule);
 		System.out.println("We reached here");
 		optimalSchedule.printSchedule();
@@ -52,7 +66,7 @@ public class Main {
 //        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
 		String graphName = dotFileReader.getGraphName();
 //        //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule, dotFileReader);
 
         op.writeFile();
     }

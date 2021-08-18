@@ -18,7 +18,7 @@ public class OutputParser {
     private Schedule schedule;
     private String graphName;
     private BnBSchedule bnbschedule;
-    private BnBScheduler bnBScheduler;
+    private DotFileReader dotFile;
 
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
@@ -27,12 +27,12 @@ public class OutputParser {
      * @param config    Config object with output file args.
      * @param schedule  Schedule to output.
      */
-    public OutputParser(String graphName, Config config, BnBSchedule schedule, BnBScheduler scheduler) {
+    public OutputParser(String graphName, Config config, BnBSchedule schedule, DotFileReader dotFileReader) {
         this.graphName = graphName.replaceAll("\"", ""); // removes quotation marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
         this.bnbschedule = schedule;
-        this.bnBScheduler = scheduler;
+        this.dotFile = dotFileReader;
     }
 
     /**
@@ -84,7 +84,7 @@ public class OutputParser {
 
 //            List<Processor> processorList = bnBScheduler.getListOfProcessors();
 
-            HashMap<String, Edge> edgeMap = bnBScheduler.getEdgeMap();
+            HashMap<String, Edge> edgeMap = dotFile.getEdgeMap();
 
             Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();
 

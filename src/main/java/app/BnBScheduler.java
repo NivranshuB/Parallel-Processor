@@ -1,10 +1,8 @@
 package app;
-
-
 import model.Edge;
 import model.Node;
-
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Author: Team UNTESTED
@@ -14,7 +12,7 @@ import java.util.*;
  * the input task graph as two HashMaps, one representing the different tasks and their weights while the other
  * representing the different task dependencies of the task graph and their weights.
  */
-public class BnBScheduler {
+public class BnBScheduler implements Callable<BnBSchedule> {
 
     private static BnBScheduler singleInstance = null;
     private HashMap<String, Node> nodeMap;
@@ -23,8 +21,7 @@ public class BnBScheduler {
     private BnBSchedule optimalSchedule;
     private Set<Node> availableToSchedule = new HashSet<Node>();
 
-
-    private BnBScheduler(DotFileReader dotFileReader, Config config) {
+    public BnBScheduler(DotFileReader dotFileReader, Config config) {
         nodeMap = dotFileReader.getNodeMap();
         edgeMap = dotFileReader.getEdgeMap();
         int processorCount = config.getNumOfProcessors();
@@ -60,6 +57,42 @@ public class BnBScheduler {
         optimalSchedule = new BnBSchedule();
     }
 
+    public BnBScheduler(DotFileReader dotFileReader, Config config, List<Node> availableNodes) {
+        nodeMap = dotFileReader.getNodeMap();
+        edgeMap = dotFileReader.getEdgeMap();
+        int processorCount = config.getNumOfProcessors();
+        int count = 0;
+        // Create processors
+        while (count < processorCount) {
+            Processor newProcessor = new Processor();
+            listOfProcessors.add(newProcessor);
+            count++;
+        }
+
+        System.out.println(dotFileReader.getRootNodeList().size());
+        // Store all root nodes into the availableToSchedule set.
+        availableNodes.addAll(dotFileReader.getRootNodeList());
+
+        // Calculate bottom weight of all nodes
+        for (Node n : availableToSchedule) {
+            calculateBottomWeight(n);
+        }
+
+        // Check for equivalency of nodes
+        for (Node n : nodeMap.values()) {
+            for (Node parent : n.getParent()) {
+                for (Node other : parent.getChild()) {
+                    if (!n.getName().equals(other.getName()) && !n.isEquivalent(other) && nodeInterchangeability(n, other)) {
+                        n.addEquivalentNodes(other);
+                        other.addEquivalentNodes(n);
+                    }
+                }
+            }
+        }
+
+        optimalSchedule = new BnBSchedule();
+    }
+
     /**
      * Method that returns the Schedule representing the optimum schedule.
      * @return BnBSchedule object representing the optimal schedule.
@@ -70,12 +103,22 @@ public class BnBScheduler {
         return optimalSchedule;
     }
 
-    public static BnBScheduler getInstance(DotFileReader dotFileReader, Config config) {
-            if (singleInstance == null) {
-                singleInstance = new BnBScheduler(dotFileReader, config);
-            }
-            return singleInstance;
+    /**
+     * Method that returns the Schedule representing the optimum schedule.
+     * @return BnBSchedule object representing the optimal schedule.
+     */
+    public BnBSchedule getSchedule(Set<Node> availableList) {
+        System.out.println(availableList.size());
+        optimalScheduleSearch(availableList);
+        return optimalSchedule;
     }
+
+//    public static BnBScheduler getInstance(DotFileReader dotFileReader, Config config) {
+//            if (singleInstance == null) {
+//                singleInstance = new BnBScheduler(dotFileReader, config);
+//            }
+//            return singleInstance;
+//    }
 
     /**
      * Remove the specified Node from the processor it has been allocated to.
@@ -256,4 +299,10 @@ public class BnBScheduler {
     public HashMap<String, Edge> getEdgeMap() {
         return edgeMap;
     }
+
+    @Override
+    public BnBSchedule call() throws Exception {
+        optimalScheduleSearch(availableToSchedule);
+        return optimalSchedule;
     }
+}
