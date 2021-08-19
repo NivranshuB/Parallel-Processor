@@ -10,6 +10,7 @@ public class BnBSchedule {
     private Set<Node> availableNodes = new HashSet<Node>();
     private Map<String, Node> nodeMap = new HashMap<String, Node>();
     private List<String> stringStorage = new ArrayList<String>();
+    private int criticalPath = 0;
 
 
     public BnBSchedule() {
@@ -39,6 +40,39 @@ public class BnBSchedule {
                 nodeMap.put(node.getName(), node);
             }
         }
+    }
+
+    public int calculateCriticalPath () {
+        criticalPath = 0;
+        int start = 0;
+
+        for (String string : stringStorage) {
+            String[] stringArray;
+
+            stringArray = string.split(",");
+            for (String splitString : stringArray) {
+                String[] attributes = splitString.split("-");
+
+                if (attributes.length >= 2) {
+                    Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
+
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, Node> entry = iterator.next();
+                        Node node = entry.getValue();
+                        if (node.getName().equals(attributes[1])) {
+                            start = Integer.parseInt(attributes[0].replaceAll("\\s+",""));
+                            int potentialCriticalPath = start + node.getWeight();
+                            if (potentialCriticalPath > criticalPath) {
+                                criticalPath = potentialCriticalPath;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return criticalPath;
     }
 
     /**

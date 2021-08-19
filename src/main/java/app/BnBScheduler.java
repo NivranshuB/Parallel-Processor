@@ -256,4 +256,8 @@ public class BnBScheduler {
     public HashMap<String, Edge> getEdgeMap() {
         return edgeMap;
     }
+
+    public static void reset() {
+        singleInstance = null;
+    }
     }
