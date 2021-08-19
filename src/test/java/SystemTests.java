@@ -139,7 +139,9 @@ public class SystemTests {
      */
     @Test
     public void Nodes9Processor1Test() {
-
+        String[] inputArg = {"src\\test\\test_files\\Nodes_9_SeriesParallel.dot", "1"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(55, optimal.calculateCriticalPath());
     }
 
     /**
@@ -167,7 +169,9 @@ public class SystemTests {
      */
     @Test
     public void Nodes10Processor1Test() {
-
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Random.dot", "1"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(63, optimal.calculateCriticalPath());
     }
 
     /**
@@ -215,7 +219,9 @@ public class SystemTests {
      */
     @Test
     public void Nodes11Processor1Test() {
-
+        String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "1"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(640, optimal.calculateCriticalPath());
     }
 
     /**
@@ -234,9 +240,7 @@ public class SystemTests {
     @Test
     public void NodesElevenProcessorFourTest() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4"};
-
         BnBSchedule optimal = getOptimalSchedule(inputArg);
-
         assertEquals(227, optimal.calculateCriticalPath());
     }
 
@@ -258,10 +262,19 @@ public class SystemTests {
     @Test
     public void Nodes15Edges10Edges() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_15_SparseEdges.dot", "3"};
-
         BnBSchedule optimal = getOptimalSchedule(inputArg);
-
         assertEquals(197, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 21 node input graph with no edge dependencies, on 1 processors with the default single core.
+     * This is one of the worst case input graphs for DFS variation algorithms.
+     */
+    @Test
+    public void Nodes21IndependentProcessor1Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "2"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(136, optimal.calculateCriticalPath());
     }
 
     /**
