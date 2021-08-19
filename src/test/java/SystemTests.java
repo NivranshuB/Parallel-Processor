@@ -1,14 +1,44 @@
+import app.*;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class SystemTests {
 
     /**
-     * This sets up an Edge object for testing.
+     * This sets up for a system level testing input.
      */
     @Before
     public void testSetUp() {
+        BnBScheduler.reset();
+    }
 
+    /**
+     *
+     */
+    public BnBSchedule getOptimalSchedule(String[] inputArg) {
+        ArgumentParser parser = new ArgumentParser();
+        Config config;
+
+        try {
+            config = parser.parse(inputArg);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Unable to parse arguments "+ e.getMessage());
+            return null;
+        }
+
+        assertNotNull(config);
+        System.out.println(config.getInputFile().getName());
+        System.out.println("Number of processors: " + config.getNumOfProcessors());
+        System.out.println("Number of tasks: " + config.toString());
+
+        DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
+
+        BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
+        optimalSchedule.printSchedule();
+
+        return optimalSchedule;
     }
 
     /**
@@ -16,7 +46,11 @@ public class SystemTests {
      */
     @Test
     public void NodesFourProcessorOneTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_4.dot", "1"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(24, optimal.calculateCriticalPath());
     }
 
     /**
@@ -24,7 +58,11 @@ public class SystemTests {
      */
     @Test
     public void NodesFourProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_4.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(19, optimal.calculateCriticalPath());
     }
 
     /**
@@ -32,7 +70,11 @@ public class SystemTests {
      */
     @Test
     public void NodesFourProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_4.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(19, optimal.calculateCriticalPath());
     }
 
     /**
@@ -48,7 +90,11 @@ public class SystemTests {
      */
     @Test
     public void NodesSevenProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_7_OutTree.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(28, optimal.calculateCriticalPath());
     }
 
     /**
@@ -56,7 +102,11 @@ public class SystemTests {
      */
     @Test
     public void NodesSevenProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_7_OutTree.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(22, optimal.calculateCriticalPath());
     }
 
     /**
@@ -72,7 +122,11 @@ public class SystemTests {
      */
     @Test
     public void NodesEightProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_8_Random.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(581, optimal.calculateCriticalPath());
     }
 
     /**
@@ -80,7 +134,11 @@ public class SystemTests {
      */
     @Test
     public void NodesEightProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_8_Random.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(581, optimal.calculateCriticalPath());
     }
 
     /**
@@ -96,7 +154,11 @@ public class SystemTests {
      */
     @Test
     public void NodesNineProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_9_SeriesParallel.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(55, optimal.calculateCriticalPath());
     }
 
     /**
@@ -104,7 +166,11 @@ public class SystemTests {
      */
     @Test
     public void NodesNineProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_9_SeriesParallel.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(55, optimal.calculateCriticalPath());
     }
 
     /**
@@ -120,7 +186,11 @@ public class SystemTests {
      */
     @Test
     public void NodesTenProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Random.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(50, optimal.calculateCriticalPath());
     }
 
     /**
@@ -128,7 +198,11 @@ public class SystemTests {
      */
     @Test
     public void NodesTenProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Random.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(50, optimal.calculateCriticalPath());
     }
 
     /**
@@ -144,7 +218,11 @@ public class SystemTests {
      */
     @Test
     public void NodesElevenProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "2"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(350, optimal.calculateCriticalPath());
     }
 
     /**
@@ -152,7 +230,11 @@ public class SystemTests {
      */
     @Test
     public void NodesElevenProcessorFourTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4"};
 
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(227, optimal.calculateCriticalPath());
     }
 
 }
