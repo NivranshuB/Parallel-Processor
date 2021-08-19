@@ -203,5 +203,9 @@ public class Processor {
 
         return nodeEndTime;
     }
+
+    public int tasksScheduled() {
+        return taskOrderBnB.size();
+    }
 }
 

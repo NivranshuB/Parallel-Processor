@@ -23,22 +23,32 @@ public class ParallelSchedule {
         int numOfRoot = rootNodes.size();
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
 
-
+        System.out.println("Create");
+        System.out.println("Number of roots: " + rootNodes.size());
 
         for (int i = 0; i < numOfRoot; i++) {
-            List<Node> temp = new ArrayList<Node>();
-            DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
 
             if ((i == numOfRoot - 1) || (i == coreCount - 1))  {
-                temp.addAll(rootNodes);
+                List<String> temp = new ArrayList<String>();
+                rootNodes.forEach(s -> temp.add(s.getName()));
+                DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
+                System.out.println("Size of rootNodes is: " + rootNodes.size());
+                System.out.println("Root node list: " + temp.toString());
+                System.out.println("Number of threads: " + (i+1));
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp);
                 futureList.add(executor.submit(currScheduler));
+
                 break;
             } else {
-                temp.add(rootNodes.get(0));
+                List<String> temp = new ArrayList<String>();
+                temp.add(rootNodes.get(0).getName());
                 rootNodes.remove(0);
+                DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
+                System.out.println("Does this run? Size of rootNodes is " + rootNodes.size());
+                System.out.println("Root node list: " + temp.toString());
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp);
                 futureList.add(executor.submit(currScheduler));
+
             }
 
         }
@@ -67,11 +77,15 @@ public class ParallelSchedule {
 
         for (Future<BnBSchedule> currSchedule : futureList) {
             BnBSchedule current = currSchedule.get();
+            System.out.println("Schedule:");
+            System.out.println(current.getStringStorage());
             if (current.getWeight() < max) {
                 max = current.getWeight();
+                System.out.println("Current max weight: " + max);
                 lowestTime = current;
             }
         }
+        executor.shutdown();
         return lowestTime;
     }
 

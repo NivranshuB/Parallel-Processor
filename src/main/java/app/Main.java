@@ -2,12 +2,17 @@ package app;
 
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Team UNTESTED
  * Main method where the implementation of the program begins.
  */
 public class Main {
+
+
 
     public static void main(String[] args) {
         //SV's code to parse command line input arguments to extract the number of
@@ -44,8 +49,11 @@ public class Main {
 //		System.out.println("Here is optimal: \n" + optimalSchedule);
 		BnBSchedule optimalSchedule = null;
 
-		if (config.getNumOfCores() > 1) {
+		if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
+			System.out.println("Using parallelisation");
+			System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
 			ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
+
 			try {
 				optimalSchedule = parallel.checkBestSchedule();
 			} catch (InterruptedException e) {
@@ -54,6 +62,8 @@ public class Main {
 				e.printStackTrace();
 			}
 		} else {
+			System.out.println("Using serial");
+			System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
 			BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
 			optimalSchedule = optimalScheduler.getSchedule();
 		}
