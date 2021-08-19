@@ -1,4 +1,4 @@
-digraph "Random_Nodes_10_Density_1.90_CCR_10.00_WeightType_Random" {
+digraph "Nodes_10_Fork_Random" {
 	1	 [Weight=96];
 	2	 [Weight=19];
 	1 -> 2	 [Weight=8];
