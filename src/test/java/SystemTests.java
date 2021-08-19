@@ -237,4 +237,42 @@ public class SystemTests {
         assertEquals(227, optimal.calculateCriticalPath());
     }
 
+    //=========================New test cases==================================//
+
+    /**
+     * Tests for 10 node on forked join input graph, two processor
+     */
+    @Test
+    public void NodesTenForkJoinProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Fork_Join.dot", "2"};
+
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(499, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 10 node on forked join input graph, two processor
+     */
+    @Test
+    public void NodesTenForkProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Fork.dot", "2"};
+
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(300, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 10 node on forked join input graph, two processor
+     */
+    @Test
+    public void NodesTwentyOneIndependentProcessorTwoTest() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "2"};
+
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(66, optimal.calculateCriticalPath());
+    }
+
 }
