@@ -275,4 +275,28 @@ public class SystemTests {
         assertEquals(66, optimal.calculateCriticalPath());
     }
 
+    /**
+     *
+     */
+    @Test
+    public void Nodes15Edges10Edges() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_15_SparseEdges.dot", "3"};
+
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(197, optimal.calculateCriticalPath());
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void Nodes15Edges80Edges() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_15_NumerousEdges.dot", "4"};
+
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+
+        assertEquals(516, optimal.calculateCriticalPath());
+    }
+
 }
