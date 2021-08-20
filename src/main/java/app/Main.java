@@ -1,12 +1,18 @@
 package app;
 
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Team UNTESTED
  * Main method where the implementation of the program begins.
  */
 public class Main {
+
+
 
     public static void main(String[] args) {
         //SV's code to parse command line input arguments to extract the number of
@@ -41,10 +47,28 @@ public class Main {
 
 //        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
 //		System.out.println("Here is optimal: \n" + optimalSchedule);
+		BnBSchedule optimalSchedule = null;
 
-		BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
+		if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
+			System.out.println("Using parallelisation");
+			System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+			ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
 
-		BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
+			try {
+				optimalSchedule = parallel.checkBestSchedule();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Using serial");
+			System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+			BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
+			optimalSchedule = optimalScheduler.getSchedule();
+		}
+
+
 		System.out.println(optimalSchedule);
 		System.out.println("We reached here");
 		optimalSchedule.printSchedule();
@@ -52,7 +76,7 @@ public class Main {
 //        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
 		String graphName = dotFileReader.getGraphName();
 //        //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule, dotFileReader);
 
         op.writeFile();
     }

@@ -1,7 +1,6 @@
 package app;
 
 import model.Node;
-
 import java.util.*;
 
 public class BnBSchedule {
@@ -11,7 +10,6 @@ public class BnBSchedule {
     private Map<String, Node> nodeMap = new HashMap<String, Node>();
     private List<String> stringStorage = new ArrayList<String>();
     private int criticalPath = 0;
-
 
     public BnBSchedule() {
         max = Integer.MAX_VALUE;
