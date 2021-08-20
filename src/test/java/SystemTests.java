@@ -39,10 +39,14 @@ public class SystemTests {
         assertNotNull(config);
 
         DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
+        System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+        System.out.println("Number of edges: " + dotFileReader.getEdgeMap().size());
+        System.out.println("Number of processors: " + config.getNumOfProcessors());
+
         BnBSchedule optimalSchedule = new BnBSchedule();
-        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
+        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1 && dotFileReader.getEdgeMap().size() != 0) {
             System.out.println("Using parallelisation");
-            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+
             ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
 
             try {
@@ -52,9 +56,12 @@ public class SystemTests {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
+        } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
+            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            optimalSchedule = scheduler.getSchedule();
         } else {
             System.out.println("Using serial");
-            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+
             BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
             optimalSchedule = optimalScheduler.getSchedule();
         }
@@ -296,9 +303,9 @@ public class SystemTests {
      */
     @Test
     public void Nodes21IndependentProcessor1Test() {
-        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "2"};
+        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "1"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
-        assertEquals(136, optimal.calculateCriticalPath());
+        assertEquals(132, optimal.calculateCriticalPath());
     }
 
     /**

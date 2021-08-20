@@ -35,7 +35,7 @@ public class Main {
 		System.out.println("visualise = " + config.getVisualise());
 		System.out.println("output file = " + config.getOutputFile());
       
-		Scheduler scheduler = Scheduler.getInstance();
+//		Scheduler scheduler = Scheduler.getInstance();
 
 		//Joe's code that uses the DOT filepath from the args to create a new
 		//DotFileReader object/graph representation
@@ -61,6 +61,9 @@ public class Main {
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
+		} else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
+			SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+			optimalSchedule = scheduler.getSchedule();
 		} else {
 			System.out.println("Using serial");
 			System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
