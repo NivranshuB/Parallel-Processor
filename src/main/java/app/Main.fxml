@@ -207,9 +207,17 @@
                                           </Label>
                                           <HBox alignment="BASELINE_CENTER" fillHeight="false">
                                              <children>
-                                                <Label fx:id="time" alignment="TOP_LEFT" contentDisplay="BOTTOM" text="00:00:00" textFill="WHITE" wrapText="true">
+                                                <Label fx:id="time" alignment="TOP_LEFT" contentDisplay="BOTTOM" text="0" textFill="WHITE" wrapText="true">
                                                    <font>
                                                       <Font name="Arial" size="32.0" />
+                                                   </font>
+                                                   <padding>
+                                                      <Insets left="10.0" />
+                                                   </padding>
+                                                </Label>
+                                                <Label alignment="TOP_LEFT" contentDisplay="BOTTOM" text="seconds" textFill="WHITE" wrapText="true">
+                                                   <font>
+                                                      <Font name="Arial" size="14.0" />
                                                    </font>
                                                    <padding>
                                                       <Insets left="10.0" />
@@ -231,7 +239,7 @@
                                           </Label>
                                           <HBox alignment="BASELINE_CENTER" fillHeight="false">
                                              <children>
-                                                <Label fx:id="bestTime" alignment="TOP_LEFT" contentDisplay="BOTTOM" text="280" textFill="WHITE" wrapText="true">
+                                                <Label fx:id="bestTime" alignment="TOP_LEFT" contentDisplay="BOTTOM" text="0" textFill="WHITE" wrapText="true">
                                                    <font>
                                                       <Font name="Arial" size="32.0" />
                                                    </font>
