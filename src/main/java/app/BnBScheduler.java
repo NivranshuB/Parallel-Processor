@@ -380,5 +380,10 @@ public class BnBScheduler implements Callable<BnBSchedule> {
     @Override
     public BnBSchedule call() throws Exception {
         return parallelSchedule();
+
+    public static void reset() {
+        singleInstance = null;
+    }
+
     }
 }
