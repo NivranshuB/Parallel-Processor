@@ -196,7 +196,7 @@ public class MainController {
 
                     @Override
                     public void handle(ActionEvent actionEvent) {
-                        time.setText(String.valueOf(timeCurrent) + " seconds");
+                        time.setText(String.valueOf(timeCurrent));
                         timeCurrent++;
                     }
                 }));
