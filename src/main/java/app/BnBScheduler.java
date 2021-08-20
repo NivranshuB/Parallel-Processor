@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  */
 public class BnBScheduler implements Callable<BnBSchedule> {
 
-    private static BnBScheduler singleInstance = null;
+
     private HashMap<String, Node> nodeMap;
     private HashMap<String, Edge> edgeMap;
     private List<Processor> listOfProcessors = new ArrayList<Processor>();
@@ -381,9 +381,7 @@ public class BnBScheduler implements Callable<BnBSchedule> {
     public BnBSchedule call() throws Exception {
         return parallelSchedule();
 
-    public static void reset() {
-        singleInstance = null;
-    }
+
 
     }
 }

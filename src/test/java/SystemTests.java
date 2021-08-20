@@ -1,6 +1,9 @@
 import app.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.ExecutionException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -16,7 +19,7 @@ public class SystemTests {
      */
     @Before
     public void testSetUp() {
-        BnBScheduler.reset();
+//        BnBScheduler.reset();
     }
 
     /**
@@ -36,9 +39,30 @@ public class SystemTests {
         assertNotNull(config);
 
         DotFileReader dotFileReader = new DotFileReader(config.getInputFile());
-        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
+        BnBSchedule optimalSchedule = new BnBSchedule();
+        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
+            System.out.println("Using parallelisation");
+            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+            ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
 
-        BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
+            try {
+                optimalSchedule = parallel.checkBestSchedule();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Using serial");
+            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
+            BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
+            optimalSchedule = optimalScheduler.getSchedule();
+        }
+
+
+//        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
+
+
         optimalSchedule.printSchedule();
 
         return optimalSchedule;
