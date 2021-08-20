@@ -302,7 +302,10 @@ public class MainController {
                         sbc.getData().add(new XYChart.Series<Number, String>(oList));
                         currentTime = node.getStart() + node.getWeight();
                     } else {
-                        oList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
+                        XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor()));
+                        oList.add(data);
+                        invisibleList.add(data);
+//                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
 //                        invisibleList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
                         XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(oList);
 //                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
@@ -367,10 +370,10 @@ public class MainController {
 //        series2.getData().get(0).getNode().setVisible(false);
 //        sbc.getData().add(invisibleList);
 
-//        for (XYChart.Data<Number, String> task : invisibleList) {
+        for (XYChart.Data<Number, String> task : invisibleList) {
 //            System.out.println("should be invisilbe" + task.getNode());
-////            task.getNode().setVisible(false);
-//        }
+            task.getNode().setVisible(false);
+        }
 
 //        chart.setStyle(".status-blue {" +
 //                "-fx-background-color: blue;");
