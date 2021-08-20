@@ -69,6 +69,7 @@ public class MyThread extends Thread {
 
         op.writeFile();
 
-        mainController.createGantt(op);
+//        mainController.createGantt(op);
+        mainController.createGantt(op.getNodeList());
     }
 }

@@ -25,6 +25,8 @@ public class OutputParser {
 
     private Map<String, Node> nodeMap;
 
+    private List<Node> nodeList;
+
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
      *
@@ -59,6 +61,8 @@ public class OutputParser {
             int criticalPath = 0;
             int start = 0;
 
+            nodeList = new ArrayList<>();
+
             for (String string : stringSchedule) {
                 String[] stringArray;
 
@@ -80,6 +84,9 @@ public class OutputParser {
                                 }
                                 node.setProcessor(processorCount);
                                 node.setStart(start);
+
+                                nodeList.add(node);
+
 //                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
                                 writer.write("\t" + attributes[1] + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processorCount + "];\n");
                             }
@@ -123,5 +130,9 @@ public class OutputParser {
 
     public Map<String, Node> getNodeMap() {
         return nodeMap;
+    }
+
+    public List<Node> getNodeList() {
+        return nodeList;
     }
 }

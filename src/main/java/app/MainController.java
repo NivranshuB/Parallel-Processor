@@ -18,6 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -260,9 +261,11 @@ public class MainController {
         return mainController;
     }
 
-    public void createGantt(OutputParser op) {
+//    public void createGantt(OutputParser op) {
+    public void createGantt(List<model.Node> nodeList) {
 
-        Map<String, model.Node> nodeMap = op.getNodeMap();
+//        Map<String, model.Node> nodeMap = op.getNodeMap();
+
 
         int processorCount = config.getNumOfProcessors();
 //        String nameArray[] = new String[processorCount];
@@ -285,22 +288,25 @@ public class MainController {
 
         for (int i = 0; i < processorCount; i++) {
             int currentTime = 0;
-            Iterator<Map.Entry<String, model.Node>> iterator = nodeMap.entrySet().iterator();
-
-            while (iterator.hasNext()) {
-                Map.Entry<String, model.Node> entry = iterator.next();
-                model.Node node = entry.getValue();
+//            Iterator<Map.Entry<String, model.Node>> iterator = nodeMap.entrySet().iterator();
+            for (model.Node node : nodeList) {
+//            while (iterator.hasNext()) {
+//                Map.Entry<String, model.Node> entry = iterator.next();
+//                model.Node node = entry.getValue();
 
                 if (node.getProcessor() == i) {
+                    System.out.println("scheduling this node: " + node.getName());
                     ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
                     if (node.getStart() == 0) {
                         oList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
                         sbc.getData().add(new XYChart.Series<Number, String>(oList));
                         currentTime = node.getWeight();
+                        System.out.println("value: " + node.getWeight());
                     } else if (node.getStart() == currentTime) {
-                        oList.add(new XYChart.Data<Number, String>(node.getStart() + node.getWeight(), String.valueOf(node.getProcessor())));
+                        oList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
                         sbc.getData().add(new XYChart.Series<Number, String>(oList));
                         currentTime = node.getStart() + node.getWeight();
+                        System.out.println("value: " + (node.getStart() + node.getWeight()));
                     } else {
                         XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor()));
                         oList.add(data);
@@ -311,10 +317,13 @@ public class MainController {
 //                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
 //                        emptyTask.getNode().setVisible(false);
                         sbc.getData().add(emptyTask);
+                        System.out.println("value: " + node.getStart());
                         ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
-                        otherList.add(new XYChart.Data<Number, String>(node.getStart() + node.getWeight(), String.valueOf(node.getProcessor())));
+                        otherList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
                         sbc.getData().add(new XYChart.Series<Number, String>(otherList));
                         currentTime = node.getStart() + node.getWeight();
+                        System.out.println("value: " + (node.getStart() + node.getWeight()));
+
 //                        currentTime = node.getStart();
                     }
                     System.out.println("this is current time: " + currentTime);
@@ -345,6 +354,9 @@ public class MainController {
         xAxis.setLabel("Time");
         yAxis.setLabel("Processors");
 //        xAxis.setAutoRanging(false);
+        yAxis.setAutoRanging(false);
+        xAxis.setAnimated(false);
+        xAxis.setLowerBound(0);
         xAxis.setUpperBound(OutputParser.max);
         System.out.println(OutputParser.max);
 //        xAxis.setUpperBound(1000);
@@ -383,6 +395,7 @@ public class MainController {
             public void run() {
 //                chart.getChildren().add(ganttChart);
                 chart.getChildren().add(sbc);
+//                scrollPane.setContent(sbc);
             }
         });
 
