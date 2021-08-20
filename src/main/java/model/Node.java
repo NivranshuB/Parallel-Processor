@@ -92,8 +92,10 @@ public class Node {
         Set<Node> availableChildren = new HashSet<Node>();
         for (Node childNode : child) {
             childNode.scheduleOneParent();
+//            System.out.println("Unschedule parent, " + childNode.getName());
             if (childNode.parentsScheduled()) {
                 availableChildren.add(childNode);
+//                System.out.println("I can run, " + childNode.getName());
             }
         }
         return availableChildren;

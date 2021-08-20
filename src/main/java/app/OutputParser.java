@@ -18,6 +18,7 @@ public class OutputParser {
     private Schedule schedule;
     private String graphName;
     private BnBSchedule bnbschedule;
+//    private DotFileReader dotFile;
     private BnBScheduler bnBScheduler;
 
     public static int max = 0;
@@ -33,6 +34,7 @@ public class OutputParser {
      */
 
     public OutputParser(String graphName, Config config, BnBSchedule schedule, BnBScheduler scheduler) {
+
         this.graphName = graphName.replaceAll("\"", ""); // removes quotation marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
@@ -91,12 +93,12 @@ public class OutputParser {
 
 //            List<Processor> processorList = bnBScheduler.getListOfProcessors();
 
-
             max = criticalPath;
 
 //            HashMap<String, Edge> edgeMap = schedule.edgeMap;
 
             HashMap<String, Edge> edgeMap = bnBScheduler.getEdgeMap();
+
 
 
             Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();

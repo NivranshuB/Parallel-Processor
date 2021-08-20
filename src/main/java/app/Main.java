@@ -16,10 +16,14 @@ import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.Viewer;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Author: Team UNTESTED
@@ -32,6 +36,8 @@ public class Main extends Application {
     private static DotFileReader dotFileReader;
 
     private Schedule optimalSchedule;
+
+
 
     public static void main(String[] args) {
         //Parses command line input arguments to extract the number of processors, DOT file and other args
@@ -48,10 +54,12 @@ public class Main extends Application {
         }
 
         System.out.println("input file = " + config.getInputFile());
-        System.out.println("number of processors = " + config.getNumOfProcessors());
-        System.out.println("number of cores = " + config.getNumOfCores());
-        System.out.println("visualise = " + config.getVisualise());
-        System.out.println("output file = " + config.getOutputFile());
+		System.out.println("number of processors = " + config.getNumOfProcessors());
+		System.out.println("number of cores = " + config.getNumOfCores());
+		System.out.println("visualise = " + config.getVisualise());
+		System.out.println("output file = " + config.getOutputFile());
+      
+//		Scheduler scheduler = Scheduler.getInstance();
 
         Scheduler scheduler = Scheduler.getInstance();
 
@@ -64,7 +72,6 @@ public class Main extends Application {
         launch(args);
 
         // debugging
-
 
         //Joe's code that uses the DOT filepath from the args to create a new
         //DotFileReader object/graph representation

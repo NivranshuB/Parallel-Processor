@@ -84,6 +84,10 @@ public class MainController {
 
     private Config config;
 
+    private BnBScheduler scheduler;
+
+    private final Timeline[] timeline = new Timeline[1];
+
     public void initialize() {
 
         mainController = this;
@@ -186,7 +190,7 @@ public class MainController {
             }
         });
 
-        final Timeline[] timeline = new Timeline[1];
+//        timeline = new Timeline[1];
 
         Platform.runLater(new Runnable() {
             @Override
@@ -210,35 +214,10 @@ public class MainController {
         DotFileReader dotFileReader = Main.getDotFileReader();
 
 //        Scheduler scheduler = Scheduler.getInstance();
-        BnBScheduler scheduler = BnBScheduler.getInstance(dotFileReader, config);
+//        BnBScheduler scheduler = BnBScheduler.getInstance(dotFileReader, config);
+//        BnB
 
-        scheduler.addChangeListener(evt -> {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (evt.getPropertyName().equals("update node")) {
-                        model.Node searchedNode = (model.Node) evt.getNewValue();
-                        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
-                            if (searchedNode.getName().equals(vizNode.getId())) {
-                                vizNode.setAttribute("ui.class", "marked");
-                                try {
-//                                  Thread.sleep(1);
-                                } catch (Exception e) {
-                                }
-                            }
-                        }
 
-                    } else {
-                        status.setText("COMPLETE");
-
-                        bestTime.setText(String.valueOf(evt.getNewValue()));
-
-                        timeline[0].stop();
-                    }
-                }
-            });
-
-        });
 
         //temp viz that delays but updates node to green from red
 //        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
@@ -263,6 +242,10 @@ public class MainController {
 //        op.writeFile();
 
 
+    }
+
+    public void setScheduler(BnBScheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     public static Graph getVizGraph() {
@@ -400,6 +383,36 @@ public class MainController {
             }
         });
 
+    }
+
+    public void addListener() {
+        scheduler.addChangeListener(evt -> {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getPropertyName().equals("update node")) {
+                        model.Node searchedNode = (model.Node) evt.getNewValue();
+                        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
+                            if (searchedNode.getName().equals(vizNode.getId())) {
+                                vizNode.setAttribute("ui.class", "marked");
+                                try {
+//                                  Thread.sleep(1);
+                                } catch (Exception e) {
+                                }
+                            }
+                        }
+
+                    } else {
+                        status.setText("COMPLETE");
+
+                        bestTime.setText(String.valueOf(evt.getNewValue()));
+
+                        timeline[0].stop();
+                    }
+                }
+            });
+
+        });
     }
 
 }
