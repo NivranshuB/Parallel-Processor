@@ -106,6 +106,16 @@ public class SystemTests {
     }
 
     /**
+     * Tests for 4 node input graph, on 4 processors with 3 cores.
+     */
+    @Test
+    public void Nodes4Processor4Cores3Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_4.dot", "4", "-p", "3"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(19, optimal.calculateCriticalPath());
+    }
+
+    /**
      * Tests for 7 node input graph, on 1 processor with the default single core.
      */
     @Test
@@ -121,6 +131,16 @@ public class SystemTests {
     @Test
     public void Nodes7Processor2Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_7_OutTree.dot", "2"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(28, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 7 node input graph, on 2 processors with 2 cores.
+     */
+    @Test
+    public void Nodes7Processor2Cores2Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_7_OutTree.dot", "2", "-p", "2"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(28, optimal.calculateCriticalPath());
     }
@@ -166,11 +186,31 @@ public class SystemTests {
     }
 
     /**
+     * Tests for 8 node input graph, on 4 processors with 2 cores.
+     */
+    @Test
+    public void Nodes8Processor4Cores2Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_8_Random.dot", "4", "-p", "2"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(581, optimal.calculateCriticalPath());
+    }
+
+    /**
      * Tests for 9 node input graph, on 1 processor with the default single core.
      */
     @Test
     public void Nodes9Processor1Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_9_SeriesParallel.dot", "1"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(55, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 9 node input graph, on 1 processor with 3 cores.
+     */
+    @Test
+    public void Nodes9Processor1Cores3Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_9_SeriesParallel.dot", "1", "-p", "3"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(55, optimal.calculateCriticalPath());
     }
@@ -211,6 +251,16 @@ public class SystemTests {
     @Test
     public void Nodes10Processor2Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_10_Random.dot", "2"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(50, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 10 node input graph, on 2 processors with 3 cores.
+     */
+    @Test
+    public void Nodes10Processor2Cores3Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_10_Random.dot", "2", "-p", "3"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(50, optimal.calculateCriticalPath());
     }
@@ -269,8 +319,18 @@ public class SystemTests {
      * Tests for 11 node input graph, on 4 processors with the default single core.
      */
     @Test
-    public void NodesElevenProcessorFourTest() {
+    public void Nodes11Processor4Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(227, optimal.calculateCriticalPath());
+    }
+
+    /**
+     * Tests for 11 node input graph, on 4 processors with 4 cores.
+     */
+    @Test
+    public void Nodes11Processor4Cores4Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4", "-p", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(227, optimal.calculateCriticalPath());
     }
@@ -280,7 +340,7 @@ public class SystemTests {
      * with the default single core.
      */
     @Test
-    public void Nodes15Edges80Edges() {
+    public void Nodes15Edges80Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_15_NumerousEdges.dot", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(516, optimal.calculateCriticalPath());
@@ -291,7 +351,7 @@ public class SystemTests {
      * with the default single core.
      */
     @Test
-    public void Nodes15Edges10Edges() {
+    public void Nodes15Edges10Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_15_SparseEdges.dot", "3"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(197, optimal.calculateCriticalPath());
@@ -309,6 +369,17 @@ public class SystemTests {
     }
 
     /**
+     * Tests for 21 node input graph with no edge dependencies, on 1 processors with 6 cores.
+     * This is one of the worst case input graphs for DFS variation algorithms.
+     */
+    @Test
+    public void Nodes21IndependentProcessor1Cores6Test() {
+        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "1", "-p", "6"};
+        BnBSchedule optimal = getOptimalSchedule(inputArg);
+        assertEquals(132, optimal.calculateCriticalPath());
+    }
+
+    /**
      * Tests for 21 node input graph with no edge dependencies, on 2 processors with the default single core.
      * This is one of the worst case input graphs for DFS variation algorithms.
      */
@@ -318,5 +389,4 @@ public class SystemTests {
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(66, optimal.calculateCriticalPath());
     }
-
 }
