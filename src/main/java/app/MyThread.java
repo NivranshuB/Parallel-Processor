@@ -51,11 +51,12 @@ public class MyThread extends Thread {
             System.out.println("Using serial");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
             optimalScheduler = new BnBScheduler(dotFileReader, config);
+            mainController.setScheduler(optimalScheduler);
+            mainController.addListener();
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-        mainController.setScheduler(optimalScheduler);
-        mainController.addListener();
+
 
         System.out.println(optimalSchedule);
         System.out.println("We reached here");
@@ -67,7 +68,7 @@ public class MyThread extends Thread {
         OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
 
         op.writeFile();
-        
+
         mainController.createGantt(op);
     }
 }
