@@ -7,11 +7,18 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -34,15 +41,16 @@ import org.graphstream.ui.view.ViewerPipe;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class MainController {
 
     public static Graph g;
+
+    private static MainController mainController = null;
 
     @FXML
     private OutputParser outputParser;
@@ -63,6 +71,9 @@ public class MainController {
     private VBox graph;
 
     @FXML
+    private VBox chart;
+
+    @FXML
     private Label status;
 
     @FXML
@@ -71,8 +82,13 @@ public class MainController {
     @FXML
     private Label bestTime;
 
+    private Config config;
+
     public void initialize() {
-        Config config = Config.getInstance();
+
+        mainController = this;
+
+        config = Config.getInstance();
 
         int numOfT = config.getNumOfTasks();
         int numOfP = config.getNumOfProcessors();
@@ -124,6 +140,44 @@ public class MainController {
 
         graph.getChildren().add(panel);
 
+        System.out.println("or is initialise first?");
+
+//        NumberAxis xAxis = new NumberAxis();
+//        CategoryAxis yAxis = new CategoryAxis();
+//
+//        StackedBarChart<Number, String> sbc = new StackedBarChart<>(xAxis, yAxis);
+//
+//        XYChart.Series<Number, String> series1 = new XYChart.Series<>();
+//        XYChart.Series<Number, String> series2 = new XYChart.Series<>();
+//
+//        sbc.setTitle("Task allocation gantt chart"); // probably delete this
+//        xAxis.setLabel("Time");
+//        yAxis.setLabel("Processors");
+//
+//        int processorCount = config.getNumOfProcessors();
+////        String nameArray[] = new String[processorCount];
+//        List<String> nameArray = new ArrayList<>();
+//
+//        for (int i = 0; i < processorCount; i++) {
+//            nameArray.add(String.valueOf(i));
+//        }
+//
+//        yAxis.setCategories(FXCollections.observableList(nameArray));
+//
+//        series1.setName("test");
+//
+//        sbc.getData().add(series2);
+//        sbc.getData().add(series1);
+//
+//        series1.getData().add(new XYChart.Data<>(3, "1", "testwords"));
+//        series2.getData().add(new XYChart.Data<>(2, "1"));
+//        XYChart.Data item = series1.getData().get(0);
+//
+//        Tooltip.install(item.getNode(), new Tooltip("blah"));
+//        series2.getData().get(0).getNode().setVisible(false);
+//
+//        chart.getChildren().add(sbc);
+
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {
@@ -139,6 +193,7 @@ public class MainController {
             public void run() {
                 timeline[0] = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
                     int timeCurrent = 0;
+
                     @Override
                     public void handle(ActionEvent actionEvent) {
                         time.setText(String.valueOf(timeCurrent) + " seconds");
@@ -216,6 +271,135 @@ public class MainController {
 
     public void setComplete() {
         status.setText("COMPLETE");
+    }
+
+    public static MainController getInstance() {
+        return mainController;
+    }
+
+    public void createGantt(OutputParser op) {
+
+        Map<String, model.Node> nodeMap = op.getNodeMap();
+
+        int processorCount = config.getNumOfProcessors();
+//        String nameArray[] = new String[processorCount];
+        List<String> nameArray = new ArrayList<>();
+
+        for (int i = 0; i < processorCount; i++) {
+            nameArray.add(String.valueOf(i));
+        }
+
+        NumberAxis xAxis = new NumberAxis(); // tasks time
+        CategoryAxis yAxis = new CategoryAxis(); // processors
+
+        StackedBarChart<Number, String> sbc = new StackedBarChart<>(xAxis, yAxis);
+
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+        ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
+        XYChart.Series<Number, String> invisibleTask = new XYChart.Series<>();
+
+        for (int i = 0; i < processorCount; i++) {
+            int currentTime = 0;
+            Iterator<Map.Entry<String, model.Node>> iterator = nodeMap.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, model.Node> entry = iterator.next();
+                model.Node node = entry.getValue();
+
+                if (node.getProcessor() == i) {
+                    ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
+                    if (node.getStart() == 0) {
+                        oList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                        sbc.getData().add(new XYChart.Series<Number, String>(oList));
+                        currentTime = node.getWeight();
+                    } else if (node.getStart() == currentTime) {
+                        oList.add(new XYChart.Data<Number, String>(node.getStart() + node.getWeight(), String.valueOf(node.getProcessor())));
+                        sbc.getData().add(new XYChart.Series<Number, String>(oList));
+                        currentTime = node.getStart() + node.getWeight();
+                    } else {
+                        oList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
+//                        invisibleList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
+                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(oList);
+//                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
+//                        emptyTask.getNode().setVisible(false);
+                        sbc.getData().add(emptyTask);
+                        ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
+                        otherList.add(new XYChart.Data<Number, String>(node.getStart() + node.getWeight(), String.valueOf(node.getProcessor())));
+                        sbc.getData().add(new XYChart.Series<Number, String>(otherList));
+                        currentTime = node.getStart() + node.getWeight();
+//                        currentTime = node.getStart();
+                    }
+                    System.out.println("this is current time: " + currentTime);
+                }
+            }
+        }
+
+//        XYChart.Series<Number, String> series1 = new XYChart.Series<>();
+//        XYChart.Series<Number, String> series2 = new XYChart.Series<>();
+
+
+//        GanttChart<Number, String> ganttChart = new GanttChart<>(xAxis, yAxis);
+//
+//        String processor = "0";
+//        XYChart.Series<Number, String> series1 = new XYChart.Series();
+//        series1.getData().add(new XYChart.Data<>(3, processor, 2));
+
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                ganttChart.getData().add(series1);
+//            }
+//        });
+
+
+//        ganttChart.setTitle("Task allocation gantt chart"); // probably delete this
+        sbc.setTitle("Task allocation gantt chart"); // probably delete this
+        xAxis.setLabel("Time");
+        yAxis.setLabel("Processors");
+//        xAxis.setAutoRanging(false);
+        xAxis.setUpperBound(OutputParser.max);
+        System.out.println(OutputParser.max);
+//        xAxis.setUpperBound(1000);
+//        xAxis.setTickUnit(7.22);
+//        xAxis.setAnimated(false);
+        xAxis.setTickUnit(1);
+        System.out.println(xAxis.tickUnitProperty());
+
+        yAxis.setCategories(FXCollections.observableList(nameArray));
+
+//        series1.setName("test");
+//
+//        sbc.getData().add(series2);
+//        sbc.getData().add(series1);
+//        sbc.getData().add(new XYChart.Series<Number, String>());
+//        sbc.getData().add(new XYChart.Series<Number, String>());
+
+//        series1.getData().add(new XYChart.Data<>(3, "1", "testwords"));
+//        series2.getData().add(new XYChart.Data<>(2, "1"));
+//        XYChart.Data item = series1.getData().get(0);
+
+//        Tooltip.install(item.getNode(), new Tooltip("blah"));
+//        series2.getData().get(0).getNode().setVisible(false);
+//        sbc.getData().add(invisibleList);
+
+//        for (XYChart.Data<Number, String> task : invisibleList) {
+//            System.out.println("should be invisilbe" + task.getNode());
+////            task.getNode().setVisible(false);
+//        }
+
+//        chart.setStyle(".status-blue {" +
+//                "-fx-background-color: blue;");
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+//                chart.getChildren().add(ganttChart);
+                chart.getChildren().add(sbc);
+            }
+        });
+
     }
 
 }

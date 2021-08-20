@@ -22,6 +22,8 @@ public class OutputParser {
 
     public static int max = 0;
 
+    private Map<String, Node> nodeMap;
+
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
      *
@@ -47,7 +49,7 @@ public class OutputParser {
             FileWriter writer = new FileWriter(config.getOutputFile());
             writer.write("digraph \"" + graphName + "\" {\n");
 
-            Map<String, Node> nodeMap = bnbschedule.getNodeMap();
+            nodeMap = bnbschedule.getNodeMap();
 
             List<String> stringSchedule = bnbschedule.getStringStorage();
 
@@ -74,6 +76,8 @@ public class OutputParser {
                                 if (potentialCriticalPath > criticalPath) {
                                     criticalPath = potentialCriticalPath;
                                 }
+                                node.setProcessor(processorCount);
+                                node.setStart(start);
 //                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
                                 writer.write("\t" + attributes[1] + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processorCount + "];\n");
                             }
@@ -113,5 +117,9 @@ public class OutputParser {
             e.printStackTrace();
         }
 
+    }
+
+    public Map<String, Node> getNodeMap() {
+        return nodeMap;
     }
 }

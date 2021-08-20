@@ -111,6 +111,8 @@ public class Main extends Application {
         arg0.setScene(new Scene(root));
         arg0.show();
 
+        System.out.println("is start first??");
+
         MyThread thread = new MyThread();
         thread.start();
     }

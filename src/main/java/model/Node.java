@@ -174,11 +174,19 @@ public class Node {
      */
     public int getStart(){ return start; }
 
+    public void setStart(int start) {
+        this.start = start;
+    }
+
     /**
      * Gets the processor this node is scheduled on.
      * @return Processor number this node is scheduled on.
      */
     public int getProcessor(){ return processor; }
+
+    public void setProcessor(int processor) {
+        this.processor = processor;
+    }
 
     /**
      * Gets the name of this node as a string.
