@@ -342,7 +342,7 @@ public class MainController {
                         currentTime = node.getStart() + node.getWeight();
                         System.out.println("value: " + (node.getStart() + node.getWeight()));
                     } else {
-                        XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(currentTime - node.getStart(), String.valueOf(node.getProcessor()));
+                        XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
                         oList.add(data);
                         invisibleList.add(data);
 //                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
