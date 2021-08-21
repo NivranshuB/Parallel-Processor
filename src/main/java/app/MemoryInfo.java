@@ -12,6 +12,9 @@ public class MemoryInfo implements Runnable {
 
 		this.interval = interval;
 		this.controller = controller;
+		// Launch CPU Monitor in seperate thread
+        this.cpuMonitor = new Thread(new CPUInfo(this.controller));
+        this.cpuMonitor.start();
 
 	}
 

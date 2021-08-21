@@ -105,9 +105,15 @@ public class MainController {
     @FXML
    
     private Thread Monitor;
+    
+    @FXML
+    private VBox cpu;
+    private LineChart<Number, Number> cpuChart;
+    private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
+    private double cpuStartTime;
   
    
-    
+  
     public void initialize() {
 
         Platform.runLater(new Runnable() {
@@ -133,6 +139,7 @@ public class MainController {
         mainController = this;
        
         initialiseMemory();	
+        initialiseCPU();
         config = Config.getInstance();
 
         int numOfT = config.getNumOfTasks();
@@ -518,5 +525,48 @@ public class MainController {
         this.memory.getChildren().add(memoryChart);
         memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
         memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
+    }
+    
+   
+
+    public void updateCPU(List<Double> perCoreUsage) {
+ 
+        Platform.runLater(() -> {
+        	
+            for (int i = 0; i < perCoreUsage.size(); i++) {
+                
+                if (this.cpuStartTime < 1) {
+                    this.cpuStartTime = System.currentTimeMillis();
+                }
+                double timeElapsed = (System.currentTimeMillis() - this.cpuStartTime) / 1000;
+
+                if (this.cpuSeries.size() <= i) {
+                    XYChart.Series<Number, Number> trend = new XYChart.Series<>();
+                    this.cpuChart.getData().add(trend);
+                  
+                    this.cpuSeries.add(trend);
+                }
+
+                this.cpuSeries.get(i).getData().add(new XYChart.Data<>(timeElapsed, perCoreUsage.get(i) * 100));
+            }
+        });
+    }
+
+    private void initialiseCPU() {
+        NumberAxis cpuXAxis = new NumberAxis();
+        cpuXAxis.setLabel("Time (s)");
+        NumberAxis cpuYAxis = new NumberAxis();
+        cpuYAxis.setLabel("CPU Usage %");
+        cpuYAxis.setForceZeroInRange(true);
+        cpuYAxis.setAutoRanging(false);
+        cpuYAxis.setUpperBound(100);
+        cpuYAxis.setLowerBound(0);
+
+        cpuChart = new LineChart<>(cpuXAxis, cpuYAxis);
+        cpuChart.setLegendVisible(false);
+        this.cpu.getChildren().add(cpuChart);
+        cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
+        cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
+
     }
 }
