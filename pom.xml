@@ -59,6 +59,13 @@
             <version>15.0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics </artifactId>
+            <version>15.0.1</version>
+            <classifier>linux</classifier>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -110,7 +117,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>app.Main</mainClass>
+                            <mainClass>app.NewMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

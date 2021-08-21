@@ -1,28 +1,10 @@
 package app;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.stream.file.FileSource;
-import org.graphstream.stream.file.FileSourceDOT;
-import org.graphstream.ui.fx_viewer.FxViewPanel;
-import org.graphstream.ui.fx_viewer.FxViewer;
-import org.graphstream.ui.javafx.FxGraphRenderer;
-import org.graphstream.ui.view.Viewer;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -111,9 +93,10 @@ public class Main extends Application {
         primaryStage = arg0;
 //        arg0.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
 //        arg0.getIcons().add(new Image("file:logo.png"));
-        URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
-        Parent root = FXMLLoader.load(url);
-//		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+//        URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
+//        Parent root = FXMLLoader.load(url);
+		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
+//        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
         arg0.setTitle("Task Scheduler");
         arg0.setScene(new Scene(root));
         arg0.show();
