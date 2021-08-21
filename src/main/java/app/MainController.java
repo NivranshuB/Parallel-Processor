@@ -321,11 +321,8 @@ public class MainController {
 //        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
 //
 //        op.writeFile();
-
-        Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
-        Monitor.start();
-
-
+            Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
+            Monitor.start();
     }
 
 //    public void setScheduler(BnBScheduler scheduler) {

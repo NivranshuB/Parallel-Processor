@@ -1,5 +1,7 @@
 package app;
 
+import javafx.application.Platform;
+
 import java.util.concurrent.ExecutionException;
 
 public class MyThread extends Thread {
@@ -75,5 +77,11 @@ public class MyThread extends Thread {
 
 //        mainController.createGantt(op);
         mainController.createGantt(op.getNodeList());
+
+        if (!config.getVisualise()) {
+            Platform.exit();
+            System.exit(0);
+        }
+
     }
 }
