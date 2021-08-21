@@ -308,6 +308,10 @@ public class BnBScheduler implements Callable<BnBSchedule> {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
 
                 mainController.createGantt(optimalSchedule.getNodeList());
+//                System.out.println("this is current critical path: " + optimalSchedule.getWeight());
+                for (PropertyChangeListener l : listeners) {
+                    l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
+                }
 //                optimalSchedule.printSchedule();
             }
         }
