@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  * the input task graph as two HashMaps, one representing the different tasks and their weights while the other
  * representing the different task dependencies of the task graph and their weights.
  */
-public class BnBScheduler implements Callable<BnBSchedule> {
+public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
 
     private HashMap<String, Node> nodeMap;
@@ -25,7 +25,7 @@ public class BnBScheduler implements Callable<BnBSchedule> {
     private List<Node> startingParallelNodes = new ArrayList<Node>();
     private Boolean startFlag = true;
 
-    private List<PropertyChangeListener> listeners = new ArrayList<>();
+//    private List<PropertyChangeListener> listeners = new ArrayList<>();
 
     private MainController mainController = MainController.getInstance();
 
@@ -395,9 +395,9 @@ public class BnBScheduler implements Callable<BnBSchedule> {
         return edgeMap;
     }
 
-    public void addChangeListener(PropertyChangeListener listener) {
-        listeners.add(listener);
-    }
+//    public void addChangeListener(PropertyChangeListener listener) {
+//        listeners.add(listener);
+//    }
 
     @Override
     public BnBSchedule call() throws Exception {

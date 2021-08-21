@@ -89,7 +89,8 @@ public class MainController {
 
     private Config config;
 
-    private BnBScheduler scheduler;
+//    private BnBScheduler scheduler;
+    private Scheduler scheduler;
 
     private final Timeline[] timeline = new Timeline[1];
 
@@ -327,7 +328,8 @@ public class MainController {
 
     }
 
-    public void setScheduler(BnBScheduler scheduler) {
+//    public void setScheduler(BnBScheduler scheduler) {
+    public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 

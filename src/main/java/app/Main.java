@@ -43,7 +43,7 @@ public class Main extends Application {
       
 //		Scheduler scheduler = Scheduler.getInstance();
 
-        Scheduler scheduler = Scheduler.getInstance();
+//        Scheduler scheduler = Scheduler.getInstance();
 
         //Uses the DOT filepath from the args to create a new DotFileReader object/graph representation
 //        DotFileReader dotFileReader = new DotFileReader(config.getInputFile());

@@ -2,6 +2,8 @@ package app;
 
 import model.Node;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -9,14 +11,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class ParallelSchedule {
+public class ParallelScheduler extends Scheduler{
 
     private List<Node> rootNodes;
     private int coreCount;
     List<Future<BnBSchedule>> futureList = new ArrayList<>();
     ExecutorService executor;
 
-    public ParallelSchedule(Config config, DotFileReader dotFileReader) {
+    public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
         coreCount = config.getNumOfCores();
         rootNodes = dotFileReader.getRootNodeList();
@@ -86,6 +88,9 @@ public class ParallelSchedule {
             }
         }
         executor.shutdown();
+        for (PropertyChangeListener l : listeners) {
+            l.propertyChange(new PropertyChangeEvent(this, "optimal schedule", "old", lowestTime.getWeight()));
+        }
         return lowestTime;
     }
 

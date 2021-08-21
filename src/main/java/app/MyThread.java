@@ -35,7 +35,9 @@ public class MyThread extends Thread {
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
             System.out.println("Using parallelisation");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
-            ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
+            ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
+            mainController.setScheduler(parallel);
+            mainController.addListener();
 
             try {
                 optimalSchedule = parallel.checkBestSchedule();
@@ -47,6 +49,8 @@ public class MyThread extends Thread {
         } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
             SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
             optimalSchedule = scheduler.getSchedule();
+            mainController.setScheduler(scheduler);
+            mainController.addListener();
         } else {
             System.out.println("Using serial");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());

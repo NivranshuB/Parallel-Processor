@@ -47,7 +47,7 @@ public class SystemTests {
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1 && dotFileReader.getEdgeMap().size() != 0) {
             System.out.println("Using parallelisation");
 
-            ParallelSchedule parallel = new ParallelSchedule(config, dotFileReader);
+            ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
 
             try {
                 optimalSchedule = parallel.checkBestSchedule();
