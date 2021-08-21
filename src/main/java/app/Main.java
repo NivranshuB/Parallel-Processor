@@ -18,7 +18,7 @@ public class Main extends Application {
     private static DotFileReader dotFileReader;
 
     private Schedule optimalSchedule;
-
+    private static Config config;
 
 
     public static void main(String[] args) {
@@ -26,7 +26,7 @@ public class Main extends Application {
 
         ArgumentParser parser = new ArgumentParser();
 
-        Config config;
+        
 
         try {
             config = parser.parse(args);
@@ -50,7 +50,8 @@ public class Main extends Application {
         dotFileReader = new DotFileReader(config.getInputFile());
         
         config.setNumOfTasks(dotFileReader.getNodeMap().size());
-
+       
+        
         launch(args);
 
         // debugging
@@ -90,16 +91,21 @@ public class Main extends Application {
 
     @Override
     public void start(Stage arg0) throws Exception {
-        primaryStage = arg0;
-//        arg0.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
-//        arg0.getIcons().add(new Image("file:logo.png"));
-//        URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
-//        Parent root = FXMLLoader.load(url);
-		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
-//        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
-        arg0.setTitle("Task Scheduler");
-        arg0.setScene(new Scene(root));
-        arg0.show();
+    	
+    		primaryStage = arg0;
+//          arg0.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
+//          arg0.getIcons().add(new Image("file:logo.png"));
+//          URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
+//          Parent root = FXMLLoader.load(url);
+  		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
+//          Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
+          arg0.setTitle("Task Scheduler");
+          arg0.setScene(new Scene(root));
+          
+          if (config.getVisualise()) {
+        	  arg0.show();
+          }
+        
 
         System.out.println("is start first??");
 
