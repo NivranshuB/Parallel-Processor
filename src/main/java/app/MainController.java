@@ -104,7 +104,7 @@ public class MainController {
         numOfCores.setText(String.valueOf(numOfC));
 
         System.setProperty("org.graphstream.ui", "javafx");
-
+        
 //        Graph testGraph = new SingleGraph("Tutorial 1");
 //
 //        testGraph.addNode("A");
@@ -117,7 +117,9 @@ public class MainController {
 //        testGraph.display();
 
 //        Graph g = new SingleGraph("test");
-        g = new SingleGraph("test");
+//        g = new SingleGraph("test");
+        Graph g = new SingleGraph("test");
+//        g = new SingleGraph("test");
 
         FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
@@ -130,7 +132,7 @@ public class MainController {
         fs.addSink(g);
 
         try {
-            fs.readAll(config.getInputFile().getName());
+            fs.readAll(config.getInputFile().getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
