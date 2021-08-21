@@ -27,6 +27,8 @@ public class BnBScheduler implements Callable<BnBSchedule> {
 
     private List<PropertyChangeListener> listeners = new ArrayList<>();
 
+    private MainController mainController = MainController.getInstance();
+
     public BnBScheduler(DotFileReader dotFileReader, Config config) {
 
         nodeMap = dotFileReader.getNodeMap();
@@ -304,6 +306,8 @@ public class BnBScheduler implements Callable<BnBSchedule> {
             }
             if (max < optimalSchedule.getWeight()) {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
+
+                mainController.createGantt(optimalSchedule.getNodeList());
 //                optimalSchedule.printSchedule();
             }
         }

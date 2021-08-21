@@ -111,9 +111,17 @@ public class MainController {
     private LineChart<Number, Number> cpuChart;
     private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
     private double cpuStartTime;
-  
-   
-  
+
+    private int processorCount = 0;
+
+    private NumberAxis xAxis;
+
+    private CategoryAxis yAxis;
+
+    private List<String> nameArray;
+
+    private StackedBarChart<Number, String> sbc;
+
     public void initialize() {
 
         Platform.runLater(new Runnable() {
@@ -206,6 +214,34 @@ public class MainController {
         graph.getChildren().add(panel);
 
         System.out.println("or is initialise first?");
+
+        processorCount = config.getNumOfProcessors();
+//        String nameArray[] = new String[processorCount];
+        nameArray = new ArrayList<>();
+
+        for (int i = 0; i < processorCount; i++) {
+            nameArray.add(String.valueOf(i));
+        }
+
+        xAxis = new NumberAxis(); // tasks time
+        yAxis = new CategoryAxis(); // processors
+
+        sbc = new StackedBarChart<>(xAxis, yAxis);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+//                chart.getChildren().add(ganttChart);
+                chart.getChildren().add(sbc);
+//                scrollPane.setContent(sbc);
+            }
+        });
+
+
+//        ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
+////        if (node.getStart() == 0) {
+//            oList.add(new XYChart.Data<Number, String>(27, String.valueOf(3)));
+//            sbc.getData().add(new XYChart.Series<Number, String>(oList));
 
 //        NumberAxis xAxis = new NumberAxis();
 //        CategoryAxis yAxis = new CategoryAxis();
@@ -314,19 +350,12 @@ public class MainController {
 
 //        Map<String, model.Node> nodeMap = op.getNodeMap();
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
 
-        int processorCount = config.getNumOfProcessors();
-//        String nameArray[] = new String[processorCount];
-        List<String> nameArray = new ArrayList<>();
+        sbc.getData().clear();
 
-        for (int i = 0; i < processorCount; i++) {
-            nameArray.add(String.valueOf(i));
-        }
-
-        NumberAxis xAxis = new NumberAxis(); // tasks time
-        CategoryAxis yAxis = new CategoryAxis(); // processors
-
-        StackedBarChart<Number, String> sbc = new StackedBarChart<>(xAxis, yAxis);
 
 //        Platform.runLater(new Runnable() {
 //            @Override
@@ -451,17 +480,19 @@ public class MainController {
             task.getNode().setVisible(false);
         }
 
+            }
+        });
 //        chart.setStyle(".status-blue {" +
 //                "-fx-background-color: blue;");
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-//                chart.getChildren().add(ganttChart);
-                chart.getChildren().add(sbc);
-//                scrollPane.setContent(sbc);
-            }
-        });
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+////                chart.getChildren().add(ganttChart);
+//                chart.getChildren().add(sbc);
+////                scrollPane.setContent(sbc);
+//            }
+//        });
 
     }
 

@@ -1,6 +1,7 @@
 package app;
 
 import model.Node;
+
 import java.util.*;
 
 public class BnBSchedule {
@@ -40,7 +41,7 @@ public class BnBSchedule {
         }
     }
 
-    public int calculateCriticalPath () {
+    public int calculateCriticalPath() {
         criticalPath = 0;
         int start = 0;
 
@@ -58,7 +59,7 @@ public class BnBSchedule {
                         Map.Entry<String, Node> entry = iterator.next();
                         Node node = entry.getValue();
                         if (node.getName().equals(attributes[1])) {
-                            start = Integer.parseInt(attributes[0].replaceAll("\\s+",""));
+                            start = Integer.parseInt(attributes[0].replaceAll("\\s+", ""));
                             int potentialCriticalPath = start + node.getWeight();
                             if (potentialCriticalPath > criticalPath) {
                                 criticalPath = potentialCriticalPath;
@@ -75,16 +76,72 @@ public class BnBSchedule {
 
     /**
      * Getter to return max weight of current schedule
+     *
      * @return returns maximum weight of current schedule
      */
-    public int getWeight() {return max;}
+    public int getWeight() {
+        return max;
+    }
 
-    public void printSchedule() {stringStorage.forEach(System.out::println); }
+    public void printSchedule() {
+        stringStorage.forEach(System.out::println);
+    }
 
-    public List<String> getStringStorage() {return stringStorage; }
+    public List<String> getStringStorage() {
+        return stringStorage;
+    }
 
     public Map<String, Node> getNodeMap() {
         return nodeMap;
+    }
+
+    public List<Node> getNodeList() {
+        int processorCount = 0;
+        int criticalPath = 0;
+        int start = 0;
+
+        List<Node> nodeList = new ArrayList<>();
+
+        for (String string : stringStorage) {
+            String[] stringArray;
+
+            stringArray = string.split(",");
+            for (String splitString : stringArray) {
+                String[] attributes = splitString.split("-");
+
+                if (attributes.length >= 2) {
+                    Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
+
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, Node> entry = iterator.next();
+                        Node node = entry.getValue();
+                        if (node.getName().equals(attributes[1])) {
+                            start = Integer.parseInt(attributes[0].replaceAll("\\s+", ""));
+                            int potentialCriticalPath = start + node.getWeight();
+                            if (potentialCriticalPath > criticalPath) {
+                                criticalPath = potentialCriticalPath;
+                            }
+                            node.setProcessor(processorCount);
+                            node.setStart(start);
+
+                            nodeList.add(node);
+
+//                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
+
+                        }
+                    }
+                }
+            }
+            processorCount++;
+        }
+
+        System.out.println("Critical path = " + criticalPath);
+
+//            List<Processor> processorList = bnBScheduler.getListOfProcessors();
+
+        max = criticalPath;
+
+        return nodeList;
     }
 
 }
