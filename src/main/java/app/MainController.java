@@ -354,70 +354,51 @@ public class MainController {
 
                 sbc.getData().clear();
 
-
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
                 ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
                 XYChart.Series<Number, String> invisibleTask = new XYChart.Series<>();
 
                 for (int i = 0; i < processorCount; i++) {
                     int currentTime = 0;
-//            Iterator<Map.Entry<String, model.Node>> iterator = nodeMap.entrySet().iterator();
                     for (model.Node node : nodeList) {
-//            while (iterator.hasNext()) {
-//                Map.Entry<String, model.Node> entry = iterator.next();
-//                model.Node node = entry.getValue();
-
                         if (node.getProcessor() == i) {
-//                            System.out.println("scheduling this node: " + node.getName());
                             ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
+                            XYChart.Data<Number, String> taskData;
                             if (node.getStart() == 0) {
-                                oList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                                taskData = new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                oList.add(taskData);
                                 sbc.getData().add(new XYChart.Series<Number, String>(oList));
                                 currentTime = node.getWeight();
-//                                System.out.println("value: " + node.getWeight());
                             } else if (node.getStart() == currentTime) {
-                                oList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                                taskData = new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                oList.add(taskData);
                                 sbc.getData().add(new XYChart.Series<Number, String>(oList));
                                 currentTime = node.getStart() + node.getWeight();
-//                                System.out.println("value: " + (node.getStart() + node.getWeight()));
                             } else if (currentTime == 0 && node.getStart() != 0) {
                                 XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor()));
                                 oList.add(data);
                                 invisibleList.add(data);
-//                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
-//                        invisibleList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
                                 XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(oList);
-//                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
-//                        emptyTask.getNode().setVisible(false);
                                 sbc.getData().add(emptyTask);
-//                                System.out.println("value: " + node.getStart());
                                 ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
-                                otherList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                                taskData = new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                otherList.add(taskData);
                                 sbc.getData().add(new XYChart.Series<Number, String>(otherList));
                                 currentTime = node.getStart() + node.getWeight();
-//                                System.out.println("value: " + (node.getStart() + node.getWeight()));
                             } else {
                                 XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
                                 oList.add(data);
                                 invisibleList.add(data);
-//                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
-//                        invisibleList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
                                 XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(oList);
-//                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
-//                        emptyTask.getNode().setVisible(false);
                                 sbc.getData().add(emptyTask);
-//                                System.out.println("value: " + node.getStart());
                                 ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
-                                otherList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                                taskData = new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                otherList.add(taskData);
                                 sbc.getData().add(new XYChart.Series<Number, String>(otherList));
                                 currentTime = node.getStart() + node.getWeight();
-//                                System.out.println("value: " + (node.getStart() + node.getWeight()));
-
-//                        currentTime = node.getStart();
                             }
-//                            System.out.println("this is current time: " + currentTime);
+                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" + "Weight: " + node.getWeight() + "\n" + "Start time: " + node.getStart());
+                            tooltip.setShowDelay(Duration.seconds(0));
+                            Tooltip.install(taskData.getNode(), tooltip);
                         }
                     }
                 }
@@ -597,7 +578,7 @@ public class MainController {
         this.cpu.getChildren().add(cpuChart);
         cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
         cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
-        
+
 
     }
 }
