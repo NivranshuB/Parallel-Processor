@@ -105,8 +105,8 @@ public class MainController {
 
         System.setProperty("org.graphstream.ui", "javafx");
 
-//        Graph g = new SingleGraph("test");
-        g = new SingleGraph("test");
+        Graph g = new SingleGraph("test");
+//        g = new SingleGraph("test");
 
         FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
@@ -119,7 +119,7 @@ public class MainController {
         fs.addSink(g);
 
         try {
-            fs.readAll(config.getInputFile().getName());
+            fs.readAll(config.getInputFile().getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
