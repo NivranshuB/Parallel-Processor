@@ -567,6 +567,7 @@ public class MainController {
         this.cpu.getChildren().add(cpuChart);
         cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
         cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
+        
 
     }
 }

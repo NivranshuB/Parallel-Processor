@@ -41,15 +41,14 @@ public class CPUInfo implements Runnable {
                 String line = reader.readLine();
                 Pattern cpuLineMatcher = Pattern.compile("^Average:\\W*[0-9]*(\\W*[0-9]*\\.[0-9]*]*)*([0-9]*)$");
                 while (line != null)  {
-                    Matcher m = cpuLineMatcher.matcher(line);
-                   
+                    Matcher m = cpuLineMatcher.matcher(line);  
                     if (m.matches())    {
                     
                         cpuLoad.add((100 - Double.parseDouble(m.group(1)))/100);
              
-                    	
                     }
                     line = reader.readLine();
+                
                 }
 
                 try {
