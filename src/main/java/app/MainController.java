@@ -14,7 +14,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
@@ -48,7 +50,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MainController {
-
+	
+	private static final int UPDATE_INTERVAL = 1000;
+	
     public static Graph g;
 
     private static MainController mainController = null;
@@ -88,11 +92,27 @@ public class MainController {
     private BnBScheduler scheduler;
 
     private final Timeline[] timeline = new Timeline[1];
+    
+    
+    @FXML
+    private VBox memory;
+   
 
+    private XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
+
+    private double memoryStartTime;
+
+    @FXML
+   
+    private Thread Monitor;
+  
+   
+    
     public void initialize() {
 
         mainController = this;
-
+       
+        initialiseMemory();	
         config = Config.getInstance();
 
         int numOfT = config.getNumOfTasks();
@@ -254,6 +274,9 @@ public class MainController {
 //        OutputParser op = new OutputParser(graphName, config, optimalSchedule);
 //
 //        op.writeFile();
+        
+        Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
+        Monitor.start();
 
 
     }
@@ -459,5 +482,36 @@ public class MainController {
 
         });
     }
+    
+  
+   
+    public void updateMemory(double ramUsage) {
+        // update memory graph
+        if (this.memoryStartTime < 1) {
+            memoryStartTime = System.currentTimeMillis();
+        }
+        double timeElapsed = (System.currentTimeMillis() - this.memoryStartTime) / 1000;
 
+        // update ram usage
+        Platform.runLater(() -> {
+            this.memorySeries.getData().add(new XYChart.Data<>(timeElapsed, ramUsage / (1024 * 1024)));
+        });
+
+        
+    }
+    
+    private void initialiseMemory() {
+        // initialise memory view
+        NumberAxis memoryXAxis = new NumberAxis();
+        memoryXAxis.setLabel("Time (s)");
+        NumberAxis memoryYAxis = new NumberAxis();
+        memoryYAxis.setLabel("Memory Usage (Mb)");
+        LineChart<Number, Number> memoryChart = new LineChart<>(memoryXAxis, memoryYAxis);
+
+        memoryChart.getData().add(memorySeries);
+        memoryChart.setLegendVisible(false);
+        this.memory.getChildren().add(memoryChart);
+        memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
+        memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
+    }
 }
