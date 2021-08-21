@@ -91,6 +91,26 @@ public class MainController {
 
     public void initialize() {
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() { // Duration.seconds(1)
+                timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+                    int timeCurrent = 0;
+
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        int milliseconds = timeCurrent % 1000;
+                        int seconds = timeCurrent / 1000;
+//                        time.setText(String.valueOf(timeCurrent));
+                        time.setText(seconds + "." + String.format("%03d", milliseconds));
+                        timeCurrent++;
+                    }
+                }));
+                timeline[0].setCycleCount(Timeline.INDEFINITE);
+                timeline[0].play();
+            }
+        });
+
         mainController = this;
 
         config = Config.getInstance();
@@ -104,7 +124,7 @@ public class MainController {
         numOfCores.setText(String.valueOf(numOfC));
 
         System.setProperty("org.graphstream.ui", "javafx");
-        
+
 //        Graph testGraph = new SingleGraph("Tutorial 1");
 //
 //        testGraph.addNode("A");
@@ -206,22 +226,7 @@ public class MainController {
 
 //        timeline = new Timeline[1];
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() { // Duration.seconds(1)
-                timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
-                    int timeCurrent = 0;
 
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        time.setText(String.valueOf(timeCurrent));
-                        timeCurrent++;
-                    }
-                }));
-                timeline[0].setCycleCount(Timeline.INDEFINITE);
-                timeline[0].play();
-            }
-        });
 
         // everything below is temporary
 
