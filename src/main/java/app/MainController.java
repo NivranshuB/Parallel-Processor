@@ -105,6 +105,17 @@ public class MainController {
 
         System.setProperty("org.graphstream.ui", "javafx");
 
+//        Graph testGraph = new SingleGraph("Tutorial 1");
+//
+//        testGraph.addNode("A");
+//        testGraph.addNode("B");
+//        testGraph.addNode("C");
+//        testGraph.addEdge("AB", "A", "B");
+//        testGraph.addEdge("BC", "B", "C");
+//        testGraph.addEdge("CA", "C", "A");
+//
+//        testGraph.display();
+
 //        Graph g = new SingleGraph("test");
         g = new SingleGraph("test");
 
@@ -195,8 +206,8 @@ public class MainController {
 
         Platform.runLater(new Runnable() {
             @Override
-            public void run() {
-                timeline[0] = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            public void run() { // Duration.seconds(1)
+                timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
                     int timeCurrent = 0;
 
                     @Override
@@ -307,8 +318,24 @@ public class MainController {
                         sbc.getData().add(new XYChart.Series<Number, String>(oList));
                         currentTime = node.getStart() + node.getWeight();
                         System.out.println("value: " + (node.getStart() + node.getWeight()));
-                    } else {
+                    } else if (currentTime == 0 && node.getStart() != 0) {
                         XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor()));
+                        oList.add(data);
+                        invisibleList.add(data);
+//                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
+//                        invisibleList.add(new XYChart.Data<Number, String>(currentTime + node.getStart(), String.valueOf(node.getProcessor())));
+                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(oList);
+//                        XYChart.Series<Number, String> emptyTask = new XYChart.Series<Number, String>(invisibleList);
+//                        emptyTask.getNode().setVisible(false);
+                        sbc.getData().add(emptyTask);
+                        System.out.println("value: " + node.getStart());
+                        ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
+                        otherList.add(new XYChart.Data<Number, String>(node.getWeight(), String.valueOf(node.getProcessor())));
+                        sbc.getData().add(new XYChart.Series<Number, String>(otherList));
+                        currentTime = node.getStart() + node.getWeight();
+                        System.out.println("value: " + (node.getStart() + node.getWeight()));
+                    } else {
+                        XYChart.Data<Number, String> data = new XYChart.Data<Number, String>(currentTime - node.getStart(), String.valueOf(node.getProcessor()));
                         oList.add(data);
                         invisibleList.add(data);
 //                        oList.add(new XYChart.Data<Number, String>(node.getStart(), String.valueOf(node.getProcessor())));
