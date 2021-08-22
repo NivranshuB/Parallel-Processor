@@ -12,27 +12,14 @@ public class MyThread extends Thread {
 
         Config config = Config.getInstance();
 
-//        Scheduler scheduler = Scheduler.getInstance();
 
         DotFileReader dotFileReader = Main.getDotFileReader();
 
-//        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
-
-//        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-
-//        BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
-
-//        String graphName = dotFileReader.getGraphName();
-
-        //Parses the optimal schedule to the output DOT file
-//        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
-
-        //        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-//		System.out.println("Here is optimal: \n" + optimalSchedule);
         MainController mainController = MainController.getInstance();
 
         BnBSchedule optimalSchedule = null;
         BnBScheduler optimalScheduler = null;
+//        Scheduler optimalScheduler = null;
 
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
             System.out.println("Using parallelisation");
@@ -80,7 +67,8 @@ public class MyThread extends Thread {
 //        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
         String graphName = dotFileReader.getGraphName();
 //        //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+//        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule, dotFileReader);
 
         op.writeFile();
 

@@ -377,6 +377,9 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
 //                optimalSchedule.printSchedule();
                 MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
+                for (PropertyChangeListener l : listeners) {
+                    l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
+                }
             }
         }
     }
@@ -393,19 +396,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
         return output;
     }
-
-
-    public HashMap<String, Node> getNodeMap() {
-        return nodeMap;
-    }
-
-    public HashMap<String, Edge> getEdgeMap() {
-        return edgeMap;
-    }
-
-//    public void addChangeListener(PropertyChangeListener listener) {
-//        listeners.add(listener);
-//    }
 
     @Override
     public BnBSchedule call() throws Exception {
