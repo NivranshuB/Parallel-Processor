@@ -34,112 +34,200 @@ import java.util.List;
  */
 public class MainController {
 
-    private static final int UPDATE_INTERVAL = 1000;
+	private static final int UPDATE_INTERVAL = 1000;
 
-    public static Graph g;
-
-    public Graph sg;
-
-    private static MainController mainController = null;
-
-    private Config config;
-
-    private Scheduler scheduler;
+    private static final String COMPLETE_TEXT = "COMPLETE";
 
     private final Timeline[] timeline = new Timeline[1];
 
-    private int nodeCounter = 0;
-    private int edgeCounter = 0;
-
-    private final String[] COLORS = {"fill-color: rgb(41,168,41);",
-            "fill-color: rgb(125,191,255);",
-            "fill-color: rgb(80,60,240);",
-            "fill-color: rgb(0,255,0);",
-            "fill-color: rgb(255,0,0);",
-            "fill-color: rgb(107,107,255);",
-            "fill-color: rgb(30,124,120);",
-            "fill-color: rgb(215,69,152);",
-            "fill-color: rgb(107,255,221);"};
+    private static MainController mainController = null;
+	public static Graph g;
 
     private List<String> lastOptimalNode = new ArrayList<>();
 
-    @FXML
-    private Label numOfTasks;
+	public Graph sg;
+	private Config config;
+	private Scheduler scheduler;
+	private int nodeCounter = 0;
+	private int edgeCounter = 0;
 
-    @FXML
-    private Label currentBest;
+	private final String[] COLORS = {"fill-color: rgb(41,168,41);",
+			"fill-color: rgb(125,191,255);",
+			"fill-color: rgb(80,60,240);",
+			"fill-color: rgb(0,255,0);",
+			"fill-color: rgb(255,0,0);",
+			"fill-color: rgb(107,107,255);",
+			"fill-color: rgb(30,124,120);",
+			"fill-color: rgb(215,69,152);",
+	"fill-color: rgb(107,255,221);"};
 
-    @FXML
-    private Label numOfProcessors;
+	@FXML
+	private Label numOfTasks;
+	@FXML
+	private Label currentBest;
+	@FXML
+	private Label numOfProcessors;
+	@FXML
+	private Label numOfCores;
+	@FXML
+	private VBox n_graph;
+	@FXML
+	private VBox o_graph;
+	@FXML
+	private VBox chart;
+	@FXML
+	private Label status;
+	@FXML
+	private Label time;
+	@FXML
+	private Label bestTime;
+	@FXML
+	private VBox memory;
 
-    @FXML
-    private Label numOfCores;
+	private XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
 
-    @FXML
-    private VBox n_graph;
+	private double memoryStartTime;
 
-    @FXML
-    private VBox o_graph;
+	@FXML
+	private Thread Monitor;
 
-    @FXML
-    private VBox chart;
+	@FXML
+	private VBox cpu;
+	private LineChart<Number, Number> cpuChart;
+	private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
+	private double cpuStartTime;
 
-    @FXML
-    private Label status;
+	private int processorCount = 0;
 
-    @FXML
-    private Label time;
+	private NumberAxis xAxis;
+	private CategoryAxis yAxis;
+	private List<String> nameArray;
 
-    @FXML
-    private Label bestTime;
+	private StackedBarChart<Number, String> sbc;
 
-    @FXML
-    private VBox memory;
+	private static final String GraphstreamStyleSheet = "" +
+			"node {" +
+			"fill-color: red;" +
+			"text-offset: 10;" +
+			"text-size: 16;" +
+			"size-mode: dyn-size;" +
+			"text-color: white;" +
+			"}" +
+			"node.marked {" +
+			"fill-color: green;" +
+			"}" +
+			"graph {" +
+			"fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
+			"fill-mode: gradient-vertical;" +
+			"}" +
+			"edge {" +
+			"fill-color: white;" +
+			"}";
 
-    private XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
+	public void initialize() {
 
-    private double memoryStartTime;
+        createTimer();
 
-    @FXML
-    private Thread Monitor;
+		mainController = this;
 
-    @FXML
-    private VBox cpu;
-    private LineChart<Number, Number> cpuChart;
-    private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
-    private double cpuStartTime;
+		initialiseMemory();
+		initialiseCPU();
+		config = Config.getInstance();
 
-    private int processorCount = 0;
+		int numOfT = config.getNumOfTasks();
+		int numOfP = config.getNumOfProcessors();
+		int numOfC = config.getNumOfCores();
 
-    private NumberAxis xAxis;
 
-    private CategoryAxis yAxis;
+		numOfTasks.setText(String.valueOf(numOfT));
+		numOfProcessors.setText(String.valueOf(numOfP));
+		numOfCores.setText(String.valueOf(numOfC));
+		currentBest.setStyle("-fx-font-size: 17;");
+		System.setProperty("org.graphstream.ui", "javafx");
 
-    private List<String> nameArray;
+		Graph g = new SingleGraph("graph");
+		FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+		v.enableAutoLayout();
+        FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
-    private StackedBarChart<Number, String> sbc;
+        FileSource fs = new FileSourceDOT();
+        fs.addSink(g);
+        // reads dot file and parsers into Graphstream to be displayed on the GUI
+        try {
+            fs.readAll(config.getInputFile().getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            fs.removeSink(g);
+        }
 
-    private static final String GraphstreamStyleSheet = "" +
-            "node {" +
-            "fill-color: red;" +
-            "text-offset: 10;" +
-            "text-size: 16;" +
-            "size-mode: dyn-size;" +
-            "text-color: white;" +
-            "}" +
-            "node.marked {" +
-            "fill-color: green;" +
-            "}" +
-            "graph {" +
-            "fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
-            "fill-mode: gradient-vertical;" +
-            "}" +
-            "edge {" +
-            "fill-color: white;" +
-            "}";
+        for (Node node : g) {
+            node.setAttribute("ui.label", node.getId());
+        }
+        g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
 
-    public void initialize() {
+        n_graph.getChildren().add(panel);
 
+        initialiseScheduleGraph();
+
+        // adds processor numbers into array to be used when adding to the gantt chart
+        processorCount = config.getNumOfProcessors();
+        nameArray = new ArrayList<>();
+        for (int i = 0; i < processorCount; i++) {
+            nameArray.add(String.valueOf(i));
+        }
+
+        xAxis = new NumberAxis(); // tasks time
+        yAxis = new CategoryAxis(); // processors
+        sbc = new StackedBarChart<>(xAxis, yAxis);
+
+        xAxis.setLabel("Time");
+        yAxis.setLabel("Processors");
+        xAxis.setAnimated(false);
+        xAxis.setTickUnit(1);
+        yAxis.setCategories(FXCollections.observableList(nameArray));
+        sbc.setLegendVisible(false);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                chart.getChildren().add(sbc);
+            }
+        });
+
+        Stage primaryStage = Main.getPrimaryStage();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                v.close();
+            }
+        });
+        
+        // Start the memory info monitor in another thread
+        Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
+        Monitor.start();
+    }
+
+    /**
+     * Sets scheduler variable to be used in various places in MainController
+     *
+     * @param scheduler Scheduler object to be used in MainController
+     */
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    /**
+     * @return MainController Used to retrieve singleton class object
+     */
+    public static MainController getInstance() {
+        return mainController;
+    }
+
+    /**
+     * Method to create timer to be used in the visualisation and continually update the timer value
+     */
+    private void createTimer() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -158,106 +246,18 @@ public class MainController {
                 timeline[0].play();
             }
         });
-
-        mainController = this;
-
-        initialiseMemory();
-        initialiseCPU();
-        config = Config.getInstance();
-
-        int numOfT = config.getNumOfTasks();
-        int numOfP = config.getNumOfProcessors();
-        int numOfC = config.getNumOfCores();
-
-        numOfTasks.setText(String.valueOf(numOfT));
-        numOfProcessors.setText(String.valueOf(numOfP));
-        numOfCores.setText(String.valueOf(numOfC));
-        currentBest.setStyle("-fx-font-size: 17;");
-        System.setProperty("org.graphstream.ui", "javafx");
-
-        Graph g = new SingleGraph("test");
-
-        FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-
-        v.enableAutoLayout();
-
-        FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
-
-        FileSource fs = new FileSourceDOT();
-
-        fs.addSink(g);
-
-        try {
-            fs.readAll(config.getInputFile().getCanonicalPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fs.removeSink(g);
-        }
-
-        for (Node node : g) {
-            node.setAttribute("ui.label", node.getId());
-        }
-
-
-        g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
-
-        Stage primaryStage = Main.getPrimaryStage();
-
-        n_graph.getChildren().add(panel);
-
-        initialiseScheduleGraph();
-
-        processorCount = config.getNumOfProcessors();
-        nameArray = new ArrayList<>();
-
-        for (int i = 0; i < processorCount; i++) {
-            nameArray.add(String.valueOf(i));
-        }
-
-        xAxis = new NumberAxis(); // tasks time
-        yAxis = new CategoryAxis(); // processors
-
-        sbc = new StackedBarChart<>(xAxis, yAxis);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                chart.getChildren().add(sbc);
-            }
-        });
-
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-                v.close();
-            }
-        });
-
-        Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
-        Monitor.start();
     }
 
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    public static Graph getVizGraph() {
-        return g;
-    }
-
-    public void setComplete() {
-        status.setText("COMPLETE");
-    }
-
-    public static MainController getInstance() {
-        return mainController;
-    }
-
+    /**
+     * Method that creates/updates the gantt chart on the visualisation. First clears the chart, then iterates through
+     * the tasks and adds them at the correct position accounting for gaps between tasks.
+     * @param nodeList List of nodes to be added/updated on the gantt chart
+     */
     public void createGantt(List<model.Node> nodeList) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                // clears chart for a fresh canvas
                 sbc.getData().clear();
 
                 ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
@@ -265,6 +265,7 @@ public class MainController {
                 for (int i = 0; i < processorCount; i++) {
                     int currentTime = 0;
                     for (model.Node node : nodeList) {
+                        // check that the node is to be assigned on this processor
                         if (node.getProcessor() == i) {
                             ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
                             XYChart.Data<Number, String> taskData;
@@ -283,7 +284,7 @@ public class MainController {
                                     invisibleList.add(data);
                                     XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
                                     sbc.getData().add(emptyTask);
-                                // if task is not first task on processor and time != 0
+                                    // if task is not first task on processor and time != 0
                                 } else if (node.getStart() != currentTime) {
                                     XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
                                     oList.add(data);
@@ -297,20 +298,17 @@ public class MainController {
                                 sbc.getData().add(new XYChart.Series<>(otherList));
                                 currentTime = node.getStart() + node.getWeight();
                             }
-                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" + "Weight: " + node.getWeight() + "\n" + "Start time: " + node.getStart());
+                            // allows the user to hover over the task to display info
+                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" +
+                                    "Weight: " + node.getWeight() + "\n" +
+                                    "Start time: " + node.getStart());
                             tooltip.setShowDelay(Duration.seconds(0));
                             Tooltip.install(taskData.getNode(), tooltip);
                         }
                     }
                 }
 
-                xAxis.setLabel("Time");
-                yAxis.setLabel("Processors");
-                xAxis.setAnimated(false);
-                xAxis.setTickUnit(1);
-                yAxis.setCategories(FXCollections.observableList(nameArray));
-                sbc.setLegendVisible(false);
-
+                // sets temporary tasks used as spaces to invisible
                 for (XYChart.Data<Number, String> task : invisibleList) {
                     task.getNode().setVisible(false);
                 }
@@ -318,6 +316,9 @@ public class MainController {
         });
     }
 
+    /**
+     * Method used to add a listener to specific sections of code used to update the UI in real-time
+     */
     public void addListener() {
         scheduler.addChangeListener(evt -> {
             Platform.runLater(new Runnable() {
@@ -343,83 +344,92 @@ public class MainController {
                         }
                         // runs when final optimal schedule is found
                     } else if (evt.getPropertyName().equals("optimal schedule")) {
-                        status.setText("COMPLETE");
+                        status.setText(COMPLETE_TEXT);
                         bestTime.setText(String.valueOf(evt.getNewValue()));
                         timeline[0].stop();
                     }
                 }
             });
-
         });
     }
 
-    public void updateMemory(double ramUsage) {
-        // update memory graph
-        if (this.memoryStartTime < 1) {
-            memoryStartTime = System.currentTimeMillis();
-        }
-        double timeElapsed = (System.currentTimeMillis() - this.memoryStartTime) / 1000;
+    /**
+	 * Update the memory graph using the memory usage data and time elapsed.
+	 * @param memoryUsage The total memory currently in use.
+	 */
+	public void updateMemory(double memoryUsage) {
+		// store starting time
+		if (this.memoryStartTime < 1) {
+			memoryStartTime = System.currentTimeMillis();
+		}
+		double timeElapsed = (System.currentTimeMillis() - this.memoryStartTime) / 1000;
 
-        // update ram usage
-        Platform.runLater(() -> {
-            this.memorySeries.getData().add(new XYChart.Data<>(timeElapsed, ramUsage / (1024 * 1024)));
-        });
-    }
+		// update memory usage and time axis
+		Platform.runLater(() -> {
+			this.memorySeries.getData().add(new XYChart.Data<>(timeElapsed, memoryUsage / (1024 * 1024)));
+		});
+	}
 
-    private void initialiseMemory() {
-        // initialise memory view
-        NumberAxis memoryXAxis = new NumberAxis();
-        memoryXAxis.setLabel("Time (s)");
-        NumberAxis memoryYAxis = new NumberAxis();
-        memoryYAxis.setLabel("Memory Usage (Mb)");
-        LineChart<Number, Number> memoryChart = new LineChart<>(memoryXAxis, memoryYAxis);
+	/**
+	 * Create a blank memory graph with the appropriate axis and sizing.
+	 */
+	private void initialiseMemory() {
 
-        memoryChart.getData().add(memorySeries);
-        memoryChart.setLegendVisible(false);
-        this.memory.getChildren().add(memoryChart);
-        memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
-        memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
-    }
+		NumberAxis memoryXAxis = new NumberAxis();
+		memoryXAxis.setLabel("Time (s)");
+		NumberAxis memoryYAxis = new NumberAxis();
+		memoryYAxis.setLabel("Memory Usage (Mb)");
+		LineChart<Number, Number> memoryChart = new LineChart<>(memoryXAxis, memoryYAxis);
+		memoryChart.getData().add(memorySeries);
+		memoryChart.setLegendVisible(false);
+		this.memory.getChildren().add(memoryChart);
+		memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
+		memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
+	}
+	
+	/**
+	 * Update the CPU graph using the CPU usage data for each core and time elapsed.
+	 * @param perCoreUsage A list containing the CPU usage for each core in use.
+	 */
+	public void updateCPU(List<Double> perCoreUsage) {
 
-    public void updateCPU(List<Double> perCoreUsage) {
+		Platform.runLater(() -> {
+			for (int i = 0; i < perCoreUsage.size(); i++) {
+				// store starting time
+				if (this.cpuStartTime < 1) {
+					this.cpuStartTime = System.currentTimeMillis();
+				}
+				double timeElapsed = (System.currentTimeMillis() - this.cpuStartTime) / 1000;
+				// add the correct number of cpu lines to graph depending on number of cores
+				if (this.cpuSeries.size() <= i) {
+					XYChart.Series<Number, Number> trend = new XYChart.Series<>();
+					this.cpuChart.getData().add(trend);
+					this.cpuSeries.add(trend);
+				}
+				// update cpu usage and time axis
+				this.cpuSeries.get(i).getData().add(new XYChart.Data<>(timeElapsed, perCoreUsage.get(i) * 100));
+			}
+		});
+	}
 
-        Platform.runLater(() -> {
-
-            for (int i = 0; i < perCoreUsage.size(); i++) {
-
-                if (this.cpuStartTime < 1) {
-                    this.cpuStartTime = System.currentTimeMillis();
-                }
-                double timeElapsed = (System.currentTimeMillis() - this.cpuStartTime) / 1000;
-
-                if (this.cpuSeries.size() <= i) {
-                    XYChart.Series<Number, Number> trend = new XYChart.Series<>();
-                    this.cpuChart.getData().add(trend);
-
-                    this.cpuSeries.add(trend);
-                }
-
-                this.cpuSeries.get(i).getData().add(new XYChart.Data<>(timeElapsed, perCoreUsage.get(i) * 100));
-            }
-        });
-    }
-
-    private void initialiseCPU() {
-        NumberAxis cpuXAxis = new NumberAxis();
-        cpuXAxis.setLabel("Time (s)");
-        NumberAxis cpuYAxis = new NumberAxis();
-        cpuYAxis.setLabel("CPU Usage %");
-        cpuYAxis.setForceZeroInRange(true);
-        cpuYAxis.setAutoRanging(false);
-        cpuYAxis.setUpperBound(100);
-        cpuYAxis.setLowerBound(0);
-
-        cpuChart = new LineChart<>(cpuXAxis, cpuYAxis);
-        cpuChart.setLegendVisible(false);
-        this.cpu.getChildren().add(cpuChart);
-        cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
-        cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
-    }
+	/**
+	 * Create a blank CPU graph with the appropriate axis and sizing.
+	 */
+	private void initialiseCPU() {
+		NumberAxis cpuXAxis = new NumberAxis();
+		cpuXAxis.setLabel("Time (s)");
+		NumberAxis cpuYAxis = new NumberAxis();
+		cpuYAxis.setLabel("CPU Usage %");
+		cpuYAxis.setForceZeroInRange(true);
+		cpuYAxis.setAutoRanging(false);
+		cpuYAxis.setUpperBound(100);
+		cpuYAxis.setLowerBound(0);
+		cpuChart = new LineChart<>(cpuXAxis, cpuYAxis);
+		cpuChart.setLegendVisible(false);
+		this.cpu.getChildren().add(cpuChart);
+		cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
+		cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
+	}
 
     private void initialiseScheduleGraph() {
         sg = new SingleGraph("test_optimals");
@@ -498,4 +508,5 @@ public class MainController {
         lastOptimalNode.set(coreNm, currentNode.toString());
 
     }
+
 }

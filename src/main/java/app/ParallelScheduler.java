@@ -40,7 +40,6 @@ public class ParallelScheduler extends Scheduler {
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
 
 
-
         int coreCounter = 0;
 
         for (int i = 0; i < numOfRoot; i++) {
@@ -81,7 +80,7 @@ public class ParallelScheduler extends Scheduler {
     /**
      * Method that returns the number of threads that should be created
      * @param numOfRoot Number of root nodes
-     * @return
+     * @return Number of threads that should be created.
      */
     private int numberOfThreads(int numOfRoot) {
         return Math.min(coreCount, numOfRoot);
@@ -110,8 +109,5 @@ public class ParallelScheduler extends Scheduler {
         }
         return lowestTime;
     }
-
-
-
 
 }

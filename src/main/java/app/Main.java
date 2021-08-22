@@ -6,7 +6,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -44,7 +43,7 @@ public class Main extends Application {
         if (config.getVisualise()) {
             launch(args);
         } else {
-            MyThread thread = new MyThread();
+            ApplicationThread thread = new ApplicationThread();
             thread.start();
         }
 
@@ -62,12 +61,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         primaryStage = stage;
-        //      stage.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
-        //      stage.getIcons().add(new Image("file:logo.png"));
-        //      URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
-        //      Parent root = FXMLLoader.load(url);
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
-        //      Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
+
         stage.setTitle("Task Scheduler");
         stage.setScene(new Scene(root, 1300, 760));
         stage.setResizable(false);
@@ -77,7 +73,7 @@ public class Main extends Application {
 
         System.out.println("is start first??");
 
-        MyThread thread = new MyThread();
+        ApplicationThread thread = new ApplicationThread();
         thread.start();
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

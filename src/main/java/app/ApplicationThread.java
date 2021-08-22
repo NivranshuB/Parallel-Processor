@@ -6,26 +6,28 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Author: Team UNTESTED
+ * Class that implements the run method for threading.
  */
-public class MyThread extends Thread {
+public class ApplicationThread extends Thread {
 
+    /**
+     * Required method for thread implementation, called by start() method.
+     */
     public void run() {
+        // Set up
         Config config = Config.getInstance();
-
         DotFileReader dotFileReader = Main.getDotFileReader();
-
         MainController mainController = MainController.getInstance();
-
         BnBSchedule optimalSchedule = null;
         BnBScheduler optimalScheduler;
 
+        // Decides on which scheduler implementation to use based on the input graph attributes.
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
             if (config.getVisualise()) {
                 mainController.setScheduler(parallel);
                 mainController.addListener();
             }
-
             try {
                 optimalSchedule = parallel.checkBestSchedule();
             } catch (InterruptedException e) {
@@ -51,9 +53,8 @@ public class MyThread extends Thread {
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-
+        //Parses the output and writes the optimum schedule to a new file.
         OutputParser op = new OutputParser(config, optimalSchedule, dotFileReader);
-
         op.writeFile();
 
         if (config.getVisualise()) {

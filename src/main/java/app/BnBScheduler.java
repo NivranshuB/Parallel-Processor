@@ -60,8 +60,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         for (Node n : nodeMap.values()) {
             for (Node parent : n.getParent()) {
                 for (Node other : parent.getChild()) {
-                    if (!n.getName().equals(other.getName()) && !n.isEquivalent(other) &&
-                            nodeInterchangeability(n, other)) {
+                    if (!n.getName().equals(other.getName()) && !n.isEquivalent(other) && nodeInterchangeability(n, other)) {
                         n.addEquivalentNodes(other);
                         other.addEquivalentNodes(n);
                     }
@@ -110,8 +109,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         for (Node n : nodeMap.values()) {
             for (Node parent : n.getParent()) {
                 for (Node other : parent.getChild()) {
-                    if (!n.getName().equals(other.getName()) && !n.isEquivalent(other) &&
-                            nodeInterchangeability(n, other)) {
+                    if (!n.getName().equals(other.getName()) && !n.isEquivalent(other) && nodeInterchangeability(n, other)) {
                         n.addEquivalentNodes(other);
                         other.addEquivalentNodes(n);
                     }
@@ -129,21 +127,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     public BnBSchedule getSchedule() {
         optimalScheduleSearch(availableToSchedule);
 
-        //temp
         for (PropertyChangeListener l : listeners) {
-            l.propertyChange(new PropertyChangeEvent(this, "optimal schedule", "old",
-                    optimalSchedule.getWeight()));
+            l.propertyChange(new PropertyChangeEvent(this, "optimal schedule", "old", optimalSchedule.getWeight()));
         }
 
-        return optimalSchedule;
-    }
-
-    /**
-     * Method that returns the Schedule representing the optimum schedule.
-     * @return BnBSchedule object representing the optimal schedule.
-     */
-    public BnBSchedule getSchedule(Set<Node> availableList) {
-        optimalScheduleSearch(availableList);
         return optimalSchedule;
     }
 
@@ -173,8 +160,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             } else {
                 // Add transfer weight between processors if not on the same processor
                 String edge = parent.getName() + "_" + n.getName();
-                offsetedTime = Math.max(offsetedTime, parent.getStart() + parent.getWeight() +
-                        edgeMap.get(edge).getWeight());
+                offsetedTime = Math.max(offsetedTime, parent.getStart() + parent.getWeight() + edgeMap.get(edge).getWeight());
             }
         }
         return offsetedTime;
@@ -217,8 +203,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         for (Node parent : node.getParent()){
             String nodeToParent = parent.getName() + "_" + node.getName();
             String checkToParent = parent.getName() + "_" + check.getName();
-            if (!(check.getParent().contains(parent) &&
-                    (edgeMap.get(nodeToParent).getWeight() == edgeMap.get(checkToParent).getWeight()))) {
+            if (!(check.getParent().contains(parent) && edgeMap.get(nodeToParent).getWeight() == edgeMap.get(checkToParent).getWeight())) {
                 return false;
             }
         }
@@ -227,8 +212,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         for (Node child : node.getChild()){
             String nodeToChild = node.getName() + "_" + child.getName();
             String checkToChild = check.getName() + "_" + child.getName();
-            if (check.getChild().contains(child) &&
-                    edgeMap.get(nodeToChild).getWeight() == edgeMap.get(checkToChild).getWeight()) {
+            if (check.getChild().contains(child) && edgeMap.get(nodeToChild).getWeight() == edgeMap.get(checkToChild).getWeight()) {
 
             } else {
                 return false;
@@ -260,10 +244,9 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startTime Start time of Node to be checked
      * @return true if interchangeable, false otherwise
      */
-    public boolean checkInterchangeableProcessor(Processor processor, Set<Processor> processorSet,
-                                                 Node node, int startTime) {
+    public boolean checkInterchangeableProcessor(Processor processor, Set<Processor> processorSet, Node node, int startTime) {
         int comparedStartTime = 0;
-        //hypothetically test if the start time is the same if the node is scheduled on another processor
+        //Hypothetically test if the start time is the same if the node is scheduled on another processor
         for (Processor p : processorSet) {
             comparedStartTime = Math.max(p.getAvailableStartTime(), startTimeAfterParent(node, p));
             if (comparedStartTime == startTime && processor.toString().equals(p.toString())) { return true;}
@@ -314,11 +297,9 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
                 if (Config.getInstance().getVisualise()) {
                     mainController.createGantt(optimalSchedule.getNodeList());
-                    MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(),
-                            coreNumber);
+                    MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
                     for (PropertyChangeListener l : listeners) {
-                        l.propertyChange(new PropertyChangeEvent(this, "update progress",
-                                "old", optimalSchedule.getWeight()));
+                        l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                     }
                 }
 
@@ -332,7 +313,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startNode The specified start node of the current search thread.
      */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
-        BnBSchedule optimalCandidate = new BnBSchedule();
+
         // Only run if there are available nodes to schedule
         if (freeNodes.size() > 0 && startFlag == true) {
 
@@ -381,13 +362,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
             if (max < optimalSchedule.getWeight()) {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
-//                optimalSchedule.printSchedule();
-                for (PropertyChangeListener l : listeners) { // doesn't do anything
-                    l.propertyChange(new PropertyChangeEvent(this, "update progress",
-                            "old", optimalSchedule.getWeight()));
+                for (PropertyChangeListener l : listeners) {
+                    l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                 }
-                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(),
-                        coreNumber);
+                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
 
             }
         }
@@ -412,10 +390,9 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     /**
      * Method used by ExecutorService.
      * @return returns optimal schedule.
-     * @throws Exception throws checked exception.
      */
     @Override
-    public BnBSchedule call() throws Exception {
+    public BnBSchedule call() {
         return parallelSchedule();
     }
 }
