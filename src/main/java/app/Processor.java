@@ -44,20 +44,14 @@ public class Processor {
 
     /**
      * Getter used by BnBScheduler
-     * @return earliest available start time of the current processor
+     * @return Earliest available start time of the current processor
      */
     public int getAvailableStartTime() { return availableStartTime; }
 
     /**
-     * Getter used by BnBScheduler
-     * @return bottom weight of the schedule.
-     */
-    public int getBottomWeight() { return bottomWeight; }
-
-    /**
      * Method to add new Node (task) to this Processor and update the bottom weight after addition of Node.
-     * @param node
-     * @param startTime
+     * @param node Node to be scheduled to this processor.
+     * @param startTime Start time for computation of the Node.
      */
     public void scheduleNode(Node node, int startTime) {
         taskOrderBnB.put(startTime, node);
@@ -68,7 +62,7 @@ public class Processor {
 
     /**
      * Method to remove a node from the current Processor schedule at the specified time, then recalculate Processor's weight
-     * @param startTime start time of the task to be removed
+     * @param startTime Start time of the task to be removed
      */
     public void unscheduleNodeAtTime(int startTime) {
         taskOrderBnB.remove(startTime);
@@ -79,12 +73,6 @@ public class Processor {
             availableStartTime = 0;
         }
     }
-
-    /**
-     * Gets the task order for the BnB version of this processor
-     * @return taskOrderBnB
-     */
-    public TreeMap<Integer,Node> getTaskOrderBnB() { return taskOrderBnB; }
 
     /**
      * Returns the string representation of the TaskOrderBnB, showing the time periods when tasks are scheduled on it,
