@@ -92,6 +92,27 @@ public class MainController {
 
     private StackedBarChart<Number, String> sbc;
 
+    private static final String GraphstreamStyleSheet = "" +
+            "node {" +
+            "fill-color: red;" +
+//            "text-background-mode: rounded-box;" +
+//            "text-background-color: black;" +
+            "text-offset: 10;" +
+            "text-size: 16;" +
+            "size-mode: dyn-size;" +
+            "text-color: white;" +
+            "}" +
+            "node.marked {" +
+            "fill-color: green;" +
+            "}" +
+            "graph {" +
+            "fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
+            "fill-mode: gradient-vertical;" +
+            "}" +
+            "edge {" +
+            "fill-color: white;" +
+            "}";
+
     public void initialize() {
 
         Platform.runLater(new Runnable() {
@@ -153,14 +174,8 @@ public class MainController {
             node.setAttribute("ui.label", node.getId());
         }
 
-        String styleSheet = "node {" +
-                "fill-color: red;" +
-                "}" +
-                "node.marked {" +
-                "fill-color: green;" +
-                "}";
 
-        g.setAttribute("ui.stylesheet", styleSheet);
+        g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
 
         Stage primaryStage = Main.getPrimaryStage();
 
