@@ -16,10 +16,17 @@ public class BnBSchedule {
     private List<String> stringStorage = new ArrayList<String>();
     private int criticalPath = 0;
 
+    /**
+     * Default constructor for BnBSchedule that sets its max length to max value.
+     */
     public BnBSchedule() {
         max = Integer.MAX_VALUE;
     }
 
+    /**
+     * Constructs BnBSchedule with the current list of processors and the tasks scheduled on them.
+     * @param processors List of processors with tasks scheduled on them
+     */
     public BnBSchedule(List<Processor> processors) {
         max = 0;
         for (Processor p : processors) {
@@ -28,20 +35,6 @@ public class BnBSchedule {
             }
             stringStorage.add(p.toString());
             max = Math.max(max, p.getAvailableStartTime());
-        }
-    }
-
-    public BnBSchedule(List<Processor> processors, Set<Node> availableNodes) {
-        max = 0;
-
-        this.availableNodes.addAll(availableNodes);
-
-        // Update the max weight of current schedule.
-        for (Processor curr : processors) {
-            max = Math.max(max, curr.getAvailableStartTime());
-            for (Node node : curr.getTaskOrderBnB().values()) {
-                nodeMap.put(node.getName(), node);
-            }
         }
     }
 

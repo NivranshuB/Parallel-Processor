@@ -13,12 +13,20 @@ public class SingleProcessorNoEdgesScheduler extends Scheduler{
 
     private Map<String, Node> nodeMap;
 
-
+    /**
+     * Constructor for scheduler that is run to schedule the edge case situation of having all nodes without edges,
+     * running on a single processor.
+     * @param dotFileReader reference to DotFileReader object.
+     */
     public SingleProcessorNoEdgesScheduler(DotFileReader dotFileReader) {
         nodeMap = dotFileReader.getNodeMap();
 
     }
 
+    /**
+     * Method that returns the optimum schedule.
+     * @return returns optimum BnBSchedule.
+     */
     public BnBSchedule getSchedule() {
         Processor processor = new Processor();
 
