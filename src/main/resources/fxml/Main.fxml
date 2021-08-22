@@ -9,14 +9,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="910.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
+<AnchorPane prefHeight="752.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
    <children>
-      <ImageView fitHeight="910.0" fitWidth="1300.0" pickOnBounds="true">
+      <ImageView fitHeight="760.0" fitWidth="1300.0" pickOnBounds="true">
          <image>
             <Image url="@background.jpg" />
          </image>
       </ImageView>
-      <VBox layoutY="-1.0" prefHeight="910.0" prefWidth="1300.0">
+      <VBox layoutY="-1.0" prefHeight="760.0" prefWidth="1300.0">
          <children>
             <HBox prefHeight="964.0" prefWidth="1300.0">
                <children>
@@ -54,9 +54,9 @@
                                     <Insets />
                                  </HBox.margin>
                               </VBox>
-                              <VBox prefHeight="462.0" prefWidth="828.0" style="-fx-border-color: gray;">
+                              <VBox prefHeight="387.0" prefWidth="586.0" style="-fx-border-color: gray;">
                                  <children>
-                                    <VBox prefHeight="591.0" prefWidth="486.0" styleClass="categories">
+                                    <VBox prefHeight="365.0" prefWidth="357.0" styleClass="categories">
                                        <children>
                                           <Label alignment="TOP_LEFT" prefHeight="63.0" prefWidth="510.0" styleClass="subheading" text="NODE GRAPH" textFill="WHITE">
                                              <padding>
@@ -65,8 +65,28 @@
                                           </Label>
                                           <HBox prefHeight="379.0" prefWidth="631.0">
                                              <children>
-                                                <VBox fx:id="n_graph" prefHeight="378.0" prefWidth="316.0" />
-                                                <VBox fx:id="o_graph" prefHeight="378.0" prefWidth="315.0" />
+                                                <VBox fx:id="n_graph" prefHeight="341.0" prefWidth="367.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" top="10.0" />
+                                 </padding>
+                              </VBox>
+                              <VBox prefHeight="387.0" prefWidth="565.0" style="-fx-border-color: gray;">
+                                 <children>
+                                    <VBox prefHeight="365.0" prefWidth="252.0" styleClass="categories">
+                                       <children>
+                                          <Label alignment="TOP_LEFT" prefHeight="63.0" prefWidth="510.0" styleClass="subheading" text="SEARCH SPACE" textFill="WHITE">
+                                             <padding>
+                                                <Insets left="15.0" top="5.0" />
+                                             </padding>
+                                          </Label>
+                                          <HBox prefHeight="379.0" prefWidth="631.0">
+                                             <children>
+                                                <VBox fx:id="o_graph" prefHeight="341.0" prefWidth="324.0" />
                                              </children>
                                           </HBox>
                                        </children>
