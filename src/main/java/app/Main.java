@@ -47,7 +47,13 @@ public class Main extends Application {
 
         config.setNumOfTasks(dotFileReader.getNodeMap().size());
 
-        launch(args);
+        if (config.getVisualise()) {
+            launch(args);
+        } else {
+            MyThread thread = new MyThread();
+            thread.start();
+        }
+
     }
 
     public static Stage getPrimaryStage() {
