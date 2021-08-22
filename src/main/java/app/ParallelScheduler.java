@@ -23,11 +23,16 @@ public class ParallelScheduler extends Scheduler {
     List<Future<BnBSchedule>> futureList = new ArrayList<>();
     ExecutorService executor;
 
+    /**
+     * Constructor for ParallelScheduler object.
+     * @param config reference to Config object.
+     * @param dotFileReader reference to DotFileReader object.
+     */
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
         MainController mainController = MainController.getInstance();
         coreCount = config.getNumOfCores();
-        if (MainController.getInstance() != null) {
+        if (config.getVisualise()) {
             MainController.getInstance().instantiateOptimalNodes(coreCount);
         }
         rootNodes = dotFileReader.getRootNodeList();

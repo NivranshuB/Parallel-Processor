@@ -117,7 +117,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>app.NewMain</mainClass>
+                            <mainClass>app.AppMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

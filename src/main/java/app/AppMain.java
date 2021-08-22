@@ -1,6 +1,6 @@
 package app;
 
-public class NewMain {
+public class AppMain {
     public static void main(String[] args) {
         Main.main(args);
     }
