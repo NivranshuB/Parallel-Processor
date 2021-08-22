@@ -25,12 +25,10 @@ public class OutputParser {
 
     /**
      * Constructs the OutputParser object used to create an output graph DOT file.
-     *
-     * @param graphName Name of the output graph.
      * @param config    Config object with output file args.
      * @param schedule  Schedule to output.
+     * @param dotFileReader DotFileReader object with graph information.
      */
-
     public OutputParser(Config config, BnBSchedule schedule, DotFileReader dotFileReader) {
 
         this.graphName = dotFileReader.getGraphName().replaceAll("\"", ""); // removes quotation marks from graph name
@@ -82,6 +80,10 @@ public class OutputParser {
         }
     }
 
+    /**
+     * Gets the node list in ths OutputParser object.
+     * @return List of scheduled nodes.
+     */
     public List<Node> getNodeList() {
         return nodeList;
     }
