@@ -17,8 +17,6 @@ public class MyThread extends Thread {
         BnBScheduler optimalScheduler;
 
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
-            System.out.println("Using parallelisation");
-            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
             if (config.getVisualise()) {
                 mainController.setScheduler(parallel);
@@ -41,9 +39,6 @@ public class MyThread extends Thread {
             optimalSchedule = scheduler.getSchedule();
 
         } else {
-            System.out.println("Using serial");
-            System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
-
             optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             if (config.getVisualise()) {
                 mainController.instantiateOptimalNodes(1);
@@ -53,9 +48,6 @@ public class MyThread extends Thread {
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-        System.out.println(optimalSchedule);
-        System.out.println("We reached here");
-        optimalSchedule.printSchedule();
 
         OutputParser op = new OutputParser(config, optimalSchedule, dotFileReader);
 

@@ -311,7 +311,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
         BnBSchedule optimalCandidate = new BnBSchedule();
-//        freeNodes.forEach(s -> System.out.println(s.getName()));
         // Only run if there are available nodes to schedule
         if (freeNodes.size() > 0 && startFlag == true) {
 
