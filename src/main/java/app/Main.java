@@ -36,12 +36,6 @@ public class Main extends Application {
             return;
         }
 
-        System.out.println("input file = " + config.getInputFile());
-        System.out.println("number of processors = " + config.getNumOfProcessors());
-        System.out.println("number of cores = " + config.getNumOfCores());
-        System.out.println("visualise = " + config.getVisualise());
-        System.out.println("output file = " + config.getOutputFile());
-
         dotFileReader = new DotFileReader(config.getInputFile());
 
         config.setNumOfTasks(dotFileReader.getNodeMap().size());
