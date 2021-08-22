@@ -20,6 +20,7 @@ public class ParallelScheduler extends Scheduler{
 
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
+        MainController mainController = MainController.getInstance();
         coreCount = config.getNumOfCores();
         MainController.getInstance().instantiateOptimalNodes(coreCount);
         rootNodes = dotFileReader.getRootNodeList();
@@ -42,6 +43,10 @@ public class ParallelScheduler extends Scheduler{
                 System.out.println("Number of threads: " + (i+1));
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
+                if (config.getVisualise()) {
+                    mainController.setScheduler(currScheduler);
+                    mainController.addListener();
+                }
 
                 break;
             } else {
@@ -53,7 +58,10 @@ public class ParallelScheduler extends Scheduler{
                 System.out.println("Root node list: " + temp.toString());
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
-
+                if (config.getVisualise()) {
+                    mainController.setScheduler(currScheduler);
+                    mainController.addListener();
+                }
             }
 
             if (coreCounter > coreCount) {
@@ -61,10 +69,7 @@ public class ParallelScheduler extends Scheduler{
             }
 
             coreCounter++;
-
         }
-
-
     }
 
     /**

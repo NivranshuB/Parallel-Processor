@@ -298,6 +298,7 @@ public class MainController {
                 xAxis.setLabel("Time");
                 yAxis.setLabel("Processors");
                 xAxis.setAnimated(false);
+//                sbc.setAnimated(false);
 //                xAxis.setLowerBound(0);
 //                xAxis.setUpperBound(OutputParser.max);
                 xAxis.setTickUnit(1);
@@ -322,20 +323,16 @@ public class MainController {
                             if (searchedNode.getName().equals(vizNode.getId())) {
                                 vizNode.setAttribute("ui.class", "marked");
                                 try {
-//                                  Thread.sleep(1);
                                 } catch (Exception e) {
                                 }
                             }
                         }
-
                     }
                     if (evt.getPropertyName().equals("update progress")) {
-                        bestTime.setText(String.valueOf(evt.getNewValue()));
+                            bestTime.setText(String.valueOf(evt.getNewValue()));
                     } else {
                         status.setText("COMPLETE");
-
                         bestTime.setText(String.valueOf(evt.getNewValue()));
-
                         timeline[0].stop();
                     }
                 }
