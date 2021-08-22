@@ -31,152 +31,152 @@ import java.util.List;
 
 public class MainController {
 
-    private static final int UPDATE_INTERVAL = 1000;
+	private static final int UPDATE_INTERVAL = 1000;
 
-    public static Graph g;
+	public static Graph g;
 
-    public Graph sg;
+	public Graph sg;
 
-    private static MainController mainController = null;
+	private static MainController mainController = null;
 
-    private Config config;
+	private Config config;
 
-    private Scheduler scheduler;
+	private Scheduler scheduler;
 
-    private final Timeline[] timeline = new Timeline[1];
+	private final Timeline[] timeline = new Timeline[1];
 
-    private int nodeCounter = 0;
-    private int edgeCounter = 0;
+	private int nodeCounter = 0;
+	private int edgeCounter = 0;
 
-    private final String[] COLORS = {"fill-color: rgb(41,168,41);",
-            "fill-color: rgb(125,191,255);",
-            "fill-color: rgb(80,60,240);",
-            "fill-color: rgb(0,255,0);",
-            "fill-color: rgb(255,0,0);",
-            "fill-color: rgb(107,107,255);",
-            "fill-color: rgb(30,124,120);",
-            "fill-color: rgb(215,69,152);",
-            "fill-color: rgb(107,255,221);"};
+	private final String[] COLORS = {"fill-color: rgb(41,168,41);",
+			"fill-color: rgb(125,191,255);",
+			"fill-color: rgb(80,60,240);",
+			"fill-color: rgb(0,255,0);",
+			"fill-color: rgb(255,0,0);",
+			"fill-color: rgb(107,107,255);",
+			"fill-color: rgb(30,124,120);",
+			"fill-color: rgb(215,69,152);",
+	"fill-color: rgb(107,255,221);"};
 
-    private List<String> lastOptimalNode = new ArrayList<>();
+	private List<String> lastOptimalNode = new ArrayList<>();
 
-    @FXML
-    private Label numOfTasks;
+	@FXML
+	private Label numOfTasks;
 
-    @FXML
-    private Label currentBest;
+	@FXML
+	private Label currentBest;
 
-    @FXML
-    private Label numOfProcessors;
+	@FXML
+	private Label numOfProcessors;
 
-    @FXML
-    private Label numOfCores;
+	@FXML
+	private Label numOfCores;
 
-    @FXML
-    private VBox n_graph;
+	@FXML
+	private VBox n_graph;
 
-    @FXML
-    private VBox o_graph;
+	@FXML
+	private VBox o_graph;
 
-    @FXML
-    private VBox chart;
+	@FXML
+	private VBox chart;
 
-    @FXML
-    private Label status;
+	@FXML
+	private Label status;
 
-    @FXML
-    private Label time;
+	@FXML
+	private Label time;
 
-    @FXML
-    private Label bestTime;
+	@FXML
+	private Label bestTime;
 
-    @FXML
-    private VBox memory;
+	@FXML
+	private VBox memory;
 
-    private XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
 
-    private double memoryStartTime;
+	private double memoryStartTime;
 
-    @FXML
-    private Thread Monitor;
+	@FXML
+	private Thread Monitor;
 
-    @FXML
-    private VBox cpu;
-    private LineChart<Number, Number> cpuChart;
-    private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
-    private double cpuStartTime;
+	@FXML
+	private VBox cpu;
+	private LineChart<Number, Number> cpuChart;
+	private List<XYChart.Series<Number, Number>> cpuSeries = new ArrayList<>();
+	private double cpuStartTime;
 
-    private int processorCount = 0;
+	private int processorCount = 0;
 
-    private NumberAxis xAxis;
+	private NumberAxis xAxis;
 
-    private CategoryAxis yAxis;
+	private CategoryAxis yAxis;
 
-    private List<String> nameArray;
+	private List<String> nameArray;
 
-    private StackedBarChart<Number, String> sbc;
+	private StackedBarChart<Number, String> sbc;
 
-    private static final String GraphstreamStyleSheet = "" +
-            "node {" +
-            "fill-color: red;" +
-            "text-offset: 10;" +
-            "text-size: 16;" +
-            "size-mode: dyn-size;" +
-            "text-color: white;" +
-            "}" +
-            "node.marked {" +
-            "fill-color: green;" +
-            "}" +
-            "graph {" +
-            "fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
-            "fill-mode: gradient-vertical;" +
-            "}" +
-            "edge {" +
-            "fill-color: white;" +
-            "}";
+	private static final String GraphstreamStyleSheet = "" +
+			"node {" +
+			"fill-color: red;" +
+			"text-offset: 10;" +
+			"text-size: 16;" +
+			"size-mode: dyn-size;" +
+			"text-color: white;" +
+			"}" +
+			"node.marked {" +
+			"fill-color: green;" +
+			"}" +
+			"graph {" +
+			"fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
+			"fill-mode: gradient-vertical;" +
+			"}" +
+			"edge {" +
+			"fill-color: white;" +
+			"}";
 
-    public void initialize() {
+	public void initialize() {
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
-                    int timeCurrent = 0;
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+					int timeCurrent = 0;
 
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        int milliseconds = timeCurrent % 1000;
-                        int seconds = timeCurrent / 1000;
-                        time.setText(seconds + "." + String.format("%03d", milliseconds));
-                        timeCurrent++;
-                    }
-                }));
-                timeline[0].setCycleCount(Timeline.INDEFINITE);
-                timeline[0].play();
-            }
-        });
+					@Override
+					public void handle(ActionEvent actionEvent) {
+						int milliseconds = timeCurrent % 1000;
+						int seconds = timeCurrent / 1000;
+						time.setText(seconds + "." + String.format("%03d", milliseconds));
+						timeCurrent++;
+					}
+				}));
+				timeline[0].setCycleCount(Timeline.INDEFINITE);
+				timeline[0].play();
+			}
+		});
 
-        mainController = this;
+		mainController = this;
 
-        initialiseMemory();
-        initialiseCPU();
-        config = Config.getInstance();
+		initialiseMemory();
+		initialiseCPU();
+		config = Config.getInstance();
 
-        int numOfT = config.getNumOfTasks();
-        int numOfP = config.getNumOfProcessors();
-        int numOfC = config.getNumOfCores();
+		int numOfT = config.getNumOfTasks();
+		int numOfP = config.getNumOfProcessors();
+		int numOfC = config.getNumOfCores();
 
-        numOfTasks.setText(String.valueOf(numOfT));
-        numOfProcessors.setText(String.valueOf(numOfP));
-        numOfCores.setText(String.valueOf(numOfC));
-        currentBest.setStyle("-fx-font-size: 17;");
-        System.setProperty("org.graphstream.ui", "javafx");
+		numOfTasks.setText(String.valueOf(numOfT));
+		numOfProcessors.setText(String.valueOf(numOfP));
+		numOfCores.setText(String.valueOf(numOfC));
+		currentBest.setStyle("-fx-font-size: 17;");
+		System.setProperty("org.graphstream.ui", "javafx");
 
-        Graph g = new SingleGraph("test");
+		Graph g = new SingleGraph("test");
 
-        FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+		FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
-        v.enableAutoLayout();
+		v.enableAutoLayout();
 
         FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
@@ -230,7 +230,8 @@ public class MainController {
                 v.close();
             }
         });
-
+        
+        // Start the memory info monitor in another thread
         Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
         Monitor.start();
     }
@@ -350,73 +351,83 @@ public class MainController {
         });
     }
 
-    public void updateMemory(double ramUsage) {
-        // update memory graph
-        if (this.memoryStartTime < 1) {
-            memoryStartTime = System.currentTimeMillis();
-        }
-        double timeElapsed = (System.currentTimeMillis() - this.memoryStartTime) / 1000;
+    /**
+	 * Update the memory graph using the memory usage data and time elapsed.
+	 * @param memoryUsage The total memory currently in use.
+	 */
+	public void updateMemory(double memoryUsage) {
+		// store starting time
+		if (this.memoryStartTime < 1) {
+			memoryStartTime = System.currentTimeMillis();
+		}
+		double timeElapsed = (System.currentTimeMillis() - this.memoryStartTime) / 1000;
 
-        // update ram usage
-        Platform.runLater(() -> {
-            this.memorySeries.getData().add(new XYChart.Data<>(timeElapsed, ramUsage / (1024 * 1024)));
-        });
-    }
+		// update memory usage and time axis
+		Platform.runLater(() -> {
+			this.memorySeries.getData().add(new XYChart.Data<>(timeElapsed, memoryUsage / (1024 * 1024)));
+		});
+	}
 
-    private void initialiseMemory() {
-        // initialise memory view
-        NumberAxis memoryXAxis = new NumberAxis();
-        memoryXAxis.setLabel("Time (s)");
-        NumberAxis memoryYAxis = new NumberAxis();
-        memoryYAxis.setLabel("Memory Usage (Mb)");
-        LineChart<Number, Number> memoryChart = new LineChart<>(memoryXAxis, memoryYAxis);
+	/**
+	 * Create a blank memory graph with the appropriate axis and sizing.
+	 */
+	private void initialiseMemory() {
 
-        memoryChart.getData().add(memorySeries);
-        memoryChart.setLegendVisible(false);
-        this.memory.getChildren().add(memoryChart);
-        memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
-        memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
-    }
+		NumberAxis memoryXAxis = new NumberAxis();
+		memoryXAxis.setLabel("Time (s)");
+		NumberAxis memoryYAxis = new NumberAxis();
+		memoryYAxis.setLabel("Memory Usage (Mb)");
+		LineChart<Number, Number> memoryChart = new LineChart<>(memoryXAxis, memoryYAxis);
+		memoryChart.getData().add(memorySeries);
+		memoryChart.setLegendVisible(false);
+		this.memory.getChildren().add(memoryChart);
+		memoryChart.prefWidthProperty().bind(this.memory.widthProperty());
+		memoryChart.prefHeightProperty().bind(this.memory.heightProperty());
+	}
+	
+	/**
+	 * Update the CPU graph using the CPU usage data for each core and time elapsed.
+	 * @param perCoreUsage A list containing the CPU usage for each core in use.
+	 */
+	public void updateCPU(List<Double> perCoreUsage) {
 
-    public void updateCPU(List<Double> perCoreUsage) {
+		Platform.runLater(() -> {
+			for (int i = 0; i < perCoreUsage.size(); i++) {
+				// store starting time
+				if (this.cpuStartTime < 1) {
+					this.cpuStartTime = System.currentTimeMillis();
+				}
+				double timeElapsed = (System.currentTimeMillis() - this.cpuStartTime) / 1000;
+				// add the correct number of cpu lines to graph depending on number of cores
+				if (this.cpuSeries.size() <= i) {
+					XYChart.Series<Number, Number> trend = new XYChart.Series<>();
+					this.cpuChart.getData().add(trend);
+					this.cpuSeries.add(trend);
+				}
+				// update cpu usage and time axis
+				this.cpuSeries.get(i).getData().add(new XYChart.Data<>(timeElapsed, perCoreUsage.get(i) * 100));
+			}
+		});
+	}
 
-        Platform.runLater(() -> {
-
-            for (int i = 0; i < perCoreUsage.size(); i++) {
-
-                if (this.cpuStartTime < 1) {
-                    this.cpuStartTime = System.currentTimeMillis();
-                }
-                double timeElapsed = (System.currentTimeMillis() - this.cpuStartTime) / 1000;
-
-                if (this.cpuSeries.size() <= i) {
-                    XYChart.Series<Number, Number> trend = new XYChart.Series<>();
-                    this.cpuChart.getData().add(trend);
-
-                    this.cpuSeries.add(trend);
-                }
-
-                this.cpuSeries.get(i).getData().add(new XYChart.Data<>(timeElapsed, perCoreUsage.get(i) * 100));
-            }
-        });
-    }
-
-    private void initialiseCPU() {
-        NumberAxis cpuXAxis = new NumberAxis();
-        cpuXAxis.setLabel("Time (s)");
-        NumberAxis cpuYAxis = new NumberAxis();
-        cpuYAxis.setLabel("CPU Usage %");
-        cpuYAxis.setForceZeroInRange(true);
-        cpuYAxis.setAutoRanging(false);
-        cpuYAxis.setUpperBound(100);
-        cpuYAxis.setLowerBound(0);
-
-        cpuChart = new LineChart<>(cpuXAxis, cpuYAxis);
-        cpuChart.setLegendVisible(false);
-        this.cpu.getChildren().add(cpuChart);
-        cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
-        cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
-    }
+	/**
+	 * Create a blank CPU graph with the appropriate axis and sizing.
+	 */
+	private void initialiseCPU() {
+		NumberAxis cpuXAxis = new NumberAxis();
+		cpuXAxis.setLabel("Time (s)");
+		NumberAxis cpuYAxis = new NumberAxis();
+		cpuYAxis.setLabel("CPU Usage %");
+		cpuYAxis.setForceZeroInRange(true);
+		cpuYAxis.setAutoRanging(false);
+		cpuYAxis.setUpperBound(100);
+		cpuYAxis.setLowerBound(0);
+		cpuChart = new LineChart<>(cpuXAxis, cpuYAxis);
+		cpuChart.setLegendVisible(false);
+		this.cpu.getChildren().add(cpuChart);
+		cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
+		cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
+	}
 
     private void initialiseScheduleGraph() {
         sg = new SingleGraph("test_optimals");
@@ -495,4 +506,5 @@ public class MainController {
         lastOptimalNode.set(coreNm, currentNode.toString());
 
     }
+
 }
