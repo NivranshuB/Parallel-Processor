@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * Class that is responsible for performing an exhaustive search (with pruning to limit the search size) of all possible
  * schedules for the provided tasks on the specified number of processors. This class stores the representation of
  * the input task graph as two HashMaps, one representing the different tasks and their weights while the other

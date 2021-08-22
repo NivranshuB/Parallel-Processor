@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.*;
 
 /**
+ * Author: Team Untested (13)
  * This is the test class that is responsible for testing the entire system from when the arguments are parsed
  * to the length of the optimal schedule returned. This class relies on the input dot files present in
  * src/test/test_files.

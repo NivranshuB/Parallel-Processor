@@ -11,7 +11,7 @@ import javafx.stage.WindowEvent;
 
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * Main method where the implementation of the program begins.
  */
 public class Main extends Application {

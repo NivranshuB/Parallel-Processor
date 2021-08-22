@@ -7,7 +7,7 @@ import java.util.TreeMap;
 import model.Node;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * This class represents the ordered lists of nodes for a particular processor of
  * a particular schedule. It also stores the time that this processor is at after all
  * its tasks have been finished.

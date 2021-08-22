@@ -1,6 +1,7 @@
 package model;
 
 /**
+ * Author: Team Untested (13)
  * Class to represent the edges in the graph, representing the relationship between tasks (Nodes). Each edge will have
  * 1 parent Node, and 1 child Node. Each Edge also has a corresponding weight.
  */

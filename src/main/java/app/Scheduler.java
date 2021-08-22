@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * Parent class that all scheduler classes extend.
  */
 public class Scheduler {

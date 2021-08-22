@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Author: Team Untested
+ * Author: Team Untested (13)
  * Class that implements the parallel scheduler, allowing the application to utilise numerous threads in order to
  * speed up the search for the optimum schedule.
  */

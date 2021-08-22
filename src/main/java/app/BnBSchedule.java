@@ -5,6 +5,7 @@ import model.Node;
 import java.util.*;
 
 /**
+ * Author: Team Untested (13)
  * Class that stores the schedule of tasks and their starting times, as well as data associated with the current
  * schedule.
  */
