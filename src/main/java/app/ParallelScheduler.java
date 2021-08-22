@@ -40,7 +40,7 @@ public class ParallelScheduler extends Scheduler{
                 System.out.println("Size of rootNodes is: " + rootNodes.size());
                 System.out.println("Root node list: " + temp.toString());
                 System.out.println("Number of threads: " + (i+1));
-                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, coreCounter);
+                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
 
                 break;
