@@ -7,19 +7,14 @@ import java.util.concurrent.ExecutionException;
 public class MyThread extends Thread {
 
     public void run() {
-
-
-
         Config config = Config.getInstance();
-
 
         DotFileReader dotFileReader = Main.getDotFileReader();
 
         MainController mainController = MainController.getInstance();
 
         BnBSchedule optimalSchedule = null;
-        BnBScheduler optimalScheduler = null;
-//        Scheduler optimalScheduler = null;
+        BnBScheduler optimalScheduler;
 
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
             System.out.println("Using parallelisation");
@@ -55,33 +50,23 @@ public class MyThread extends Thread {
                 mainController.addListener();
             }
             optimalSchedule = optimalScheduler.getSchedule();
-
         }
-
-
 
         System.out.println(optimalSchedule);
         System.out.println("We reached here");
         optimalSchedule.printSchedule();
 
-//        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
-        String graphName = dotFileReader.getGraphName();
-//        //Corban's code to parse the optimal schedule to the output DOT file
-//        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule, dotFileReader);
+        OutputParser op = new OutputParser(config, optimalSchedule, dotFileReader);
 
         op.writeFile();
 
-//        mainController.createGantt(op);
         if (config.getVisualise()) {
             mainController.createGantt(op.getNodeList());
         }
-
 
         if (!config.getVisualise()) {
             Platform.exit();
             System.exit(0);
         }
-
     }
 }

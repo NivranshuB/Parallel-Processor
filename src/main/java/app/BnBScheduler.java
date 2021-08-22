@@ -16,7 +16,6 @@ import java.util.concurrent.Callable;
  */
 public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
-
     private HashMap<String, Node> nodeMap;
     private HashMap<String, Edge> edgeMap;
     private List<Processor> listOfProcessors = new ArrayList<Processor>();
@@ -25,8 +24,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     private List<Node> startingParallelNodes = new ArrayList<Node>();
     private Boolean startFlag = true;
     private final int coreNumber;
-
-//    private List<PropertyChangeListener> listeners = new ArrayList<>();
 
     private MainController mainController = MainController.getInstance();
 
@@ -136,13 +133,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         optimalScheduleSearch(availableList);
         return optimalSchedule;
     }
-
-//    public static BnBScheduler getInstance(DotFileReader dotFileReader, Config config) {
-//            if (singleInstance == null) {
-//                singleInstance = new BnBScheduler(dotFileReader, config);
-//            }
-//            return singleInstance;
-//    }
 
     /**
      * Remove the specified Node from the processor it has been allocated to.
@@ -293,15 +283,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                                 optimalScheduleSearch(newFreeNodes);
                                 unscheduleNode(n);
                             }
-
                         }
-
                     }
-
                 }
             }
-
-
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
 
@@ -377,10 +362,11 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             if (max < optimalSchedule.getWeight()) {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
 //                optimalSchedule.printSchedule();
-                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
-                for (PropertyChangeListener l : listeners) {
+                for (PropertyChangeListener l : listeners) { // doesn't do anything
                     l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                 }
+                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
+
             }
         }
     }

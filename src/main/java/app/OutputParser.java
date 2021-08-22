@@ -15,11 +15,9 @@ import java.util.*;
 public class OutputParser {
 
     private Config config;
-    private Schedule schedule;
     private String graphName;
     private BnBSchedule bnbschedule;
     private DotFileReader dotFileReader;
-//    private BnBScheduler bnBScheduler;
 
     public static int max = 0;
 
@@ -35,13 +33,12 @@ public class OutputParser {
      * @param schedule  Schedule to output.
      */
 
-    public OutputParser(String graphName, Config config, BnBSchedule schedule, DotFileReader dotFileReader) {
+    public OutputParser(Config config, BnBSchedule schedule, DotFileReader dotFileReader) {
 
-        this.graphName = graphName.replaceAll("\"", ""); // removes quotation marks from graph name
+        this.graphName = dotFileReader.getGraphName().replaceAll("\"", ""); // removes quotation marks from graph name
         this.graphName = this.graphName + "-output";
         this.config = config;
         this.bnbschedule = schedule;
-//        this.bnBScheduler = scheduler;
         this.dotFileReader = dotFileReader;
     }
 
@@ -78,17 +75,15 @@ public class OutputParser {
                             Map.Entry<String, Node> entry = iterator.next();
                             Node node = entry.getValue();
                             if (node.getName().equals(attributes[1])) {
-                                start = Integer.parseInt(attributes[0].replaceAll("\\s+",""));
+                                start = Integer.parseInt(attributes[0].replaceAll("\\s+", ""));
                                 int potentialCriticalPath = start + node.getWeight();
                                 if (potentialCriticalPath > criticalPath) {
                                     criticalPath = potentialCriticalPath;
                                 }
                                 node.setProcessor(processorCount);
                                 node.setStart(start);
-
                                 nodeList.add(node);
 
-//                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
                                 writer.write("\t" + attributes[1] + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processorCount + "];\n");
                             }
                         }
@@ -102,8 +97,6 @@ public class OutputParser {
             max = criticalPath;
 
             HashMap<String, Edge> edgeMap = dotFileReader.getEdgeMap();
-
-
 
             Iterator<Map.Entry<String, Edge>> edgeIterate = edgeMap.entrySet().iterator();
 
@@ -122,11 +115,6 @@ public class OutputParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public Map<String, Node> getNodeMap() {
-        return nodeMap;
     }
 
     public List<Node> getNodeList() {
