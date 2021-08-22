@@ -24,21 +24,45 @@ public class Node {
     private Processor processorBnB;
     private int bottomWeight; //used by BnBScheduler
 
-
+    /**
+     * Retrieves the equivalent nodes for this Node object.
+     * @return List of equivalent nodes.
+     */
     public List<Node> getEquivalentNodes() { return equivalentNodes; } //Used by BnBScheduler
 
+    /**
+     * Adds a node which is deemed to be equivalent to this Node object. Equivalent is when it has the same
+     * characteristics that it can be swapped interchangeably in the schedule.
+     * @param node Node deemed to be equivalent.
+     */
     public void addEquivalentNodes(Node node) { equivalentNodes.add(node); } //Used by BnBScheduler
 
+    /**
+     * Retrieves the bottom weight stored in this Node.
+     * @return Bottom weight of this Node.
+     */
     public int getBottomWeight() { return bottomWeight; } //Used by BnBScheduler
 
+    /**
+     * Sets the bottom weight for this Node.
+     * @param weight Bottom weight for this Node.
+     */
     public void setBottomWeight(int weight) { bottomWeight = weight; } //Used by BnBScheduler
 
+    /**
+     * Method used to decrement the count of unscheduled parents for this Node.
+     */
     public void scheduleOneParent() { unscheduledParents--;} //Used by BnBScheduler to specify that a parent has been scheduled
 
+    /**
+     * Method used to increment the count of unscheduled parents for this Node.
+     */
     public void unscheduleOneParent() { unscheduledParents++; } //Used by BnBScheduler to specify that a parent has been unscheduled
 
-    public void scheduleAllParents() { unscheduledParents = 0; } //Used by BnBScheduler to specify that all parents have been scheduled
-
+    /**
+     * Retrieves the processor this Node object is assigned to.
+     * @return Processor Node object is assigned to.
+     */
     public Processor getBnBProcessor() { return processorBnB; } //Used by BnBScheduler to return assigned processor of node.
 
     /**
@@ -48,36 +72,16 @@ public class Node {
      */
     public boolean isEquivalent(Node node) { return equivalentNodes.contains(node); }
 
+    /**
+     * Checks if there all parents for this Node object have been scheduled.
+     * @return True if all parents for this Node object have been scheduled, False otherwise.
+     */
     public boolean parentsScheduled() {
         if (unscheduledParents == 0) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public boolean equals(Node node) {
-        if (node.getName().equals(name)) {
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * Method that returns the child nodes that become available for scheduling if the current node is scheduled.
-     * @return Set containing the child nodes that have become available for scheduling.
-     */
-    public Set<Node> ifSchedule() {
-        Set<Node> availableChildren = new HashSet<Node>();
-        for (Node childNode : child) {
-            childNode.scheduleOneParent();
-            if (childNode.parentsScheduled()) {
-                availableChildren.add(childNode);
-            }
-            childNode.unscheduleOneParent();
-        }
-        return availableChildren;
     }
 
     /**
@@ -92,10 +96,8 @@ public class Node {
         Set<Node> availableChildren = new HashSet<Node>();
         for (Node childNode : child) {
             childNode.scheduleOneParent();
-//            System.out.println("Unschedule parent, " + childNode.getName());
             if (childNode.parentsScheduled()) {
                 availableChildren.add(childNode);
-//                System.out.println("I can run, " + childNode.getName());
             }
         }
         return availableChildren;
@@ -110,15 +112,6 @@ public class Node {
         for (Node c : child) {
             c.unscheduleOneParent();
         }
-    }
-
-    /**
-     * Reset Node data to be used for the next candidate schedule
-     */
-    public void resetNode() {
-        start = Integer.MAX_VALUE;
-        processorBnB = null;
-        unscheduledParents = parent.size();
     }
 
     /**
@@ -176,6 +169,10 @@ public class Node {
      */
     public int getStart(){ return start; }
 
+    /**
+     * Sets the start time of when this node is computed.
+     * @param start Start time for computation of this Node.
+     */
     public void setStart(int start) {
         this.start = start;
     }
@@ -186,6 +183,10 @@ public class Node {
      */
     public int getProcessor(){ return processor; }
 
+    /**
+     * Sets the processor this node is scheduled on.
+     * @param processor Processor used to schedule this Node.
+     */
     public void setProcessor(int processor) {
         this.processor = processor;
     }
@@ -205,16 +206,5 @@ public class Node {
     public void setName(String nm) {
         name = nm;
     }
-    
-    /**
-     * Creates a duplicate of this current node.
-     * @return  Duplicated node.
-     */
-    public Node duplicateNode() {
-        Node dupeNode = new Node();
-        dupeNode.setWeight(weight);
-        dupeNode.setName(name);
 
-        return dupeNode;
-    }
 }

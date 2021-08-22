@@ -36,12 +36,6 @@ public class Main extends Application {
             return;
         }
 
-        System.out.println("input file = " + config.getInputFile());
-        System.out.println("number of processors = " + config.getNumOfProcessors());
-        System.out.println("number of cores = " + config.getNumOfCores());
-        System.out.println("visualise = " + config.getVisualise());
-        System.out.println("output file = " + config.getOutputFile());
-
         dotFileReader = new DotFileReader(config.getInputFile());
 
         config.setNumOfTasks(dotFileReader.getNodeMap().size());
@@ -67,12 +61,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         primaryStage = stage;
-        //      stage.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
-        //      stage.getIcons().add(new Image("file:logo.png"));
-        //      URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
-        //      Parent root = FXMLLoader.load(url);
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
-        //      Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
+
         stage.setTitle("Task Scheduler");
         stage.setScene(new Scene(root, 1300, 760));
         stage.setResizable(false);

@@ -23,19 +23,23 @@ public class ParallelScheduler extends Scheduler {
     List<Future<BnBSchedule>> futureList = new ArrayList<>();
     ExecutorService executor;
 
+    /**
+     * Constructor for ParallelScheduler object.
+     * @param config reference to Config object.
+     * @param dotFileReader reference to DotFileReader object.
+     */
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
         MainController mainController = MainController.getInstance();
         coreCount = config.getNumOfCores();
-        if (MainController.getInstance() != null) {
+        if (config.getVisualise()) {
             MainController.getInstance().instantiateOptimalNodes(coreCount);
         }
         rootNodes = dotFileReader.getRootNodeList();
         int numOfRoot = rootNodes.size();
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
 
-        System.out.println("Create");
-        System.out.println("Number of roots: " + rootNodes.size());
+
 
         int coreCounter = 0;
 
@@ -45,9 +49,6 @@ public class ParallelScheduler extends Scheduler {
                 List<String> temp = new ArrayList<String>();
                 rootNodes.forEach(s -> temp.add(s.getName()));
                 DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
-                System.out.println("Size of rootNodes is: " + rootNodes.size());
-                System.out.println("Root node list: " + temp.toString());
-                System.out.println("Number of threads: " + (i+1));
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
                 if (config.getVisualise()) {
@@ -61,8 +62,6 @@ public class ParallelScheduler extends Scheduler {
                 temp.add(rootNodes.get(0).getName());
                 rootNodes.remove(0);
                 DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
-                System.out.println("Does this run? Size of rootNodes is " + rootNodes.size());
-                System.out.println("Root node list: " + temp.toString());
                 BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
                 if (config.getVisualise()) {
@@ -100,11 +99,8 @@ public class ParallelScheduler extends Scheduler {
 
         for (Future<BnBSchedule> currSchedule : futureList) {
             BnBSchedule current = currSchedule.get();
-            System.out.println("Schedule:");
-            System.out.println(current.getStringStorage());
             if (current.getWeight() < max) {
                 max = current.getWeight();
-                System.out.println("Current max weight: " + max);
                 lowestTime = current;
             }
         }

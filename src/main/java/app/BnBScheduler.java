@@ -28,6 +28,12 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     private MainController mainController = MainController.getInstance();
 
+    /**
+     * Constructor for BnBScheduler.
+     * @param dotFileReader reference to DotFileReader object
+     * @param config reference to Config object
+     * @param coreNm specifies the core number that the schedule is running on
+     */
     public BnBScheduler(DotFileReader dotFileReader, Config config, int coreNm) {
 
         coreNumber = coreNm;
@@ -65,6 +71,13 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         optimalSchedule = new BnBSchedule();
     }
 
+    /**
+     * Constructor for BnBScheduler, specifying which nodes the scheduler should start searching from.
+     * @param dotFileReader reference to DotFileReader object.
+     * @param config reference to Config object.
+     * @param startingNodes List of starting nodes to start searching from.
+     * @param coreNm specifies the core number that the schedule is running on
+     */
     public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm) {
 
         coreNumber = coreNm;
@@ -114,20 +127,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     public BnBSchedule getSchedule() {
         optimalScheduleSearch(availableToSchedule);
 
-        //temp
         for (PropertyChangeListener l : listeners) {
             l.propertyChange(new PropertyChangeEvent(this, "optimal schedule", "old", optimalSchedule.getWeight()));
         }
 
-        return optimalSchedule;
-    }
-
-    /**
-     * Method that returns the Schedule representing the optimum schedule.
-     * @return BnBSchedule object representing the optimal schedule.
-     */
-    public BnBSchedule getSchedule(Set<Node> availableList) {
-        optimalScheduleSearch(availableList);
         return optimalSchedule;
     }
 
@@ -243,7 +246,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      */
     public boolean checkInterchangeableProcessor(Processor processor, Set<Processor> processorSet, Node node, int startTime) {
         int comparedStartTime = 0;
-        //hypothetically test if the start time is the same if the node is scheduled on another processor
+        //Hypothetically test if the start time is the same if the node is scheduled on another processor
         for (Processor p : processorSet) {
             comparedStartTime = Math.max(p.getAvailableStartTime(), startTimeAfterParent(node, p));
             if (comparedStartTime == startTime && processor.toString().equals(p.toString())) { return true;}
@@ -310,8 +313,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startNode The specified start node of the current search thread.
      */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
-        BnBSchedule optimalCandidate = new BnBSchedule();
-//        freeNodes.forEach(s -> System.out.println(s.getName()));
+
         // Only run if there are available nodes to schedule
         if (freeNodes.size() > 0 && startFlag == true) {
 
@@ -360,8 +362,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
             if (max < optimalSchedule.getWeight()) {
                 optimalSchedule = new BnBSchedule(listOfProcessors);
-//                optimalSchedule.printSchedule();
-                for (PropertyChangeListener l : listeners) { // doesn't do anything
+                for (PropertyChangeListener l : listeners) {
                     l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                 }
                 MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
@@ -389,10 +390,9 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     /**
      * Method used by ExecutorService.
      * @return returns optimal schedule.
-     * @throws Exception throws checked exception.
      */
     @Override
-    public BnBSchedule call() throws Exception {
+    public BnBSchedule call() {
         return parallelSchedule();
     }
 }
