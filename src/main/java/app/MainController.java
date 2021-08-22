@@ -33,18 +33,16 @@ public class MainController {
 
 	private static final int UPDATE_INTERVAL = 1000;
 
+    private final Timeline[] timeline = new Timeline[1];
+
+    private static MainController mainController = null;
 	public static Graph g;
 
+    private List<String> lastOptimalNode = new ArrayList<>();
+
 	public Graph sg;
-
-	private static MainController mainController = null;
-
 	private Config config;
-
 	private Scheduler scheduler;
-
-	private final Timeline[] timeline = new Timeline[1];
-
 	private int nodeCounter = 0;
 	private int edgeCounter = 0;
 
@@ -58,38 +56,26 @@ public class MainController {
 			"fill-color: rgb(215,69,152);",
 	"fill-color: rgb(107,255,221);"};
 
-	private List<String> lastOptimalNode = new ArrayList<>();
-
 	@FXML
 	private Label numOfTasks;
-
 	@FXML
 	private Label currentBest;
-
 	@FXML
 	private Label numOfProcessors;
-
 	@FXML
 	private Label numOfCores;
-
 	@FXML
 	private VBox n_graph;
-
 	@FXML
 	private VBox o_graph;
-
 	@FXML
 	private VBox chart;
-
 	@FXML
 	private Label status;
-
 	@FXML
 	private Label time;
-
 	@FXML
 	private Label bestTime;
-
 	@FXML
 	private VBox memory;
 
@@ -109,9 +95,7 @@ public class MainController {
 	private int processorCount = 0;
 
 	private NumberAxis xAxis;
-
 	private CategoryAxis yAxis;
-
 	private List<String> nameArray;
 
 	private StackedBarChart<Number, String> sbc;
