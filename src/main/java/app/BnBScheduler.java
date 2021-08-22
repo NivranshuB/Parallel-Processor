@@ -28,6 +28,12 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     private MainController mainController = MainController.getInstance();
 
+    /**
+     * Constructor for BnBScheduler.
+     * @param dotFileReader reference to DotFileReader object
+     * @param config reference to Config object
+     * @param coreNm specifies the core number that the schedule is running on
+     */
     public BnBScheduler(DotFileReader dotFileReader, Config config, int coreNm) {
 
         coreNumber = coreNm;
@@ -65,6 +71,13 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         optimalSchedule = new BnBSchedule();
     }
 
+    /**
+     * Constructor for BnBScheduler, specifying which nodes the scheduler should start searching from.
+     * @param dotFileReader reference to DotFileReader object.
+     * @param config reference to Config object.
+     * @param startingNodes List of starting nodes to start searching from.
+     * @param coreNm specifies the core number that the schedule is running on
+     */
     public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm) {
 
         coreNumber = coreNm;
