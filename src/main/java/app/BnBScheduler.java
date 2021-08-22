@@ -313,7 +313,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startNode The specified start node of the current search thread.
      */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
-        BnBSchedule optimalCandidate = new BnBSchedule();
+
         // Only run if there are available nodes to schedule
         if (freeNodes.size() > 0 && startFlag == true) {
 
