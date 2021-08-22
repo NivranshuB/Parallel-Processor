@@ -27,7 +27,7 @@ public class ParallelScheduler extends Scheduler {
 
         MainController mainController = MainController.getInstance();
         coreCount = config.getNumOfCores();
-        if (MainController.getInstance() != null) {
+        if (config.getVisualise()) {
             MainController.getInstance().instantiateOptimalNodes(coreCount);
         }
         rootNodes = dotFileReader.getRootNodeList();
