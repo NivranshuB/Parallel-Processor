@@ -61,8 +61,8 @@ public class SystemTests {
             optimalSchedule = scheduler.getSchedule();
         } else {
             System.out.println("Using serial");
-
-            BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config);
+            MainController.getInstance().instantiateOptimalNodes(1);
+            BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             optimalSchedule = optimalScheduler.getSchedule();
         }
 

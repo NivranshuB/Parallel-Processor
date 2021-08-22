@@ -34,6 +34,8 @@ public class MainController {
 
     public static Graph g;
 
+    public Graph sg;
+
     private static MainController mainController = null;
 
     private Config config;
@@ -41,6 +43,18 @@ public class MainController {
     private Scheduler scheduler;
 
     private final Timeline[] timeline = new Timeline[1];
+
+    int nodeCounter = 0;
+    int edgeCounter = 0;
+
+    private final String[] COLORS = {"fill-color: rgb(89,240,120);",
+            "fill-color: rgb(125,191,255);",
+            "fill-color: rgb(255,183,110);",
+            "fill-color: rgb(249,142,142);",
+            "fill-color: rgb(0,100,255);",
+            "fill-color: rgb(246,118,227);"};
+
+    private List<String> lastOptimalNode = new ArrayList<>();
 
     @FXML
     private Label numOfTasks;
@@ -165,6 +179,8 @@ public class MainController {
         Stage primaryStage = Main.getPrimaryStage();
 
         graph.getChildren().add(panel);
+
+        initialiseScheduleGraph();
 
         System.out.println("or is initialise first?");
 
@@ -378,5 +394,79 @@ public class MainController {
         cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
     }
 
+    private void initialiseScheduleGraph() {
+        sg = new SingleGraph("test_optimals");
+        sg.setStrict(true);
 
+        FxViewer v = new FxViewer(sg, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+
+        v.enableAutoLayout();
+
+        FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
+
+        sg.addNode("root" );
+        sg.getNode("root").setAttribute("ui.class", "root");
+
+        String styleSheet = "node {" +
+                "size: 35px, 20px;" +
+                "shape: box;" +
+                "stroke-color: black;" +
+                "stroke-mode: plain;" +
+                "stroke-width: 1px;" +
+                "}" +
+                "node.marked {" +
+                "stroke-color: yellow;" +
+                "stroke-width: 4px;" +
+                "stroke-mode: plain;" +
+                "z-index: 4;" +
+                "text-size: 12;" +
+                "size: 40px, 25px;" +
+                "}" +
+                "node.root {" +
+                "fill-color: grey;" +
+                "shape: circle;" +
+                "size: 20px;" +
+                "}";
+
+        sg.setAttribute("ui.stylesheet", styleSheet);
+
+        Stage primaryStage = Main.getPrimaryStage();
+
+        graph.getChildren().add(panel);
+    }
+
+    public void instantiateOptimalNodes(int tCores) {
+        for (int i = 0; i < tCores; i++) {
+            lastOptimalNode.add("");
+        }
+    }
+
+    public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
+        sg.addNode(criticalLength + "_" + nodeCounter);
+        sg.addEdge("Edge-" + edgeCounter, "root",criticalLength + "_" + nodeCounter);
+
+        Node currentNode = sg.getNode(criticalLength + "_" + nodeCounter);
+        currentNode.setAttribute("ui.label", criticalLength);
+        currentNode.setAttribute("core", coreNm);
+        currentNode.setAttribute("ui.class", "marked");
+
+        if (coreNm >= COLORS.length) {
+            currentNode.setAttribute("ui.style", COLORS[0]);
+        } else {
+            currentNode.setAttribute("ui.style", COLORS[coreNm]);
+        }
+
+        String previousCoreBest = lastOptimalNode.get(coreNm);
+
+        if (!(previousCoreBest.equals(""))) {
+            Node previousOptimalNode = sg.getNode(previousCoreBest);
+            previousOptimalNode.removeAttribute("ui.class");
+        }
+
+        lastOptimalNode.set(coreNm, currentNode.toString());
+
+        nodeCounter++;
+        edgeCounter++;
+
+    }
 }
