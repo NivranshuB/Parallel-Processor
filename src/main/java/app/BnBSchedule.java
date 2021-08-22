@@ -11,7 +11,6 @@ import java.util.*;
 public class BnBSchedule {
 
     private int max;
-    private Set<Node> availableNodes = new HashSet<Node>();
     private Map<String, Node> nodeMap = new HashMap<String, Node>();
     private List<String> stringStorage = new ArrayList<String>();
     private int criticalPath = 0;
@@ -91,21 +90,9 @@ public class BnBSchedule {
     }
 
     /**
-     * Get the string representation of the schedule.
-     * @return String representation of the schedule in the format "startingTime_nodeName".
+     * Retrieves the node list for this schedule.
+     * @return List of nodes scheduled.
      */
-    public List<String> getStringStorage() {
-        return stringStorage;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Map<String, Node> getNodeMap() {
-        return nodeMap;
-    }
-
     public List<Node> getNodeList() {
         int processorCount = 0;
         int criticalPath = 0;
