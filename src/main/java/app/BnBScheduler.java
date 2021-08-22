@@ -313,13 +313,14 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
                 if (Config.getInstance().getVisualise()) {
                     mainController.createGantt(optimalSchedule.getNodeList());
+                    MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
 //                System.out.println("this is current critical path: " + optimalSchedule.getWeight());
                     for (PropertyChangeListener l : listeners) {
                         l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                     }
                 }
 //                optimalSchedule.printSchedule();
-                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
+
             }
         }
     }

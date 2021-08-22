@@ -21,7 +21,9 @@ public class ParallelScheduler extends Scheduler{
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
         coreCount = config.getNumOfCores();
-        MainController.getInstance().instantiateOptimalNodes(coreCount);
+        if (MainController.getInstance() != null) {
+            MainController.getInstance().instantiateOptimalNodes(coreCount);
+        }
         rootNodes = dotFileReader.getRootNodeList();
         int numOfRoot = rootNodes.size();
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
