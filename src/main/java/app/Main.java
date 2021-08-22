@@ -66,11 +66,7 @@ public class Main extends Application {
         stage.setTitle("Task Scheduler");
         stage.setScene(new Scene(root, 1300, 760));
         stage.setResizable(false);
-        if (config.getVisualise()) {
-            stage.show();
-        }
-
-        System.out.println("is start first??");
+        stage.show();
 
         ApplicationThread thread = new ApplicationThread();
         thread.start();

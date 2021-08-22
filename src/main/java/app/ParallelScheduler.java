@@ -39,7 +39,6 @@ public class ParallelScheduler extends Scheduler {
         int numOfRoot = rootNodes.size();
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
 
-
         int coreCounter = 0;
 
         for (int i = 0; i < numOfRoot; i++) {
