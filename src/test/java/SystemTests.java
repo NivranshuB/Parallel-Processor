@@ -346,17 +346,6 @@ public class SystemTests {
     }
 
     /**
-     * Tests for 15 node input graph with a very small amount of edges (memory intensive), on 3 processors
-     * with the default single core.
-     */
-    @Test
-    public void Nodes15Edges10Test() {
-        String[] inputArg = {"src\\test\\test_files\\Nodes_15_SparseEdges.dot", "3"};
-        BnBSchedule optimal = getOptimalSchedule(inputArg);
-        assertEquals(197, optimal.calculateCriticalPath());
-    }
-
-    /**
      * Tests for 21 node input graph with no edge dependencies, on 1 processors with the default single core.
      * This is one of the worst case input graphs for DFS variation algorithms.
      */
@@ -376,16 +365,5 @@ public class SystemTests {
         String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "1", "-p", "6"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
         assertEquals(132, optimal.calculateCriticalPath());
-    }
-
-    /**
-     * Tests for 21 node input graph with no edge dependencies, on 2 processors with the default single core.
-     * This is one of the worst case input graphs for DFS variation algorithms.
-     */
-    @Test
-    public void Nodes21IndependentProcessor2Test() {
-        String[] inputArg = {"src\\test\\test_files\\Nodes_21_Independent.dot", "2"};
-        BnBSchedule optimal = getOptimalSchedule(inputArg);
-        assertEquals(66, optimal.calculateCriticalPath());
     }
 }
