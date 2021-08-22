@@ -48,5 +48,10 @@ Label {
     -fx-stroke: #B55B51;
 }
 
+.tooltip {
+    -fx-font-size: 20;
+    -fx-background-radius: 0;
+}
+
 
 
