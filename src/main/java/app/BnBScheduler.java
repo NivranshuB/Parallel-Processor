@@ -8,11 +8,12 @@ import java.util.concurrent.Callable;
 
 /**
  * Author: Team UNTESTED
- * Singleton class that is a variation of the Scheduler class with a different pruning algorithm. This class is
- * responsible for performing an exhaustive search (with pruning to limit the search size) of all possible
+ * Class that is responsible for performing an exhaustive search (with pruning to limit the search size) of all possible
  * schedules for the provided tasks on the specified number of processors. This class stores the representation of
  * the input task graph as two HashMaps, one representing the different tasks and their weights while the other
- * representing the different task dependencies of the task graph and their weights.
+ * representing the different task dependencies of the task graph and their weights. This class also stores the tasks
+ * that are are available to be scheduled next (all parent tasks have already been scheduled) and the reference to the
+ * current optimal schedule.
  */
 public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
@@ -41,7 +42,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             count++;
         }
 
-        System.out.println(dotFileReader.getRootNodeList().size());
         // Store all root nodes into the availableToSchedule set.
         availableToSchedule.addAll(dotFileReader.getRootNodeList());
 
@@ -82,7 +82,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
         // Store all root nodes into the availableToSchedule set.
         availableToSchedule.addAll(dotFileReader.getRootNodeList());
-        System.out.println("Available to schedule size: " + availableToSchedule.size());
 
         for (String n : startingNodes) {
             startingParallelNodes.add(nodeMap.get(n));
@@ -113,7 +112,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @return BnBSchedule object representing the optimal schedule.
      */
     public BnBSchedule getSchedule() {
-        System.out.println(availableToSchedule.size());
         optimalScheduleSearch(availableToSchedule);
 
         //temp
@@ -129,7 +127,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @return BnBSchedule object representing the optimal schedule.
      */
     public BnBSchedule getSchedule(Set<Node> availableList) {
-        System.out.println(availableList.size());
         optimalScheduleSearch(availableList);
         return optimalSchedule;
     }
@@ -168,7 +165,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     /**
      * Recursive function that calculates the bottom weight of the specified node where the bottom weight is the sum of its
-     * own weight and the maximum of the bottom weights of its own child nodes.
+     * own weight and the maximum of the bottom weights of its own child nodes. (Bottom up approach)
      * @param node Node to be calculated
      * @return Bottom weight of the calculated node
      */
@@ -208,7 +205,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
         }
 
-        //Check if all children in node appear in check, and that they have the same transmission costs.
+        //Check if all children in node appear in check, and that they have the same communication costs.
         for (Node child : node.getChild()){
             String nodeToChild = node.getName() + "_" + child.getName();
             String checkToChild = check.getName() + "_" + child.getName();
@@ -255,8 +252,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     }
 
     private void optimalScheduleSearch(Set<Node> freeNodes) {
-        BnBSchedule optimalCandidate = new BnBSchedule();
-//        freeNodes.forEach(s -> System.out.println(s.getName()));
+
         // Only run if there are available nodes to schedule
         if (freeNodes.size() > 0) {
 
@@ -299,17 +295,20 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 if (Config.getInstance().getVisualise()) {
                     mainController.createGantt(optimalSchedule.getNodeList());
                     MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
-//                System.out.println("this is current critical path: " + optimalSchedule.getWeight());
                     for (PropertyChangeListener l : listeners) {
                         l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                     }
                 }
-//                optimalSchedule.printSchedule();
 
             }
         }
     }
 
+    /**
+     * Method that initiates the search in parallel mode.
+     * @param freeNodes Set containing the free nodes to be scheduled.
+     * @param startNode The specified start node of the current search thread.
+     */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
         BnBSchedule optimalCandidate = new BnBSchedule();
 //        freeNodes.forEach(s -> System.out.println(s.getName()));
@@ -371,6 +370,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         }
     }
 
+    /**
+     * Method that outputs the best schedule from all the parallelScheduleSearch results.
+     * @return
+     */
     public BnBSchedule parallelSchedule() {
         BnBSchedule output = new BnBSchedule();
 
@@ -380,10 +383,14 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 output = optimalSchedule;
             };
         }
-
         return output;
     }
 
+    /**
+     * Method used by ExecutorService.
+     * @return returns optimal schedule.
+     * @throws Exception throws checked exception.
+     */
     @Override
     public BnBSchedule call() throws Exception {
         return parallelSchedule();

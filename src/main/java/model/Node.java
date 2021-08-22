@@ -208,10 +208,7 @@ public class Node {
     
     /**
      * Creates a duplicate of this current node.
-<<<<<<< HEAD
      * @return  Duplicated node.
-=======
->>>>>>> Joes_Experimental_Optimum_Branch
      */
     public Node duplicateNode() {
         Node dupeNode = new Node();

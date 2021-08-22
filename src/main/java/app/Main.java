@@ -21,7 +21,6 @@ public class Main extends Application {
 
     private static DotFileReader dotFileReader;
 
-    private Schedule optimalSchedule;
     private static Config config;
 
 

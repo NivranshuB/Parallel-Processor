@@ -11,7 +11,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class ParallelScheduler extends Scheduler{
+/**
+ * Author: Team Untested
+ * Class that implements the parallel scheduler, allowing the application to utilise numerous threads in order to
+ * speed up the search for the optimum schedule.
+ */
+public class ParallelScheduler extends Scheduler {
 
     private List<Node> rootNodes;
     private int coreCount;
