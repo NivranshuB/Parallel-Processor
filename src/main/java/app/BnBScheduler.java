@@ -78,7 +78,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startingNodes List of starting nodes to start searching from.
      * @param coreNm specifies the core number that the schedule is running on
      */
-    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm) {
+    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm, BnBSchedule optimum) {
 
         coreNumber = coreNm;
         nodeMap = dotFileReader.getNodeMap();
@@ -117,7 +117,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
         }
 
-        optimalSchedule = new BnBSchedule();
+        optimalSchedule = optimum;
     }
 
     /**
@@ -292,17 +292,19 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             for (Processor process : listOfProcessors) {
                 max = Math.max(max, process.getAvailableStartTime());
             }
-            if (max < optimalSchedule.getWeight()) {
-                optimalSchedule = new BnBSchedule(listOfProcessors);
+            synchronized(this) {
+                if (max < optimalSchedule.getWeight()) {
+                    optimalSchedule = new BnBSchedule(listOfProcessors);
 
-                if (Config.getInstance().getVisualise()) {
-                    mainController.createGantt(optimalSchedule.getNodeList());
-                    MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
-                    for (PropertyChangeListener l : listeners) {
-                        l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
+                    if (Config.getInstance().getVisualise()) {
+                        mainController.createGantt(optimalSchedule.getNodeList());
+                        MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
+                        for (PropertyChangeListener l : listeners) {
+                            l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
+                        }
                     }
-                }
 
+                }
             }
         }
     }

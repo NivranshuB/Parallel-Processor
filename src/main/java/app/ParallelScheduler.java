@@ -29,7 +29,7 @@ public class ParallelScheduler extends Scheduler {
      * @param dotFileReader reference to DotFileReader object.
      */
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
-
+        BnBSchedule optimum = new BnBSchedule();
         MainController mainController = MainController.getInstance();
         coreCount = config.getNumOfCores();
         if (config.getVisualise()) {
@@ -47,7 +47,7 @@ public class ParallelScheduler extends Scheduler {
                 List<String> temp = new ArrayList<String>();
                 rootNodes.forEach(s -> temp.add(s.getName()));
                 DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
-                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
+                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter, optimum);
                 futureList.add(executor.submit(currScheduler));
                 if (config.getVisualise()) {
                     mainController.setScheduler(currScheduler);
@@ -60,7 +60,7 @@ public class ParallelScheduler extends Scheduler {
                 temp.add(rootNodes.get(0).getName());
                 rootNodes.remove(0);
                 DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
-                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
+                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter, optimum);
                 futureList.add(executor.submit(currScheduler));
                 if (config.getVisualise()) {
                     mainController.setScheduler(currScheduler);
