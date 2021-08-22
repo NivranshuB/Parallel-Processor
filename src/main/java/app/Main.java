@@ -6,7 +6,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -43,7 +42,7 @@ public class Main extends Application {
         if (config.getVisualise()) {
             launch(args);
         } else {
-            MyThread thread = new MyThread();
+            ApplicationThread thread = new ApplicationThread();
             thread.start();
         }
 
@@ -73,7 +72,7 @@ public class Main extends Application {
 
         System.out.println("is start first??");
 
-        MyThread thread = new MyThread();
+        ApplicationThread thread = new ApplicationThread();
         thread.start();
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
