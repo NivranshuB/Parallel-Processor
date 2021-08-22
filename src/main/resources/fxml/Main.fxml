@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="909.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
+<AnchorPane prefHeight="909.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
    <children>
       <ImageView fitHeight="910.0" fitWidth="1300.0" pickOnBounds="true">
          <image>
@@ -63,7 +63,12 @@
                                                 <Insets left="15.0" top="5.0" />
                                              </padding>
                                           </Label>
-                                          <VBox fx:id="graph" prefHeight="426.0" prefWidth="622.0" />
+                                          <HBox prefHeight="379.0" prefWidth="631.0">
+                                             <children>
+                                                <VBox fx:id="n_graph" prefHeight="378.0" prefWidth="316.0" />
+                                                <VBox fx:id="o_graph" prefHeight="378.0" prefWidth="315.0" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                  </children>
