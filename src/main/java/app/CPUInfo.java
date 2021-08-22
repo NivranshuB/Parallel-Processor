@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * This class runs in its own thread and pushes the CPU usage to the UI
  * every 1 second.
  */

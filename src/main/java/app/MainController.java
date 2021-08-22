@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
+ * Controller class used by javafx fxml to be used with the GUI
  */
 public class MainController {
 

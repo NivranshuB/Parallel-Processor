@@ -10,7 +10,7 @@ import model.Edge;
 import model.Node;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * Utility class used to parse DOT files that represent the tasks to be scheduled.
  */
 

@@ -3,7 +3,7 @@ package app;
 import java.io.File;
 
 /**
- * Author: Team Untested
+ * Author: Team Untested (13)
  * Singleton class which stores argument options/config from the command line.
  */
 public class Config {

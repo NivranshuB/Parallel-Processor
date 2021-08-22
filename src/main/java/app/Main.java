@@ -11,9 +11,8 @@ import javafx.stage.WindowEvent;
 
 
 /**
- * Author: Team UNTESTED
- * Main method which is called from the AppMain class at runtime. This method is responsible for the initialization
- * of the application environment.
+ * Author: Team Untested (13)
+ * Main method where the implementation of the program begins.
  */
 public class Main extends Application {
 
@@ -67,11 +66,7 @@ public class Main extends Application {
         stage.setTitle("Task Scheduler");
         stage.setScene(new Scene(root, 1300, 760));
         stage.setResizable(false);
-        if (config.getVisualise()) {
-            stage.show();
-        }
-
-        System.out.println("is start first??");
+        stage.show();
 
         ApplicationThread thread = new ApplicationThread();
         thread.start();

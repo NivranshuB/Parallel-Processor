@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
  * Utility class used to output graph representing task schedules in DOT format
  */
 

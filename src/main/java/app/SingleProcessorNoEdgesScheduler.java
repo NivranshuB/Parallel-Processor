@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Author: Team UNTESTED
+ * Author: Team Untested (13)
+ * Class used for special cases where no edges are present in the input graph and when scheduled on only one processor
  */
 public class SingleProcessorNoEdgesScheduler extends Scheduler{
 
