@@ -45,12 +45,12 @@ public class MainController {
 
     private final Timeline[] timeline = new Timeline[1];
 
-    int nodeCounter = 0;
-    int edgeCounter = 0;
+    private int nodeCounter = 0;
+    private int edgeCounter = 0;
 
     private final String[] COLORS = {"fill-color: rgb(41,168,41);",
             "fill-color: rgb(125,191,255);",
-            "fill-color: rgb(0,0,255);",
+            "fill-color: rgb(80,60,240);",
             "fill-color: rgb(0,255,0);",
             "fill-color: rgb(255,0,0);",
             "fill-color: rgb(107,107,255);",
@@ -432,7 +432,7 @@ public class MainController {
         String styleSheet = "node {" +
                 "size: 35px, 20px;" +
                 "shape: box;" +
-                "stroke-color: grey;" +
+                "stroke-color: rgb(2, 4, 16);" +
                 "stroke-mode: plain;" +
                 "stroke-width: 1px;" +
                 "}" +
@@ -452,7 +452,7 @@ public class MainController {
                 "graph {fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
                 "fill-mode: gradient-vertical;" +
                 "}" +
-                "edge {fill-color: white};";
+                "edge {fill-color: grey;};";
 
         sg.setAttribute("ui.stylesheet", styleSheet);
 
@@ -470,8 +470,10 @@ public class MainController {
     public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
         sg.addNode(criticalLength + "_" + nodeCounter);
         sg.addEdge("Edge-" + edgeCounter, "root",criticalLength + "_" + nodeCounter);
+        nodeCounter++;
+        edgeCounter++;
 
-        Node currentNode = sg.getNode(criticalLength + "_" + nodeCounter);
+        Node currentNode = sg.getNode(criticalLength + "_" + (nodeCounter - 1));
         currentNode.setAttribute("ui.label", criticalLength);
         currentNode.setAttribute("core", coreNm);
         currentNode.setAttribute("ui.class", "marked");
@@ -491,8 +493,8 @@ public class MainController {
 
         lastOptimalNode.set(coreNm, currentNode.toString());
 
-        nodeCounter++;
-        edgeCounter++;
-
+        if (sg.getNodeCount() > 41) {
+            sg.removeNode(1);
+        }
     }
 }
