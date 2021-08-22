@@ -26,7 +26,7 @@ public class MemoryInfo implements Runnable {
 	}
 
 	/**
-     * Start the MemoryInfo thread.
+     * Start the MemoryInfo thread and push memory usage to the main controller.
      */
 	public void run() {
         while (true)    {
