@@ -30,8 +30,8 @@ public class OutputParser {
      * @param dotFileReader DotFileReader object with graph information.
      */
     public OutputParser(Config config, BnBSchedule schedule, DotFileReader dotFileReader) {
-
-        this.graphName = dotFileReader.getGraphName().replaceAll("\"", ""); // removes quotation marks from graph name
+        // removes quotation marks from graph name
+        this.graphName = dotFileReader.getGraphName().replaceAll("\"", "");
         this.graphName = this.graphName + "-output";
         this.config = config;
         this.bnbschedule = schedule;

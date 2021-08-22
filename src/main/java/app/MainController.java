@@ -33,6 +33,8 @@ public class MainController {
 
 	private static final int UPDATE_INTERVAL = 1000;
 
+    private static final String COMPLETE_TEXT = "COMPLETE";
+
     private final Timeline[] timeline = new Timeline[1];
 
     private static MainController mainController = null;
@@ -121,24 +123,7 @@ public class MainController {
 
 	public void initialize() {
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
-					int timeCurrent = 0;
-
-					@Override
-					public void handle(ActionEvent actionEvent) {
-						int milliseconds = timeCurrent % 1000;
-						int seconds = timeCurrent / 1000;
-						time.setText(seconds + "." + String.format("%03d", milliseconds));
-						timeCurrent++;
-					}
-				}));
-				timeline[0].setCycleCount(Timeline.INDEFINITE);
-				timeline[0].play();
-			}
-		});
+        createTimer();
 
 		mainController = this;
 
@@ -150,24 +135,21 @@ public class MainController {
 		int numOfP = config.getNumOfProcessors();
 		int numOfC = config.getNumOfCores();
 
+
 		numOfTasks.setText(String.valueOf(numOfT));
 		numOfProcessors.setText(String.valueOf(numOfP));
 		numOfCores.setText(String.valueOf(numOfC));
 		currentBest.setStyle("-fx-font-size: 17;");
 		System.setProperty("org.graphstream.ui", "javafx");
 
-		Graph g = new SingleGraph("test");
-
+		Graph g = new SingleGraph("graph");
 		FxViewer v = new FxViewer(g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-
 		v.enableAutoLayout();
-
         FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
         FileSource fs = new FileSourceDOT();
-
         fs.addSink(g);
-
+        // reads dot file and parsers into Graphstream to be displayed on the GUI
         try {
             fs.readAll(config.getInputFile().getCanonicalPath());
         } catch (IOException e) {
@@ -179,27 +161,29 @@ public class MainController {
         for (Node node : g) {
             node.setAttribute("ui.label", node.getId());
         }
-
-
         g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
-
-        Stage primaryStage = Main.getPrimaryStage();
 
         n_graph.getChildren().add(panel);
 
         initialiseScheduleGraph();
 
+        // adds processor numbers into array to be used when adding to the gantt chart
         processorCount = config.getNumOfProcessors();
         nameArray = new ArrayList<>();
-
         for (int i = 0; i < processorCount; i++) {
             nameArray.add(String.valueOf(i));
         }
 
         xAxis = new NumberAxis(); // tasks time
         yAxis = new CategoryAxis(); // processors
-
         sbc = new StackedBarChart<>(xAxis, yAxis);
+
+        xAxis.setLabel("Time");
+        yAxis.setLabel("Processors");
+        xAxis.setAnimated(false);
+        xAxis.setTickUnit(1);
+        yAxis.setCategories(FXCollections.observableList(nameArray));
+        sbc.setLegendVisible(false);
 
         Platform.runLater(new Runnable() {
             @Override
@@ -208,6 +192,7 @@ public class MainController {
             }
         });
 
+        Stage primaryStage = Main.getPrimaryStage();
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {
@@ -220,26 +205,56 @@ public class MainController {
         Monitor.start();
     }
 
+    /**
+     * Sets scheduler variable to be used in various places in MainController
+     *
+     * @param scheduler Scheduler object to be used in MainController
+     */
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
-    public static Graph getVizGraph() {
-        return g;
-    }
-
-    public void setComplete() {
-        status.setText("COMPLETE");
-    }
-
+    /**
+     * @return MainController Used to retrieve singleton class object
+     */
     public static MainController getInstance() {
         return mainController;
     }
 
+    /**
+     * Method to create timer to be used in the visualisation and continually update the timer value
+     */
+    private void createTimer() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+                    int timeCurrent = 0;
+
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        int milliseconds = timeCurrent % 1000;
+                        int seconds = timeCurrent / 1000;
+                        time.setText(seconds + "." + String.format("%03d", milliseconds));
+                        timeCurrent++;
+                    }
+                }));
+                timeline[0].setCycleCount(Timeline.INDEFINITE);
+                timeline[0].play();
+            }
+        });
+    }
+
+    /**
+     * Method that creates/updates the gantt chart on the visualisation. First clears the chart, then iterates through
+     * the tasks and adds them at the correct position accounting for gaps between tasks.
+     * @param nodeList List of nodes to be added/updated on the gantt chart
+     */
     public void createGantt(List<model.Node> nodeList) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                // clears chart for a fresh canvas
                 sbc.getData().clear();
 
                 ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
@@ -247,6 +262,7 @@ public class MainController {
                 for (int i = 0; i < processorCount; i++) {
                     int currentTime = 0;
                     for (model.Node node : nodeList) {
+                        // check that the node is to be assigned on this processor
                         if (node.getProcessor() == i) {
                             ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
                             XYChart.Data<Number, String> taskData;
@@ -265,7 +281,7 @@ public class MainController {
                                     invisibleList.add(data);
                                     XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
                                     sbc.getData().add(emptyTask);
-                                // if task is not first task on processor and time != 0
+                                    // if task is not first task on processor and time != 0
                                 } else if (node.getStart() != currentTime) {
                                     XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
                                     oList.add(data);
@@ -279,20 +295,17 @@ public class MainController {
                                 sbc.getData().add(new XYChart.Series<>(otherList));
                                 currentTime = node.getStart() + node.getWeight();
                             }
-                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" + "Weight: " + node.getWeight() + "\n" + "Start time: " + node.getStart());
+                            // allows the user to hover over the task to display info
+                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" +
+                                    "Weight: " + node.getWeight() + "\n" +
+                                    "Start time: " + node.getStart());
                             tooltip.setShowDelay(Duration.seconds(0));
                             Tooltip.install(taskData.getNode(), tooltip);
                         }
                     }
                 }
 
-                xAxis.setLabel("Time");
-                yAxis.setLabel("Processors");
-                xAxis.setAnimated(false);
-                xAxis.setTickUnit(1);
-                yAxis.setCategories(FXCollections.observableList(nameArray));
-                sbc.setLegendVisible(false);
-
+                // sets temporary tasks used as spaces to invisible
                 for (XYChart.Data<Number, String> task : invisibleList) {
                     task.getNode().setVisible(false);
                 }
@@ -300,6 +313,9 @@ public class MainController {
         });
     }
 
+    /**
+     * Method used to add a listener to specific sections of code used to update the UI in real-time
+     */
     public void addListener() {
         scheduler.addChangeListener(evt -> {
             Platform.runLater(new Runnable() {
@@ -325,13 +341,12 @@ public class MainController {
                         }
                         // runs when final optimal schedule is found
                     } else if (evt.getPropertyName().equals("optimal schedule")) {
-                        status.setText("COMPLETE");
+                        status.setText(COMPLETE_TEXT);
                         bestTime.setText(String.valueOf(evt.getNewValue()));
                         timeline[0].stop();
                     }
                 }
             });
-
         });
     }
 
