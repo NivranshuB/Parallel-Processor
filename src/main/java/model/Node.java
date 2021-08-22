@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Author: Team UNTESTED
  * Class to represent the Nodes in the graph, representing the tasks to be scheduled. Each node can have 0 to many
  * parent Nodes, and 0 to many child Nodes. Each node also has a corresponding weight.
  */

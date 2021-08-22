@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Author: Team UNTESTED
+ */
 public class SingleProcessorNoEdgesScheduler extends Scheduler{
 
     private Map<String, Node> nodeMap;

@@ -4,6 +4,9 @@ import javafx.application.Platform;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Author: Team UNTESTED
+ */
 public class MyThread extends Thread {
 
     public void run() {

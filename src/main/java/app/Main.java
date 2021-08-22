@@ -13,7 +13,8 @@ import javafx.stage.WindowEvent;
 
 /**
  * Author: Team UNTESTED
- * Main method where the implementation of the program begins.
+ * Main method which is called from the AppMain class at runtime. This method is responsible for the initialization
+ * of the application environment.
  */
 public class Main extends Application {
 

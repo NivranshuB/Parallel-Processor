@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Author: Team UNTESTED
+ */
 public class MainController {
 
     private static final int UPDATE_INTERVAL = 1000;

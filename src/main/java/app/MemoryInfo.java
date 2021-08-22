@@ -1,7 +1,7 @@
 package app;
 
 /**
- * Author: Team Untested
+ * Author: Team UNTESTED
  * This class runs in its own thread and pushes the memory usage to the UI
  * at a set interval.
  */
