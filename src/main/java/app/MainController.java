@@ -205,8 +205,6 @@ public class MainController {
 
         initialiseScheduleGraph();
 
-        System.out.println("or is initialise first?");
-
         processorCount = config.getNumOfProcessors();
         nameArray = new ArrayList<>();
 
@@ -494,7 +492,6 @@ public class MainController {
             Node previousOptimalNode = sg.getNode(previousCoreBest);
             previousOptimalNode.removeAttribute("ui.class");
         }
-        System.out.println(currentNode.toString());
         lastOptimalNode.set(coreNm, currentNode.toString());
 
     }
