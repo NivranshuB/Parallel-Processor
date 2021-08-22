@@ -69,7 +69,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
         //      Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
         stage.setTitle("Task Scheduler");
-        stage.setScene(new Scene(root, 1280, 960));
+        stage.setScene(new Scene(root, 1300, 900));
         stage.setResizable(false);
         if (config.getVisualise()) {
             stage.show();
