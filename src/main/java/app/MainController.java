@@ -62,7 +62,7 @@ public class MainController {
 
     @FXML
     private Label numOfTasks;
-    
+
     @FXML
     private Label currentBest;
 
@@ -119,8 +119,6 @@ public class MainController {
     private static final String GraphstreamStyleSheet = "" +
             "node {" +
             "fill-color: red;" +
-//            "text-background-mode: rounded-box;" +
-//            "text-background-color: black;" +
             "text-offset: 10;" +
             "text-size: 16;" +
             "size-mode: dyn-size;" +
@@ -141,7 +139,7 @@ public class MainController {
 
         Platform.runLater(new Runnable() {
             @Override
-            public void run() { // Duration.seconds(1)
+            public void run() {
                 timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
                     int timeCurrent = 0;
 
@@ -163,7 +161,7 @@ public class MainController {
         initialiseMemory();
         initialiseCPU();
         config = Config.getInstance();
-        
+
         int numOfT = config.getNumOfTasks();
         int numOfP = config.getNumOfProcessors();
         int numOfC = config.getNumOfCores();
@@ -269,20 +267,23 @@ public class MainController {
                         if (node.getProcessor() == i) {
                             ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
                             XYChart.Data<Number, String> taskData;
-                            if (node.getStart() == 0) { // if task starts at time = 0
+                            // if task starts at time = 0
+                            if (node.getStart() == 0) {
                                 taskData = new XYChart.Data<>(node.getWeight(), String.valueOf(node.getProcessor()));
                                 oList.add(taskData);
                                 sbc.getData().add(new XYChart.Series<>(oList));
                                 currentTime = node.getWeight();
                             } else {
                                 ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
-                                if (currentTime == 0 && node.getStart() != 0) { // if task is first task on processor when time != 0
+                                // if task is first task on processor when time != 0
+                                if (currentTime == 0 && node.getStart() != 0) {
                                     XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart(), String.valueOf(node.getProcessor()));
                                     oList.add(data);
                                     invisibleList.add(data);
                                     XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
                                     sbc.getData().add(emptyTask);
-                                } else if (node.getStart() != currentTime) { // if task is not first task on processor and time != 0
+                                // if task is not first task on processor and time != 0
+                                } else if (node.getStart() != currentTime) {
                                     XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
                                     oList.add(data);
                                     invisibleList.add(data);
@@ -305,9 +306,6 @@ public class MainController {
                 xAxis.setLabel("Time");
                 yAxis.setLabel("Processors");
                 xAxis.setAnimated(false);
-//                sbc.setAnimated(false);
-//                xAxis.setLowerBound(0);
-//                xAxis.setUpperBound(OutputParser.max);
                 xAxis.setTickUnit(1);
                 yAxis.setCategories(FXCollections.observableList(nameArray));
                 sbc.setLegendVisible(false);
@@ -324,20 +322,26 @@ public class MainController {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (evt.getPropertyName().equals("update node")) {
-                        model.Node searchedNode = (model.Node) evt.getNewValue();
-                        for (org.graphstream.graph.Node vizNode : MainController.getVizGraph()) {
-                            if (searchedNode.getName().equals(vizNode.getId())) {
-                                vizNode.setAttribute("ui.class", "marked");
-                                try {
-                                } catch (Exception e) {
+                    if (evt.getPropertyName().equals("update progress")) {
+                        // checks if multi-threading
+                        if (Integer.parseInt(numOfCores.getText()) > 1) {
+                            boolean newOptimal = true;
+                            // looks through potential optimal schedule of each thread
+                            for (String n : lastOptimalNode) {
+                                n = n.split("_")[0];
+                                // checks that new value is less than all threads
+                                if (Integer.parseInt(n) < (int) (evt.getNewValue())) {
+                                    newOptimal = false;
                                 }
                             }
-                        }
-                    }
-                    if (evt.getPropertyName().equals("update progress")) {
+                            if (newOptimal) { // if true, updates value
+                                bestTime.setText(String.valueOf(evt.getNewValue()));
+                            }
+                        } else { // always updates value if single threaded
                             bestTime.setText(String.valueOf(evt.getNewValue()));
-                    } else {
+                        }
+                        // runs when final optimal schedule is found
+                    } else if (evt.getPropertyName().equals("optimal schedule")) {
                         status.setText("COMPLETE");
                         bestTime.setText(String.valueOf(evt.getNewValue()));
                         timeline[0].stop();
@@ -426,7 +430,7 @@ public class MainController {
 
         FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
-        sg.addNode("root" );
+        sg.addNode("root");
         sg.getNode("root").setAttribute("ui.class", "root");
 
         String styleSheet = "node {" +
@@ -452,7 +456,7 @@ public class MainController {
                 "graph {fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
                 "fill-mode: gradient-vertical;" +
                 "}" +
-                "edge {fill-color: grey;};";
+                "edge {fill-color: grey;}";
 
         sg.setAttribute("ui.stylesheet", styleSheet);
 
@@ -469,7 +473,7 @@ public class MainController {
 
     public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
         sg.addNode(criticalLength + "_" + nodeCounter);
-        sg.addEdge("Edge-" + edgeCounter, "root",criticalLength + "_" + nodeCounter);
+        sg.addEdge("Edge-" + edgeCounter, "root", criticalLength + "_" + nodeCounter);
         nodeCounter++;
         edgeCounter++;
 
@@ -490,7 +494,7 @@ public class MainController {
             Node previousOptimalNode = sg.getNode(previousCoreBest);
             previousOptimalNode.removeAttribute("ui.class");
         }
-
+        System.out.println(currentNode.toString());
         lastOptimalNode.set(coreNm, currentNode.toString());
 
     }
