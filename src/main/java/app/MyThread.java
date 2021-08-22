@@ -43,9 +43,10 @@ public class MyThread extends Thread {
         } else {
             System.out.println("Using serial");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
-            mainController.instantiateOptimalNodes(1);
+
             optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             if (config.getVisualise()) {
+                mainController.instantiateOptimalNodes(1);
                 mainController.setScheduler(optimalScheduler);
                 mainController.addListener();
             }
