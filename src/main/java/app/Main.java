@@ -61,12 +61,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         primaryStage = stage;
-        //      stage.getIcons().add(new Image(Main.class.getResourceAsStream("logo.png")));
-        //      stage.getIcons().add(new Image("file:logo.png"));
-        //      URL url = Paths.get("./src/main/java/app/Main.fxml").toUri().toURL();
-        //      Parent root = FXMLLoader.load(url);
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
-        //      Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
+
         stage.setTitle("Task Scheduler");
         stage.setScene(new Scene(root, 1300, 760));
         stage.setResizable(false);
