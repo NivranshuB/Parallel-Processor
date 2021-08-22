@@ -48,7 +48,6 @@ public class MyThread extends Thread {
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-        optimalSchedule.printSchedule();
 
         OutputParser op = new OutputParser(config, optimalSchedule, dotFileReader);
 
