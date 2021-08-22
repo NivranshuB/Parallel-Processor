@@ -4,6 +4,10 @@ import model.Node;
 
 import java.util.*;
 
+/**
+ * Class that stores the schedule of tasks and their starting times, as well as data associated with the current
+ * schedule.
+ */
 public class BnBSchedule {
 
     private int max;
@@ -41,6 +45,10 @@ public class BnBSchedule {
         }
     }
 
+    /**
+     * Method that calculates the critical path (total time taken by the entire schedule)
+     * @return Total time taken by the entire schedule
+     */
     public int calculateCriticalPath() {
         criticalPath = 0;
         int start = 0;
@@ -68,27 +76,39 @@ public class BnBSchedule {
                     }
                 }
             }
+
         }
+
         return criticalPath;
     }
 
     /**
-     * Getter to return max weight of current schedule
-     *
+     * Getter to return max weight of current schedule.
      * @return returns maximum weight of current schedule
      */
     public int getWeight() {
         return max;
     }
 
+    /**
+     * Prints the schedule to the console. Used during development and debugging.
+     */
     public void printSchedule() {
         stringStorage.forEach(System.out::println);
     }
 
+    /**
+     * Get the string representation of the schedule.
+     * @return String representation of the schedule in the format "startingTime_nodeName".
+     */
     public List<String> getStringStorage() {
         return stringStorage;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, Node> getNodeMap() {
         return nodeMap;
     }
@@ -123,6 +143,7 @@ public class BnBSchedule {
                             node.setStart(start);
 
                             nodeList.add(node);
+
                         }
                     }
                 }

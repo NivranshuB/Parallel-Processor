@@ -178,182 +178,180 @@ public class MainController {
 
 		v.enableAutoLayout();
 
-		FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
+        FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
-		FileSource fs = new FileSourceDOT();
+        FileSource fs = new FileSourceDOT();
 
-		fs.addSink(g);
+        fs.addSink(g);
 
-		try {
-			fs.readAll(config.getInputFile().getCanonicalPath());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			fs.removeSink(g);
-		}
+        try {
+            fs.readAll(config.getInputFile().getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            fs.removeSink(g);
+        }
 
-		for (Node node : g) {
-			node.setAttribute("ui.label", node.getId());
-		}
+        for (Node node : g) {
+            node.setAttribute("ui.label", node.getId());
+        }
 
 
-		g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
+        g.setAttribute("ui.stylesheet", GraphstreamStyleSheet);
 
-		Stage primaryStage = Main.getPrimaryStage();
+        Stage primaryStage = Main.getPrimaryStage();
 
-		n_graph.getChildren().add(panel);
+        n_graph.getChildren().add(panel);
 
-		initialiseScheduleGraph();
+        initialiseScheduleGraph();
 
-		System.out.println("or is initialise first?");
+        processorCount = config.getNumOfProcessors();
+        nameArray = new ArrayList<>();
 
-		processorCount = config.getNumOfProcessors();
-		nameArray = new ArrayList<>();
+        for (int i = 0; i < processorCount; i++) {
+            nameArray.add(String.valueOf(i));
+        }
 
-		for (int i = 0; i < processorCount; i++) {
-			nameArray.add(String.valueOf(i));
-		}
+        xAxis = new NumberAxis(); // tasks time
+        yAxis = new CategoryAxis(); // processors
 
-		xAxis = new NumberAxis(); // tasks time
-		yAxis = new CategoryAxis(); // processors
+        sbc = new StackedBarChart<>(xAxis, yAxis);
 
-		sbc = new StackedBarChart<>(xAxis, yAxis);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                chart.getChildren().add(sbc);
+            }
+        });
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				chart.getChildren().add(sbc);
-			}
-		});
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                v.close();
+            }
+        });
+        
+        // Start the memory info monitor in another thread
+        Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
+        Monitor.start();
+    }
 
-		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent windowEvent) {
-				v.close();
-			}
-		});
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
-		// Start monitor to poll for updates and push to UI
-		Monitor = new Thread(new MemoryInfo(this, UPDATE_INTERVAL));
-		Monitor.start();
-	}
+    public static Graph getVizGraph() {
+        return g;
+    }
 
-	public void setScheduler(Scheduler scheduler) {
-		this.scheduler = scheduler;
-	}
+    public void setComplete() {
+        status.setText("COMPLETE");
+    }
 
-	public static Graph getVizGraph() {
-		return g;
-	}
+    public static MainController getInstance() {
+        return mainController;
+    }
 
-	public void setComplete() {
-		status.setText("COMPLETE");
-	}
+    public void createGantt(List<model.Node> nodeList) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                sbc.getData().clear();
 
-	public static MainController getInstance() {
-		return mainController;
-	}
+                ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
 
-	public void createGantt(List<model.Node> nodeList) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				sbc.getData().clear();
+                for (int i = 0; i < processorCount; i++) {
+                    int currentTime = 0;
+                    for (model.Node node : nodeList) {
+                        if (node.getProcessor() == i) {
+                            ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
+                            XYChart.Data<Number, String> taskData;
+                            // if task starts at time = 0
+                            if (node.getStart() == 0) {
+                                taskData = new XYChart.Data<>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                oList.add(taskData);
+                                sbc.getData().add(new XYChart.Series<>(oList));
+                                currentTime = node.getWeight();
+                            } else {
+                                ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
+                                // if task is first task on processor when time != 0
+                                if (currentTime == 0 && node.getStart() != 0) {
+                                    XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart(), String.valueOf(node.getProcessor()));
+                                    oList.add(data);
+                                    invisibleList.add(data);
+                                    XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
+                                    sbc.getData().add(emptyTask);
+                                // if task is not first task on processor and time != 0
+                                } else if (node.getStart() != currentTime) {
+                                    XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
+                                    oList.add(data);
+                                    invisibleList.add(data);
+                                    XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
+                                    sbc.getData().add(emptyTask);
+                                }
+                                // used for above two or if task starts immediately after the previous
+                                taskData = new XYChart.Data<>(node.getWeight(), String.valueOf(node.getProcessor()));
+                                otherList.add(taskData);
+                                sbc.getData().add(new XYChart.Series<>(otherList));
+                                currentTime = node.getStart() + node.getWeight();
+                            }
+                            Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" + "Weight: " + node.getWeight() + "\n" + "Start time: " + node.getStart());
+                            tooltip.setShowDelay(Duration.seconds(0));
+                            Tooltip.install(taskData.getNode(), tooltip);
+                        }
+                    }
+                }
 
-				ObservableList<XYChart.Data<Number, String>> invisibleList = FXCollections.observableArrayList();
+                xAxis.setLabel("Time");
+                yAxis.setLabel("Processors");
+                xAxis.setAnimated(false);
+                xAxis.setTickUnit(1);
+                yAxis.setCategories(FXCollections.observableList(nameArray));
+                sbc.setLegendVisible(false);
 
-				for (int i = 0; i < processorCount; i++) {
-					int currentTime = 0;
-					for (model.Node node : nodeList) {
-						if (node.getProcessor() == i) {
-							ObservableList<XYChart.Data<Number, String>> oList = FXCollections.observableArrayList();
-							XYChart.Data<Number, String> taskData;
-							// if task starts at time = 0
-							if (node.getStart() == 0) {
-								taskData = new XYChart.Data<>(node.getWeight(), String.valueOf(node.getProcessor()));
-								oList.add(taskData);
-								sbc.getData().add(new XYChart.Series<>(oList));
-								currentTime = node.getWeight();
-							} else {
-								ObservableList<XYChart.Data<Number, String>> otherList = FXCollections.observableArrayList();
-								// if task is first task on processor when time != 0
-								if (currentTime == 0 && node.getStart() != 0) {
-									XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart(), String.valueOf(node.getProcessor()));
-									oList.add(data);
-									invisibleList.add(data);
-									XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
-									sbc.getData().add(emptyTask);
-									// if task is not first task on processor and time != 0
-								} else if (node.getStart() != currentTime) {
-									XYChart.Data<Number, String> data = new XYChart.Data<>(node.getStart() - currentTime, String.valueOf(node.getProcessor()));
-									oList.add(data);
-									invisibleList.add(data);
-									XYChart.Series<Number, String> emptyTask = new XYChart.Series<>(oList);
-									sbc.getData().add(emptyTask);
-								}
-								// used for above two or if task starts immediately after the previous
-								taskData = new XYChart.Data<>(node.getWeight(), String.valueOf(node.getProcessor()));
-								otherList.add(taskData);
-								sbc.getData().add(new XYChart.Series<>(otherList));
-								currentTime = node.getStart() + node.getWeight();
-							}
-							Tooltip tooltip = new Tooltip("Task: " + node.getName() + "\n" + "Weight: " + node.getWeight() + "\n" + "Start time: " + node.getStart());
-							tooltip.setShowDelay(Duration.seconds(0));
-							Tooltip.install(taskData.getNode(), tooltip);
-						}
-					}
-				}
+                for (XYChart.Data<Number, String> task : invisibleList) {
+                    task.getNode().setVisible(false);
+                }
+            }
+        });
+    }
 
-				xAxis.setLabel("Time");
-				yAxis.setLabel("Processors");
-				xAxis.setAnimated(false);
-				xAxis.setTickUnit(1);
-				yAxis.setCategories(FXCollections.observableList(nameArray));
-				sbc.setLegendVisible(false);
+    public void addListener() {
+        scheduler.addChangeListener(evt -> {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getPropertyName().equals("update progress")) {
+                        // checks if multi-threading
+                        if (Integer.parseInt(numOfCores.getText()) > 1) {
+                            boolean newOptimal = true;
+                            // looks through potential optimal schedule of each thread
+                            for (String n : lastOptimalNode) {
+                                n = n.split("_")[0];
+                                // checks that new value is less than all threads
+                                if (Integer.parseInt(n) < (int) (evt.getNewValue())) {
+                                    newOptimal = false;
+                                }
+                            }
+                            if (newOptimal) { // if true, updates value
+                                bestTime.setText(String.valueOf(evt.getNewValue()));
+                            }
+                        } else { // always updates value if single threaded
+                            bestTime.setText(String.valueOf(evt.getNewValue()));
+                        }
+                        // runs when final optimal schedule is found
+                    } else if (evt.getPropertyName().equals("optimal schedule")) {
+                        status.setText("COMPLETE");
+                        bestTime.setText(String.valueOf(evt.getNewValue()));
+                        timeline[0].stop();
+                    }
+                }
+            });
 
-				for (XYChart.Data<Number, String> task : invisibleList) {
-					task.getNode().setVisible(false);
-				}
-			}
-		});
-	}
+        });
+    }
 
-	public void addListener() {
-		scheduler.addChangeListener(evt -> {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					if (evt.getPropertyName().equals("update progress")) {
-						// checks if multi-threading
-						if (Integer.parseInt(numOfCores.getText()) > 1) {
-							boolean newOptimal = true;
-							// looks through potential optimal schedule of each thread
-							for (String n : lastOptimalNode) {
-								n = n.split("_")[0];
-								// checks that new value is less than all threads
-								if (Integer.parseInt(n) < (int) (evt.getNewValue())) {
-									newOptimal = false;
-								}
-							}
-							if (newOptimal) { // if true, updates value
-								bestTime.setText(String.valueOf(evt.getNewValue()));
-							}
-						} else { // always updates value if single threaded
-							bestTime.setText(String.valueOf(evt.getNewValue()));
-						}
-						// runs when final optimal schedule is found
-					} else if (evt.getPropertyName().equals("optimal schedule")) {
-						status.setText("COMPLETE");
-						bestTime.setText(String.valueOf(evt.getNewValue()));
-						timeline[0].stop();
-					}
-				}
-			});
-
-		});
-	}
-
-	/**
+    /**
 	 * Update the memory graph using the memory usage data and time elapsed.
 	 * @param memoryUsage The total memory currently in use.
 	 */
@@ -431,82 +429,82 @@ public class MainController {
 		cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
 	}
 
-	private void initialiseScheduleGraph() {
-		sg = new SingleGraph("test_optimals");
-		sg.setStrict(true);
+    private void initialiseScheduleGraph() {
+        sg = new SingleGraph("test_optimals");
+        sg.setStrict(true);
 
-		FxViewer v = new FxViewer(sg, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        FxViewer v = new FxViewer(sg, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
-		v.enableAutoLayout();
+        v.enableAutoLayout();
 
-		FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
+        FxViewPanel panel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
 
-		sg.addNode("root");
-		sg.getNode("root").setAttribute("ui.class", "root");
+        sg.addNode("root");
+        sg.getNode("root").setAttribute("ui.class", "root");
 
-		String styleSheet = "node {" +
-				"size: 35px, 20px;" +
-				"shape: box;" +
-				"stroke-color: rgb(2, 4, 16);" +
-				"stroke-mode: plain;" +
-				"stroke-width: 1px;" +
-				"}" +
-				"node.marked {" +
-				"stroke-color: yellow;" +
-				"stroke-width: 4px;" +
-				"stroke-mode: plain;" +
-				"z-index: 4;" +
-				"text-size: 12;" +
-				"size: 40px, 25px;" +
-				"}" +
-				"node.root {" +
-				"fill-color: grey;" +
-				"shape: circle;" +
-				"size: 20px;" +
-				"}" +
-				"graph {fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
-				"fill-mode: gradient-vertical;" +
-				"}" +
-				"edge {fill-color: grey;}";
+        String styleSheet = "node {" +
+                "size: 35px, 20px;" +
+                "shape: box;" +
+                "stroke-color: rgb(2, 4, 16);" +
+                "stroke-mode: plain;" +
+                "stroke-width: 1px;" +
+                "}" +
+                "node.marked {" +
+                "stroke-color: yellow;" +
+                "stroke-width: 4px;" +
+                "stroke-mode: plain;" +
+                "z-index: 4;" +
+                "text-size: 12;" +
+                "size: 40px, 25px;" +
+                "}" +
+                "node.root {" +
+                "fill-color: grey;" +
+                "shape: circle;" +
+                "size: 20px;" +
+                "}" +
+                "graph {fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
+                "fill-mode: gradient-vertical;" +
+                "}" +
+                "edge {fill-color: grey;}";
 
-		sg.setAttribute("ui.stylesheet", styleSheet);
+        sg.setAttribute("ui.stylesheet", styleSheet);
 
-		Stage primaryStage = Main.getPrimaryStage();
+        Stage primaryStage = Main.getPrimaryStage();
 
-		o_graph.getChildren().add(panel);
-	}
+        o_graph.getChildren().add(panel);
+    }
 
-	public void instantiateOptimalNodes(int tCores) {
-		for (int i = 0; i < tCores; i++) {
-			lastOptimalNode.add("");
-		}
-	}
+    public void instantiateOptimalNodes(int tCores) {
+        for (int i = 0; i < tCores; i++) {
+            lastOptimalNode.add("");
+        }
+    }
 
-	public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
-		sg.addNode(criticalLength + "_" + nodeCounter);
-		sg.addEdge("Edge-" + edgeCounter, "root", criticalLength + "_" + nodeCounter);
-		nodeCounter++;
-		edgeCounter++;
+    public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
+        sg.addNode(criticalLength + "_" + nodeCounter);
+        sg.addEdge("Edge-" + edgeCounter, "root", criticalLength + "_" + nodeCounter);
+        nodeCounter++;
+        edgeCounter++;
 
-		Node currentNode = sg.getNode(criticalLength + "_" + (nodeCounter - 1));
-		currentNode.setAttribute("ui.label", criticalLength);
-		currentNode.setAttribute("core", coreNm);
-		currentNode.setAttribute("ui.class", "marked");
+        Node currentNode = sg.getNode(criticalLength + "_" + (nodeCounter - 1));
+        currentNode.setAttribute("ui.label", criticalLength);
+        currentNode.setAttribute("core", coreNm);
+        currentNode.setAttribute("ui.class", "marked");
 
-		if (coreNm >= COLORS.length) {
-			currentNode.setAttribute("ui.style", COLORS[0]);
-		} else {
-			currentNode.setAttribute("ui.style", COLORS[coreNm]);
-		}
+        if (coreNm >= COLORS.length) {
+            currentNode.setAttribute("ui.style", COLORS[0]);
+        } else {
+            currentNode.setAttribute("ui.style", COLORS[coreNm]);
+        }
 
-		String previousCoreBest = lastOptimalNode.get(coreNm);
+        String previousCoreBest = lastOptimalNode.get(coreNm);
 
-		if (!(previousCoreBest.equals(""))) {
-			Node previousOptimalNode = sg.getNode(previousCoreBest);
-			previousOptimalNode.removeAttribute("ui.class");
-		}
-		System.out.println(currentNode.toString());
-		lastOptimalNode.set(coreNm, currentNode.toString());
+        if (!(previousCoreBest.equals(""))) {
+            Node previousOptimalNode = sg.getNode(previousCoreBest);
+            previousOptimalNode.removeAttribute("ui.class");
+        }
+        lastOptimalNode.set(coreNm, currentNode.toString());
 
-	}
+    }
+
 }
