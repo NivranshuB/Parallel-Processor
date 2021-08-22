@@ -21,12 +21,15 @@ public class ParallelScheduler extends Scheduler{
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
 
         coreCount = config.getNumOfCores();
+        MainController.getInstance().instantiateOptimalNodes(coreCount);
         rootNodes = dotFileReader.getRootNodeList();
         int numOfRoot = rootNodes.size();
         executor = Executors.newFixedThreadPool(numberOfThreads(numOfRoot));
 
         System.out.println("Create");
         System.out.println("Number of roots: " + rootNodes.size());
+
+        int coreCounter = 0;
 
         for (int i = 0; i < numOfRoot; i++) {
 
@@ -37,7 +40,7 @@ public class ParallelScheduler extends Scheduler{
                 System.out.println("Size of rootNodes is: " + rootNodes.size());
                 System.out.println("Root node list: " + temp.toString());
                 System.out.println("Number of threads: " + (i+1));
-                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp);
+                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
 
                 break;
@@ -48,10 +51,16 @@ public class ParallelScheduler extends Scheduler{
                 DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
                 System.out.println("Does this run? Size of rootNodes is " + rootNodes.size());
                 System.out.println("Root node list: " + temp.toString());
-                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp);
+                BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, temp, coreCounter);
                 futureList.add(executor.submit(currScheduler));
 
             }
+
+            if (coreCounter > coreCount) {
+                coreCount = 0;
+            }
+
+            coreCounter++;
 
         }
 

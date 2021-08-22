@@ -12,34 +12,23 @@ public class MyThread extends Thread {
 
         Config config = Config.getInstance();
 
-//        Scheduler scheduler = Scheduler.getInstance();
 
         DotFileReader dotFileReader = Main.getDotFileReader();
 
-//        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
-
-//        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-
-//        BnBSchedule optimalSchedule = optimalScheduler.getSchedule();
-
-//        String graphName = dotFileReader.getGraphName();
-
-        //Parses the optimal schedule to the output DOT file
-//        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
-
-        //        Schedule optimalSchedule = scheduler.getOptimalSchedule(dotFileReader.getNodeMap(), dotFileReader.getEdgeMap(), config.getNumOfProcessors());
-//		System.out.println("Here is optimal: \n" + optimalSchedule);
         MainController mainController = MainController.getInstance();
 
         BnBSchedule optimalSchedule = null;
         BnBScheduler optimalScheduler = null;
+//        Scheduler optimalScheduler = null;
 
         if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
             System.out.println("Using parallelisation");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
-            mainController.setScheduler(parallel);
-            mainController.addListener();
+            if (config.getVisualise()) {
+                mainController.setScheduler(parallel);
+                mainController.addListener();
+            }
 
             try {
                 optimalSchedule = parallel.checkBestSchedule();
@@ -50,16 +39,23 @@ public class MyThread extends Thread {
             }
         } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
             SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            if (config.getVisualise()) {
+                mainController.setScheduler(scheduler);
+                mainController.addListener();
+            }
             optimalSchedule = scheduler.getSchedule();
-            mainController.setScheduler(scheduler);
-            mainController.addListener();
+
         } else {
             System.out.println("Using serial");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
-            optimalScheduler = new BnBScheduler(dotFileReader, config);
-            mainController.setScheduler(optimalScheduler);
-            mainController.addListener();
+            mainController.instantiateOptimalNodes(1);
+            optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
+            if (config.getVisualise()) {
+                mainController.setScheduler(optimalScheduler);
+                mainController.addListener();
+            }
             optimalSchedule = optimalScheduler.getSchedule();
+
         }
 
 
@@ -71,12 +67,16 @@ public class MyThread extends Thread {
 //        //optimalSchedule = scheduler.getOptimalSchedule(nodeMap, edgeMap, numberOfProcessors);
         String graphName = dotFileReader.getGraphName();
 //        //Corban's code to parse the optimal schedule to the output DOT file
-        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+//        OutputParser op = new OutputParser(graphName, config, optimalSchedule, optimalScheduler);
+        OutputParser op = new OutputParser(graphName, config, optimalSchedule, dotFileReader);
 
         op.writeFile();
 
 //        mainController.createGantt(op);
-        mainController.createGantt(op.getNodeList());
+        if (config.getVisualise()) {
+            mainController.createGantt(op.getNodeList());
+        }
+
 
         if (!config.getVisualise()) {
             Platform.exit();
