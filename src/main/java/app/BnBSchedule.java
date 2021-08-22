@@ -68,9 +68,7 @@ public class BnBSchedule {
                     }
                 }
             }
-
         }
-
         return criticalPath;
     }
 
@@ -125,19 +123,12 @@ public class BnBSchedule {
                             node.setStart(start);
 
                             nodeList.add(node);
-
-//                                System.out.println("node: " + attributes[1] + " " + " " + attributes[0] + " " + processorCount);
-
                         }
                     }
                 }
             }
             processorCount++;
         }
-
-        System.out.println("Critical path = " + criticalPath);
-
-//            List<Processor> processorList = bnBScheduler.getListOfProcessors();
 
         max = criticalPath;
 

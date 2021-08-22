@@ -68,5 +68,6 @@ public class MyThread extends Thread {
             Platform.exit();
             System.exit(0);
         }
+
     }
 }

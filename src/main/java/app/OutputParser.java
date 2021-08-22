@@ -21,8 +21,6 @@ public class OutputParser {
 
     public static int max = 0;
 
-    private Map<String, Node> nodeMap;
-
     private List<Node> nodeList;
 
     /**
@@ -51,50 +49,17 @@ public class OutputParser {
             FileWriter writer = new FileWriter(config.getOutputFile());
             writer.write("digraph \"" + graphName + "\" {\n");
 
-            nodeMap = bnbschedule.getNodeMap();
+            nodeList = bnbschedule.getNodeList();
 
-            List<String> stringSchedule = bnbschedule.getStringStorage();
-
-            int processorCount = 0;
-            int criticalPath = 0;
-            int start = 0;
-
-            nodeList = new ArrayList<>();
-
-            for (String string : stringSchedule) {
-                String[] stringArray;
-
-                stringArray = string.split(",");
-                for (String splitString : stringArray) {
-                    String[] attributes = splitString.split("-");
-
-                    if (attributes.length >= 2) {
-                        Iterator<Map.Entry<String, Node>> iterator = nodeMap.entrySet().iterator();
-
-                        while (iterator.hasNext()) {
-                            Map.Entry<String, Node> entry = iterator.next();
-                            Node node = entry.getValue();
-                            if (node.getName().equals(attributes[1])) {
-                                start = Integer.parseInt(attributes[0].replaceAll("\\s+", ""));
-                                int potentialCriticalPath = start + node.getWeight();
-                                if (potentialCriticalPath > criticalPath) {
-                                    criticalPath = potentialCriticalPath;
-                                }
-                                node.setProcessor(processorCount);
-                                node.setStart(start);
-                                nodeList.add(node);
-
-                                writer.write("\t" + attributes[1] + "\t [Weight=" + node.getWeight() + ",Start=" + start + ",Processor=" + processorCount + "];\n");
-                            }
-                        }
-                    }
-                }
-                processorCount++;
+            for (Node n : nodeList) {
+                String nodeName = n.getName();
+                int nodeWeight = n.getWeight();
+                int nodeStart = n.getStart();
+                int nodeProcessor = n.getProcessor();
+                writer.write("\t" + nodeName + "\t [Weight=" + nodeWeight + ",Start=" + nodeStart + ",Processor=" + nodeProcessor + "];\n");
             }
 
-            System.out.println("Critical path = " + criticalPath);
-
-            max = criticalPath;
+            max = bnbschedule.getWeight();
 
             HashMap<String, Edge> edgeMap = dotFileReader.getEdgeMap();
 
