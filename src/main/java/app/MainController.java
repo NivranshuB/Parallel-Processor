@@ -44,6 +44,9 @@ public class MainController {
 
     @FXML
     private Label numOfTasks;
+    
+    @FXML
+    private Label currentBest;
 
     @FXML
     private Label numOfProcessors;
@@ -118,7 +121,7 @@ public class MainController {
         initialiseMemory();
         initialiseCPU();
         config = Config.getInstance();
-
+        
         int numOfT = config.getNumOfTasks();
         int numOfP = config.getNumOfProcessors();
         int numOfC = config.getNumOfCores();
@@ -126,7 +129,7 @@ public class MainController {
         numOfTasks.setText(String.valueOf(numOfT));
         numOfProcessors.setText(String.valueOf(numOfP));
         numOfCores.setText(String.valueOf(numOfC));
-
+        currentBest.setStyle("-fx-font-size: 17;");
         System.setProperty("org.graphstream.ui", "javafx");
 
         Graph g = new SingleGraph("test");

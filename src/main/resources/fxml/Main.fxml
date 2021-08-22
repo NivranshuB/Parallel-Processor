@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="909.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
+<AnchorPane prefHeight="910.0" prefWidth="1300.0" styleClass="background" stylesheets="@UI.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainController">
    <children>
       <ImageView fitHeight="910.0" fitWidth="1300.0" pickOnBounds="true">
          <image>
@@ -24,9 +24,9 @@
                      <children>
                         <HBox prefHeight="491.0" prefWidth="1262.0">
                            <children>
-                              <VBox prefHeight="548.0" prefWidth="841.0" style="-fx-border-color: gray;" styleClass="inputGraphContainer">
+                              <VBox prefHeight="462.0" prefWidth="842.0" style="-fx-border-color: gray;" styleClass="inputGraphContainer">
                                  <children>
-                                    <VBox styleClass="categories">
+                                    <VBox prefWidth="640.0" styleClass="categories">
                                        <children>
                                           <Label alignment="TOP_LEFT" prefHeight="36.0" prefWidth="402.0" styleClass="subheading" text="CURRENT SCHEDULE" textFill="WHITE">
                                              <opaqueInsets>
@@ -54,7 +54,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </VBox>
-                              <VBox prefHeight="470.0" prefWidth="805.0" style="-fx-border-color: gray;">
+                              <VBox prefHeight="462.0" prefWidth="828.0" style="-fx-border-color: gray;">
                                  <children>
                                     <VBox prefHeight="591.0" prefWidth="486.0" styleClass="categories">
                                        <children>
@@ -232,7 +232,7 @@
                                     </VBox>
                                     <VBox prefHeight="176.0" prefWidth="341.0" styleClass="categories">
                                        <children>
-                                          <Label alignment="TOP_LEFT" prefHeight="63.0" prefWidth="510.0" styleClass="subheading" text="CURRENT BEST SCHEDULE" textFill="WHITE">
+                                          <Label fx:id="currentBest" alignment="TOP_LEFT" prefHeight="63.0" prefWidth="510.0" styleClass="subheading" text="CURRENT BEST SCHEDULE" textFill="WHITE">
                                              <padding>
                                                 <Insets left="15.0" top="5.0" />
                                              </padding>
@@ -267,7 +267,7 @@
                                     <Insets bottom="10.0" top="10.0" />
                                  </padding>
                               </VBox>
-                              <VBox prefHeight="470.0" prefWidth="346.0" style="-fx-border-color: gray;">
+                              <VBox prefHeight="449.0" prefWidth="508.0" style="-fx-border-color: gray;">
                                  <children>
                                     <VBox prefHeight="591.0" prefWidth="486.0" styleClass="categories">
                                        <children>
@@ -284,7 +284,7 @@
                                     <Insets bottom="10.0" top="10.0" />
                                  </padding>
                               </VBox>
-                              <VBox prefHeight="470.0" prefWidth="346.0" style="-fx-border-color: gray;">
+                              <VBox prefHeight="449.0" prefWidth="508.0" style="-fx-border-color: gray;">
                                  <children>
                                     <VBox prefHeight="591.0" prefWidth="486.0" styleClass="categories">
                                        <children>
