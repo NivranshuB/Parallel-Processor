@@ -493,8 +493,5 @@ public class MainController {
 
         lastOptimalNode.set(coreNm, currentNode.toString());
 
-        if (sg.getNodeCount() > 41) {
-            sg.removeNode(1);
-        }
     }
 }
