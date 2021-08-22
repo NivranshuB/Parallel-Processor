@@ -38,8 +38,10 @@ public class MyThread extends Thread {
             System.out.println("Using parallelisation");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
-            mainController.setScheduler(parallel);
-            mainController.addListener();
+            if (config.getVisualise()) {
+                mainController.setScheduler(parallel);
+                mainController.addListener();
+            }
 
             try {
                 optimalSchedule = parallel.checkBestSchedule();
@@ -50,16 +52,22 @@ public class MyThread extends Thread {
             }
         } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
             SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            if (config.getVisualise()) {
+                mainController.setScheduler(scheduler);
+                mainController.addListener();
+            }
             optimalSchedule = scheduler.getSchedule();
-            mainController.setScheduler(scheduler);
-            mainController.addListener();
+
         } else {
             System.out.println("Using serial");
             System.out.println("Number of root nodes: " + dotFileReader.getRootNodeList().size());
             optimalScheduler = new BnBScheduler(dotFileReader, config);
-            mainController.setScheduler(optimalScheduler);
-            mainController.addListener();
+            if (config.getVisualise()) {
+                mainController.setScheduler(optimalScheduler);
+                mainController.addListener();
+            }
             optimalSchedule = optimalScheduler.getSchedule();
+
         }
 
 
@@ -76,7 +84,10 @@ public class MyThread extends Thread {
         op.writeFile();
 
 //        mainController.createGantt(op);
-        mainController.createGantt(op.getNodeList());
+        if (config.getVisualise()) {
+            mainController.createGantt(op.getNodeList());
+        }
+
 
         if (!config.getVisualise()) {
             Platform.exit();
