@@ -59,12 +59,10 @@ public class ApplicationThread extends Thread {
 
         if (config.getVisualise()) {
             mainController.createGantt(op.getNodeList());
-        }
-
-        if (!config.getVisualise()) {
+        } else {
+            System.out.println("Optimal Schedule found with critical path: " + optimalSchedule.getWeight());
             Platform.exit();
             System.exit(0);
         }
-
     }
 }
