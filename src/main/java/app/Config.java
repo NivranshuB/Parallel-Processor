@@ -52,16 +52,16 @@ public class Config {
     }
 
     /**
-     * Gets the number of cores to use when executing algorithm.
-     * @return Number of cores to use when executing algorithm.
+     * Gets the number of tasks to be scheduled.
+     * @return Number of tasks to schedule.
      */
     public int getNumOfTasks() {
         return numOfTasks;
     }
 
     /**
-     * Sets the number of cores to use when executing algorithm for storage.
-     * @param numOfCores Number of cores to use when executing algorithm.
+     * Sets the number of tasks to be scheduled.
+     * @param numOfTasks Number of tasks to be scheduled.
      */
     public void setNumOfTasks(int numOfTasks) {
         this.numOfTasks = numOfTasks;
