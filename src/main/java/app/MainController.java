@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -44,15 +45,18 @@ public class MainController {
 
     private final Timeline[] timeline = new Timeline[1];
 
-    int nodeCounter = 0;
-    int edgeCounter = 0;
+    private int nodeCounter = 0;
+    private int edgeCounter = 0;
 
-    private final String[] COLORS = {"fill-color: rgb(89,240,120);",
+    private final String[] COLORS = {"fill-color: rgb(41,168,41);",
             "fill-color: rgb(125,191,255);",
-            "fill-color: rgb(255,183,110);",
-            "fill-color: rgb(249,142,142);",
-            "fill-color: rgb(0,100,255);",
-            "fill-color: rgb(246,118,227);"};
+            "fill-color: rgb(80,60,240);",
+            "fill-color: rgb(0,255,0);",
+            "fill-color: rgb(255,0,0);",
+            "fill-color: rgb(107,107,255);",
+            "fill-color: rgb(30,124,120);",
+            "fill-color: rgb(215,69,152);",
+            "fill-color: rgb(107,255,221);"};
 
     private List<String> lastOptimalNode = new ArrayList<>();
 
@@ -69,7 +73,10 @@ public class MainController {
     private Label numOfCores;
 
     @FXML
-    private VBox graph;
+    private VBox n_graph;
+
+    @FXML
+    private VBox o_graph;
 
     @FXML
     private VBox chart;
@@ -196,7 +203,7 @@ public class MainController {
 
         Stage primaryStage = Main.getPrimaryStage();
 
-        graph.getChildren().add(panel);
+        n_graph.getChildren().add(panel);
 
         initialiseScheduleGraph();
 
@@ -425,7 +432,7 @@ public class MainController {
         String styleSheet = "node {" +
                 "size: 35px, 20px;" +
                 "shape: box;" +
-                "stroke-color: black;" +
+                "stroke-color: rgb(2, 4, 16);" +
                 "stroke-mode: plain;" +
                 "stroke-width: 1px;" +
                 "}" +
@@ -441,13 +448,17 @@ public class MainController {
                 "fill-color: grey;" +
                 "shape: circle;" +
                 "size: 20px;" +
-                "}";
+                "}" +
+                "graph {fill-color: rgb(2, 4, 16), rgb(5, 21, 34);" +
+                "fill-mode: gradient-vertical;" +
+                "}" +
+                "edge {fill-color: grey;};";
 
         sg.setAttribute("ui.stylesheet", styleSheet);
 
         Stage primaryStage = Main.getPrimaryStage();
 
-        graph.getChildren().add(panel);
+        o_graph.getChildren().add(panel);
     }
 
     public void instantiateOptimalNodes(int tCores) {
@@ -459,8 +470,10 @@ public class MainController {
     public synchronized void addOptimalToSearchGraph(int criticalLength, int coreNm) {
         sg.addNode(criticalLength + "_" + nodeCounter);
         sg.addEdge("Edge-" + edgeCounter, "root",criticalLength + "_" + nodeCounter);
+        nodeCounter++;
+        edgeCounter++;
 
-        Node currentNode = sg.getNode(criticalLength + "_" + nodeCounter);
+        Node currentNode = sg.getNode(criticalLength + "_" + (nodeCounter - 1));
         currentNode.setAttribute("ui.label", criticalLength);
         currentNode.setAttribute("core", coreNm);
         currentNode.setAttribute("ui.class", "marked");
@@ -479,9 +492,6 @@ public class MainController {
         }
 
         lastOptimalNode.set(coreNm, currentNode.toString());
-
-        nodeCounter++;
-        edgeCounter++;
 
     }
 }

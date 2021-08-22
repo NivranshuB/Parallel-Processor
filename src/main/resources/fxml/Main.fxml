@@ -63,7 +63,12 @@
                                                 <Insets left="15.0" top="5.0" />
                                              </padding>
                                           </Label>
-                                          <VBox fx:id="graph" prefHeight="426.0" prefWidth="622.0" />
+                                          <HBox prefHeight="379.0" prefWidth="631.0">
+                                             <children>
+                                                <VBox fx:id="n_graph" prefHeight="378.0" prefWidth="316.0" />
+                                                <VBox fx:id="o_graph" prefHeight="378.0" prefWidth="315.0" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                  </children>
