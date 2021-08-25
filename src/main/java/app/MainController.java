@@ -332,6 +332,9 @@ public class MainController {
                             // looks through potential optimal schedule of each thread
                             for (String n : lastOptimalNode) {
                                 n = n.split("_")[0];
+                                if (n.equals("")) {
+                                    n = "0";
+                                }
                                 // checks that new value is less than all threads
                                 if (Integer.parseInt(n) < (int) (evt.getNewValue())) {
                                     newOptimal = false;
