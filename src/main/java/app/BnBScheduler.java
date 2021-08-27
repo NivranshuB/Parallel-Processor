@@ -21,7 +21,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     private HashMap<String, Node> nodeMap;
     private HashMap<String, Edge> edgeMap;
     private List<Processor> listOfProcessors = new ArrayList<Processor>();
-    private BnBSchedule optimalSchedule = new BnBSchedule();
+    private BnBSchedule optimalSchedule;
     private Set<Node> availableToSchedule = new HashSet<Node>();
     private List<Node> startingParallelNodes = new ArrayList<Node>();
     private Boolean startFlag = true;
@@ -118,7 +118,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 }
             }
         }
-
+        optimalSchedule = new BnBSchedule();
     }
 
     /**
@@ -289,17 +289,16 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
-            Set<Node> testSet = new HashSet<Node>();
-            for (Processor process : listOfProcessors) {
-                max = Math.max(max, process.getAvailableStartTime());
-                testSet.addAll(process.getTaskOrder());
-            }
+
 
             synchronized(this) {
-                System.out.println("Max value = " + max);
-                if (max < optimalSchedule.getWeight() && testSet.size() == nodeMap.values().size()) {
+                int numTasks = 0;
+                for (Processor process : listOfProcessors) {
+                    max = Math.max(max, process.getAvailableStartTime());
+                    numTasks += process.getNumberOfTasks();
+                }
+                if (max < optimalSchedule.getWeight() && numTasks == nodeMap.values().size()) {
                     optimalSchedule = new BnBSchedule(listOfProcessors);
-                    optimalSchedule.printSchedule();
 
                     if (Config.getInstance().getVisualise()) {
                         mainController.createGantt(optimalSchedule.getNodeList());

@@ -95,5 +95,9 @@ public class Processor {
         return taskOrder;
     }
 
+    public int getNumberOfTasks() {
+        return taskOrderBnB.values().size();
+    }
+
 }
 

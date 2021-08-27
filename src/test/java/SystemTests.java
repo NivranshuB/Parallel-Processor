@@ -298,7 +298,6 @@ public class SystemTests {
      * Tests for 11 node input graph, on 1 processor with the default single core.
      */
     @Test
-    @Ignore
     public void Nodes11Processor1Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "1"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -309,7 +308,6 @@ public class SystemTests {
      * Tests for 11 node input graph, on 2 processors with the default single core.
      */
     @Test
-    @Ignore
     public void Nodes11Processor2Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "2"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -320,7 +318,6 @@ public class SystemTests {
      * Tests for 11 node input graph, on 4 processors with the default single core.
      */
     @Test
-    @Ignore
     public void Nodes11Processor4Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -331,7 +328,6 @@ public class SystemTests {
      * Tests for 11 node input graph, on 4 processors with 4 cores.
      */
     @Test
-    @Ignore
     public void Nodes11Processor4Cores4Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4", "-p", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
