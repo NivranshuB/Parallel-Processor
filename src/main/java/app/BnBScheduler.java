@@ -5,6 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Author: Team Untested (13)
@@ -20,10 +21,11 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     private HashMap<String, Node> nodeMap;
     private HashMap<String, Edge> edgeMap;
     private List<Processor> listOfProcessors = new ArrayList<Processor>();
-    private BnBSchedule optimalSchedule;
+    private BnBSchedule optimalSchedule = new BnBSchedule();
     private Set<Node> availableToSchedule = new HashSet<Node>();
     private List<Node> startingParallelNodes = new ArrayList<Node>();
     private Boolean startFlag = true;
+    private int parallelisationBit = 0;
     private final int coreNumber;
 
     private MainController mainController = MainController.getInstance();
@@ -78,7 +80,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @param startingNodes List of starting nodes to start searching from.
      * @param coreNm specifies the core number that the schedule is running on
      */
-    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm, BnBSchedule optimum) {
+    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm) {
 
         coreNumber = coreNm;
         nodeMap = dotFileReader.getNodeMap();
@@ -117,7 +119,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
         }
 
-        optimalSchedule = optimum;
     }
 
     /**
@@ -288,13 +289,17 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
             }
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
-
+            Set<Node> testSet = new HashSet<Node>();
             for (Processor process : listOfProcessors) {
                 max = Math.max(max, process.getAvailableStartTime());
+                testSet.addAll(process.getTaskOrder());
             }
+
             synchronized(this) {
-                if (max < optimalSchedule.getWeight()) {
+                System.out.println("Max value = " + max);
+                if (max < optimalSchedule.getWeight() && testSet.size() == nodeMap.values().size()) {
                     optimalSchedule = new BnBSchedule(listOfProcessors);
+                    optimalSchedule.printSchedule();
 
                     if (Config.getInstance().getVisualise()) {
                         mainController.createGantt(optimalSchedule.getNodeList());
@@ -317,7 +322,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
 
         // Only run if there are available nodes to schedule
-        if (freeNodes.size() > 0 && startFlag == true) {
+        if (freeNodes.size() > 0 && startFlag) {
 
             // Only schedule one of the equivalent nodes if there are equivalent nodes (Pruning stage 1)
             Set<Node> uniqueNodes = new HashSet<Node>();
@@ -358,6 +363,79 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
             startFlag = false;
+            int numScheduled = 0;
+
+            for (Processor process : listOfProcessors) {
+                numScheduled += process.getTaskOrder().size();
+                max = Math.max(max, process.getAvailableStartTime());
+            }
+            if (max < optimalSchedule.getWeight() && numScheduled == nodeMap.values().size()) {
+                System.out.println("Num scheduled " + numScheduled);
+                optimalSchedule = new BnBSchedule(listOfProcessors);
+                for (PropertyChangeListener l : listeners) {
+                    l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
+                }
+                MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
+
+            }
+        }
+    }
+
+    /**
+     * Method that initiates the search in parallel mode.
+     * @param freeNodes Set containing the free nodes to be scheduled.
+     * @param startNodes The specified node sequence of the current search thread.
+     * @param count Current position in the startNodes list that is being added.
+     */
+    private void controlledParallelScheduleSearch(Set<Node> freeNodes, List<Node> startNodes, int count) {
+
+        // Only run if there are available nodes to schedule
+        if (freeNodes.size() > 0 && startFlag) {
+
+            // Only schedule one of the equivalent nodes if there are equivalent nodes (Pruning stage 1)
+            Set<Node> uniqueNodes = new HashSet<Node>();
+            for (Node n : freeNodes) {
+                if (startFlag) {
+                    n = startNodes.get(count);
+                    count++;
+                }
+                if (!checkInterchangeableNode(n, uniqueNodes)) {
+                    uniqueNodes.add(n);
+
+                    //Check if processors are equivalent
+                    Set<Processor> uniqueProcessors = new HashSet<Processor>();
+                    for (Processor p : listOfProcessors) {
+                        // Calculate earliest start time of Node on current Processor
+                        int start = Math.max(p.getAvailableStartTime(), startTimeAfterParent(n, p));
+                        if (!checkInterchangeableProcessor(p, uniqueProcessors, n, start)) {
+                            uniqueProcessors.add(p);
+
+                            // Check if the weight of the schedule is greater than current optimum schedule's weight. If
+                            // yes, stop checking. Otherwise, continue.
+                            if ((n.getBottomWeight() + start) <= optimalSchedule.getWeight()) {
+                                Set<Node> newFreeNodes = n.schedule(p, start);
+                                p.scheduleNode(n, start);
+                                newFreeNodes.addAll(freeNodes);
+                                newFreeNodes.remove(n);
+                                if ((count < startNodes.size())) {
+                                    controlledParallelScheduleSearch(newFreeNodes, startNodes, count);
+                                } else {
+                                    optimalScheduleSearch(newFreeNodes);
+                                }
+                                unscheduleNode(n);
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+
+        } else { //If all free nodes scheduled
+            int max = -1; //Initialise max
+            startFlag = false;
 
             for (Processor process : listOfProcessors) {
                 max = Math.max(max, process.getAvailableStartTime());
@@ -378,15 +456,20 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
      * @return
      */
     public BnBSchedule parallelSchedule() {
-        BnBSchedule output = new BnBSchedule();
+//      BnBSchedule output = new BnBSchedule();
+        if (parallelisationBit == 0) {
+            for (Node n : startingParallelNodes) {
+                parallelScheduleSearch(availableToSchedule, n);
+//            if (optimalSchedule.getWeight() < output.getWeight()) {
+//                output = optimalSchedule;
+//            };
+            }
 
-        for (Node n : startingParallelNodes){
-            parallelScheduleSearch(availableToSchedule, n);
-            if (optimalSchedule.getWeight() < output.getWeight()) {
-                output = optimalSchedule;
-            };
+        } else {
+            controlledParallelScheduleSearch(availableToSchedule, startingParallelNodes, 0);
+
         }
-        return output;
+        return optimalSchedule;
     }
 
     /**

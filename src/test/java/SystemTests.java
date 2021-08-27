@@ -1,5 +1,6 @@
 import app.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
@@ -45,11 +46,14 @@ public class SystemTests {
         System.out.println("Number of processors: " + config.getNumOfProcessors());
 
         BnBSchedule optimalSchedule = new BnBSchedule();
-        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1 && dotFileReader.getEdgeMap().size() != 0) {
-            System.out.println("Using parallelisation");
+        // Decides on which scheduler implementation to use based on the input graph attributes.
+        if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
+            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            optimalSchedule = scheduler.getSchedule();
 
+        } else if (config.getNumOfCores() > 1 ) {
+            System.out.println("Using parallel");
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
-
             try {
                 optimalSchedule = parallel.checkBestSchedule();
             } catch (InterruptedException e) {
@@ -57,18 +61,13 @@ public class SystemTests {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
-            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
-            optimalSchedule = scheduler.getSchedule();
-        } else {
+        }  else {
             System.out.println("Using serial");
             BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-
 //        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
-
 
         optimalSchedule.printSchedule();
 
@@ -299,6 +298,7 @@ public class SystemTests {
      * Tests for 11 node input graph, on 1 processor with the default single core.
      */
     @Test
+    @Ignore
     public void Nodes11Processor1Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "1"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -309,6 +309,7 @@ public class SystemTests {
      * Tests for 11 node input graph, on 2 processors with the default single core.
      */
     @Test
+    @Ignore
     public void Nodes11Processor2Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "2"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -319,6 +320,7 @@ public class SystemTests {
      * Tests for 11 node input graph, on 4 processors with the default single core.
      */
     @Test
+    @Ignore
     public void Nodes11Processor4Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
@@ -329,6 +331,7 @@ public class SystemTests {
      * Tests for 11 node input graph, on 4 processors with 4 cores.
      */
     @Test
+    @Ignore
     public void Nodes11Processor4Cores4Test() {
         String[] inputArg = {"src\\test\\test_files\\Nodes_11_OutTree.dot", "4", "-p", "4"};
         BnBSchedule optimal = getOptimalSchedule(inputArg);
