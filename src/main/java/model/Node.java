@@ -229,6 +229,11 @@ public class Node {
         Node objectArg = (Node) o;
 
         //Check values in the object passed in
+        //Check parent list size matches
+        if (parent.size() != objectArg.parent.size()) {
+            return false;
+        }
+
         //Check parent
         for (int i = 0; i < parent.size(); i++) {
             Node parentNode = parent.get(i);
@@ -238,6 +243,11 @@ public class Node {
             }
         }
 
+        //Check child list size matches
+        if (child.size() != objectArg.child.size()) {
+            return false;
+        }
+
         //Check child
         for (int i = 0; i < child.size(); i++) {
             Node childNode = child.get(i);
@@ -245,6 +255,11 @@ public class Node {
             if (!(childNode.equals(child.get(i)))) {
                 return false;
             }
+        }
+
+        //Check equivalent list size matches
+        if (equivalentNodes.size() != objectArg.equivalentNodes.size()) {
+            return false;
         }
 
         //Check equivalent nodes

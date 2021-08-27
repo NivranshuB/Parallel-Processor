@@ -116,6 +116,11 @@ public class Processor {
         Processor objectArg = (Processor) o;
 
         //Check values in the object passed in
+        //Check taskOrder list size matches
+        if (taskOrder.size() != objectArg.taskOrder.size()) {
+            return false;
+        }
+
         // Check taskOrder
         for (int i = 0; i < taskOrder.size(); i++) {
             Node taskNode = taskOrder.get(i);
