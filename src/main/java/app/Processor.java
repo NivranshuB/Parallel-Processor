@@ -95,5 +95,54 @@ public class Processor {
         return taskOrder;
     }
 
+    /**
+     * Defines an equals method for the Processor class that overrides the default equals method.
+     * @param o Object to compare this Processor object to.
+     * @return Returns True, if objects are equal, False otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        //Check if the object passed in is this object
+        if (o == this) {
+            return true;
+        }
+
+        //Check if the object passed in is a Processor object
+        if (!(o instanceof Processor)) {
+            return false;
+        }
+
+        //Cast object passed in to Processor object
+        Processor objectArg = (Processor) o;
+
+        //Check values in the object passed in
+        // Check taskOrder
+        for (int i = 0; i < taskOrder.size(); i++) {
+            Node taskNode = taskOrder.get(i);
+
+            if (!(taskNode.equals(taskOrder.get(i)))) {
+                return false;
+            }
+        }
+
+        if (!(this.finishTime == objectArg.finishTime)) {
+            return false;
+        }
+
+        if (!(this.availableStartTime == objectArg.availableStartTime)) {
+            return false;
+        }
+
+        if (!(this.bottomWeight == objectArg.bottomWeight)) {
+            return false;
+        }
+
+        if (!(taskOrderBnB.equals(objectArg.taskOrderBnB))) {
+            return false;
+        }
+
+        //Object is the same as this Processor
+        return true;
+    }
 }
 

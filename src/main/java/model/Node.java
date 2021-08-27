@@ -208,4 +208,90 @@ public class Node {
         name = nm;
     }
 
+    /**
+     * Defines an equals method for the Node class that overrides the default equals method.
+     * @param o Object to compare this Node object to.
+     * @return Returns True, if objects are equal, False otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        //Check if the object passed in is this object
+        if (o == this) {
+            return true;
+        }
+
+        //Check if the object passed in is a  Node object
+        if (!(o instanceof Node)) {
+            return false;
+        }
+
+        //Cast object passed in to Node object
+        Node objectArg = (Node) o;
+
+        //Check values in the object passed in
+        //Check parent
+        for (int i = 0; i < parent.size(); i++) {
+            Node parentNode = parent.get(i);
+
+            if (!(parentNode.equals(parent.get(i)))) {
+                return false;
+            }
+        }
+
+        //Check child
+        for (int i = 0; i < child.size(); i++) {
+            Node childNode = child.get(i);
+
+            if (!(childNode.equals(child.get(i)))) {
+                return false;
+            }
+        }
+
+        //Check equivalent nodes
+        for (int i = 0; i < equivalentNodes.size(); i++) {
+            Node equivalentNodesNode = equivalentNodes.get(i);
+
+            if (!(equivalentNodesNode.equals(equivalentNodes.get(i)))) {
+                return false;
+            }
+        }
+
+        if (!(this.name.equals(objectArg.name))) {
+            return false;
+        }
+
+        if (!(this.unscheduledParents == objectArg.unscheduledParents)) {
+            return false;
+        }
+
+        if (!(this.weight == objectArg.weight)) {
+            return false;
+        }
+
+        if (!(this.start == objectArg.start)) {
+            return false;
+        }
+
+        if (!(this.processor == objectArg.processor)) {
+            return false;
+        }
+
+        if ((this.processorBnB == null) && (objectArg.processorBnB == null)) {
+            //Ignore check for processorBnB as both null
+        } else if ((this.processorBnB == null) && (objectArg.processorBnB != null)) {
+            return false;
+        } else if ((this.processorBnB != null) && (objectArg.processorBnB == null)) {
+            return false;
+        } else if (!(this.processorBnB.equals(objectArg.processorBnB))) {
+            return false;
+        }
+
+        if (!(this.bottomWeight == objectArg.bottomWeight)) {
+            return false;
+        }
+
+        //Object is the same as this Node
+        return true;
+    }
+
 }
