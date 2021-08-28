@@ -342,7 +342,6 @@ public class MainController {
                                 }
                             }
                             if (newOptimal) { // if true, updates value
-                                System.out.println("what");
                                 bestTime.setText(String.valueOf(evt.getNewValue()));
                             }
                         } else { // always updates value if single threaded

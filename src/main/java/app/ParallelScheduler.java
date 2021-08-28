@@ -31,7 +31,6 @@ public class ParallelScheduler extends Scheduler {
      * @param dotFileReader reference to DotFileReader object.
      */
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
-        BnBSchedule optimum = new BnBSchedule();
         MainController mainController = MainController.getInstance();
         this.dotFileReader = dotFileReader;
         coreCount = config.getNumOfCores();
@@ -47,9 +46,14 @@ public class ParallelScheduler extends Scheduler {
         } else {
             lessRootNodesThanCores(mainController, config, executor);
         }
-
     }
 
+    /**
+     * Method that allocates tasks to the ExecutorService when there are less root nodes than cores.
+     * @param mainController Refers to the controller for visualisation
+     * @param config Config object to obtain information such as current file
+     * @param executor ExecutorService object to execute parallel tasks
+     */
     private void lessRootNodesThanCores(MainController mainController, Config config, ExecutorService executor) {
 
         List<List<String>> scheduleList = createParallelisationFreeNodeList();
@@ -69,10 +73,15 @@ public class ParallelScheduler extends Scheduler {
                 break;
             }
         }
-
     }
 
-
+    /**
+     * Method that allocates tasks to the ExecutorService when there are more root nodes than cores
+     * @param mainController Refers to the controller for visualisation
+     * @param config Config object to obtain information such as current file
+     * @param executor ExecutorService object to execute parallel tasks
+     * @param numOfRoot Number of root nodes
+     */
     private void moreRootNodesThanCores(MainController mainController, Config config, ExecutorService executor, int numOfRoot) {
         int coreCounter = 0;
 
@@ -145,12 +154,6 @@ public class ParallelScheduler extends Scheduler {
     }
 
     /**
-     * Method that checks if there are more root nodes than cores, or equal numbers.
-     * @return True if more or equal numbers of root nodes compared to cores, else returns false.
-     */
-    private boolean checkRootNodesMoreThanCores() { return (rootNodes.size() >= coreCount); }
-
-    /**
      * Method that creates a list of lists of Strings representing the nodes to be explored by the different threads.
      * @return List of List of Strings of nodes to be fed to scheduler objects.
      */
@@ -168,7 +171,6 @@ public class ParallelScheduler extends Scheduler {
                 tree.addAll(getChildSchedules(currentList, false, false));
                 scheduleCount = tree.size();
             }
-
 
             while (scheduleCount < coreCount && looper < 5) {
                 List<List<Node>> newTree = new ArrayList<List<Node>>();
@@ -191,7 +193,6 @@ public class ParallelScheduler extends Scheduler {
             tree.add(currentList);
             }
 
-
             for (Node n : rootNodes) {
                 if (scheduleCount < coreCount) {
                     List<Node> currentList = new ArrayList<Node>();
@@ -206,16 +207,19 @@ public class ParallelScheduler extends Scheduler {
                     if (!currentList.isEmpty()) {
                         tree.add(currentList);
                     }
-
                 }
             }
-
         }
 
         return convertNodeToString(tree);
 
     }
 
+    /**
+     * Helper function to convert list of list of Nodes into list of list of String.
+     * @param input List of List of Nodes to be converted
+     * @return Returns List of List of Strings representing the List of List of Nodes by name
+     */
     private List<List<String>> convertNodeToString(List<List<Node>> input) {
         List<List<String>> outputString = new ArrayList<>();
 
