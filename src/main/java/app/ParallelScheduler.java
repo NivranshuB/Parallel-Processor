@@ -31,7 +31,6 @@ public class ParallelScheduler extends Scheduler {
      * @param dotFileReader reference to DotFileReader object.
      */
     public ParallelScheduler(Config config, DotFileReader dotFileReader) {
-        BnBSchedule optimum = new BnBSchedule();
         MainController mainController = MainController.getInstance();
         this.dotFileReader = dotFileReader;
         coreCount = config.getNumOfCores();
