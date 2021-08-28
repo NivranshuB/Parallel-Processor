@@ -1,6 +1,11 @@
 package app;
+
 import model.Edge;
 import model.Node;
+import parsers.Config;
+import parsers.DotFileReader;
+import visualisation.MainController;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -24,15 +29,17 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     private Set<Node> availableToSchedule = new HashSet<Node>();
     private List<Node> startingParallelNodes = new ArrayList<Node>();
     private Boolean startFlag = true;
+    private int parallelisationBit = 0;
     private final int coreNumber;
 
     private MainController mainController = MainController.getInstance();
 
     /**
      * Constructor for BnBScheduler.
+     *
      * @param dotFileReader reference to DotFileReader object
-     * @param config reference to Config object
-     * @param coreNm specifies the core number that the schedule is running on
+     * @param config        reference to Config object
+     * @param coreNm        specifies the core number that the schedule is running on
      */
     public BnBScheduler(DotFileReader dotFileReader, Config config, int coreNm) {
 
@@ -67,18 +74,18 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 }
             }
         }
-
         optimalSchedule = new BnBSchedule();
     }
 
     /**
      * Constructor for BnBScheduler, specifying which nodes the scheduler should start searching from.
+     *
      * @param dotFileReader reference to DotFileReader object.
-     * @param config reference to Config object.
+     * @param config        reference to Config object.
      * @param startingNodes List of starting nodes to start searching from.
-     * @param coreNm specifies the core number that the schedule is running on
+     * @param coreNm        specifies the core number that the schedule is running on
      */
-    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm, BnBSchedule optimum) {
+    public BnBScheduler(DotFileReader dotFileReader, Config config, List<String> startingNodes, int coreNm) {
 
         coreNumber = coreNm;
         nodeMap = dotFileReader.getNodeMap();
@@ -116,12 +123,12 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 }
             }
         }
-
-        optimalSchedule = optimum;
+        optimalSchedule = new BnBSchedule();
     }
 
     /**
      * Method that returns the Schedule representing the optimum schedule.
+     *
      * @return BnBSchedule object representing the optimal schedule.
      */
     public BnBSchedule getSchedule() {
@@ -136,6 +143,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     /**
      * Remove the specified Node from the processor it has been allocated to.
+     *
      * @param node Node to be unscheduled.
      */
     public void unscheduleNode(Node node) {
@@ -148,6 +156,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     /**
      * Method that calculates the earliest start time for the current node considering whether or not the node is to be
      * scheduled on the same processor as its parent or not.
+     *
      * @param n Node to be scheduled
      * @param p Processor that node is intending to be scheduled on
      * @return earliest start time due to parents
@@ -169,6 +178,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
     /**
      * Recursive function that calculates the bottom weight of the specified node where the bottom weight is the sum of its
      * own weight and the maximum of the bottom weights of its own child nodes. (Bottom up approach)
+     *
      * @param node Node to be calculated
      * @return Bottom weight of the calculated node
      */
@@ -187,12 +197,15 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     /**
      * Check if two nodes are exactly identical, and therefore their positions can be interchangeable.
-     * @param node First node to be compared
+     *
+     * @param node  First node to be compared
      * @param check Second node to be compared
      */
     public boolean nodeInterchangeability(Node node, Node check) {
         //Check if weights are the same
-        if (node.getWeight() != check.getWeight()) {return false;}
+        if (node.getWeight() != check.getWeight()) {
+            return false;
+        }
 
         //Check if the number of parents and child nodes of the two nodes are the same
         if (node.getParent().size() != check.getParent().size() || node.getChild().size() != check.getChild().size()) {
@@ -200,7 +213,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         }
 
         //Check if all parents in node appear in check, and that they have the same transmission costs.
-        for (Node parent : node.getParent()){
+        for (Node parent : node.getParent()) {
             String nodeToParent = parent.getName() + "_" + node.getName();
             String checkToParent = parent.getName() + "_" + check.getName();
             if (!(check.getParent().contains(parent) && edgeMap.get(nodeToParent).getWeight() == edgeMap.get(checkToParent).getWeight())) {
@@ -209,7 +222,7 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         }
 
         //Check if all children in node appear in check, and that they have the same communication costs.
-        for (Node child : node.getChild()){
+        for (Node child : node.getChild()) {
             String nodeToChild = node.getName() + "_" + child.getName();
             String checkToChild = check.getName() + "_" + child.getName();
             if (check.getChild().contains(child) && edgeMap.get(nodeToChild).getWeight() == edgeMap.get(checkToChild).getWeight()) {
@@ -220,10 +233,11 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         }
         return true; //Conclude that they are equivalent and interchangeable
     }
-    
+
     /**
      * Checks if a node is interchangeable with another in the set of nodes
-     * @param node Node to be checked
+     *
+     * @param node    Node to be checked
      * @param nodeSet Set of nodes to be compared to
      * @return true if interchangeable, false otherwise
      */
@@ -238,10 +252,11 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     /**
      * Checks if a processor is interchangeable with another in the set of processors
-     * @param processor Processor to be checked
+     *
+     * @param processor    Processor to be checked
      * @param processorSet Set of processors to be compared to
-     * @param node Node that is intended to be added
-     * @param startTime Start time of Node to be checked
+     * @param node         Node that is intended to be added
+     * @param startTime    Start time of Node to be checked
      * @return true if interchangeable, false otherwise
      */
     public boolean checkInterchangeableProcessor(Processor processor, Set<Processor> processorSet, Node node, int startTime) {
@@ -249,11 +264,18 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         //Hypothetically test if the start time is the same if the node is scheduled on another processor
         for (Processor p : processorSet) {
             comparedStartTime = Math.max(p.getAvailableStartTime(), startTimeAfterParent(node, p));
-            if (comparedStartTime == startTime && processor.toString().equals(p.toString())) { return true;}
+            if (comparedStartTime == startTime && processor.toString().equals(p.toString())) {
+                return true;
+            }
         }
         return false;
     }
 
+    /**
+     * Method that searches for the optimal schedule based on a set of free nodes.
+     *
+     * @param freeNodes Set of free nodes
+     */
     private void optimalScheduleSearch(Set<Node> freeNodes) {
 
         // Only run if there are available nodes to schedule
@@ -289,11 +311,13 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
 
-            for (Processor process : listOfProcessors) {
-                max = Math.max(max, process.getAvailableStartTime());
-            }
-            synchronized(this) {
-                if (max < optimalSchedule.getWeight()) {
+            synchronized (this) {
+                int numTasks = 0;
+                for (Processor process : listOfProcessors) {
+                    max = Math.max(max, process.getAvailableStartTime());
+                    numTasks += process.getNumberOfTasks();
+                }
+                if (max < optimalSchedule.getWeight() && numTasks == nodeMap.values().size()) {
                     optimalSchedule = new BnBSchedule(listOfProcessors);
 
                     if (Config.getInstance().getVisualise()) {
@@ -303,7 +327,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                             l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                         }
                     }
-
                 }
             }
         }
@@ -311,13 +334,14 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
 
     /**
      * Method that initiates the search in parallel mode.
+     *
      * @param freeNodes Set containing the free nodes to be scheduled.
      * @param startNode The specified start node of the current search thread.
      */
     private void parallelScheduleSearch(Set<Node> freeNodes, Node startNode) {
 
         // Only run if there are available nodes to schedule
-        if (freeNodes.size() > 0 && startFlag == true) {
+        if (freeNodes.size() > 0 && startFlag) {
 
             // Only schedule one of the equivalent nodes if there are equivalent nodes (Pruning stage 1)
             Set<Node> uniqueNodes = new HashSet<Node>();
@@ -346,15 +370,61 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                                 optimalScheduleSearch(newFreeNodes);
                                 unscheduleNode(n);
                             }
-
                         }
-
                     }
-
                 }
             }
+        }
+    }
 
+    /**
+     * Method that initiates the search in parallel mode.
+     *
+     * @param freeNodes  Set containing the free nodes to be scheduled.
+     * @param startNodes The specified node sequence of the current search thread.
+     * @param count      Current position in the startNodes list that is being added.
+     */
+    private void controlledParallelScheduleSearch(Set<Node> freeNodes, List<Node> startNodes, int count) {
 
+        // Only run if there are available nodes to schedule
+        if (freeNodes.size() > 0 && startFlag) {
+
+            // Only schedule one of the equivalent nodes if there are equivalent nodes (Pruning stage 1)
+            Set<Node> uniqueNodes = new HashSet<Node>();
+            for (Node n : freeNodes) {
+                if (startFlag) {
+                    n = startNodes.get(count);
+                    count++;
+                }
+                if (!checkInterchangeableNode(n, uniqueNodes)) {
+                    uniqueNodes.add(n);
+
+                    //Check if processors are equivalent
+                    Set<Processor> uniqueProcessors = new HashSet<Processor>();
+                    for (Processor p : listOfProcessors) {
+                        // Calculate earliest start time of Node on current Processor
+                        int start = Math.max(p.getAvailableStartTime(), startTimeAfterParent(n, p));
+                        if (!checkInterchangeableProcessor(p, uniqueProcessors, n, start)) {
+                            uniqueProcessors.add(p);
+
+                            // Check if the weight of the schedule is greater than current optimum schedule's weight. If
+                            // yes, stop checking. Otherwise, continue.
+                            if ((n.getBottomWeight() + start) <= optimalSchedule.getWeight()) {
+                                Set<Node> newFreeNodes = n.schedule(p, start);
+                                p.scheduleNode(n, start);
+                                newFreeNodes.addAll(freeNodes);
+                                newFreeNodes.remove(n);
+                                if ((count < startNodes.size())) {
+                                    controlledParallelScheduleSearch(newFreeNodes, startNodes, count);
+                                } else {
+                                    optimalScheduleSearch(newFreeNodes);
+                                }
+                                unscheduleNode(n);
+                            }
+                        }
+                    }
+                }
+            }
         } else { //If all free nodes scheduled
             int max = -1; //Initialise max
             startFlag = false;
@@ -368,29 +438,29 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                     l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));
                 }
                 MainController.getInstance().addOptimalToSearchGraph(optimalSchedule.calculateCriticalPath(), coreNumber);
-
             }
         }
     }
 
     /**
      * Method that outputs the best schedule from all the parallelScheduleSearch results.
+     *
      * @return
      */
     public BnBSchedule parallelSchedule() {
-        BnBSchedule output = new BnBSchedule();
-
-        for (Node n : startingParallelNodes){
-            parallelScheduleSearch(availableToSchedule, n);
-            if (optimalSchedule.getWeight() < output.getWeight()) {
-                output = optimalSchedule;
-            };
+        if (parallelisationBit == 0) {
+            for (Node n : startingParallelNodes) {
+                parallelScheduleSearch(availableToSchedule, n);
+            }
+        } else {
+            controlledParallelScheduleSearch(availableToSchedule, startingParallelNodes, 0);
         }
-        return output;
+        return optimalSchedule;
     }
 
     /**
      * Method used by ExecutorService.
+     *
      * @return returns optimal schedule.
      */
     @Override

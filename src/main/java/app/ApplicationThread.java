@@ -1,6 +1,11 @@
 package app;
 
 import javafx.application.Platform;
+import parallelisation.ParallelScheduler;
+import parsers.Config;
+import parsers.DotFileReader;
+import parsers.OutputParser;
+import visualisation.MainController;
 
 import java.util.concurrent.ExecutionException;
 
@@ -22,7 +27,15 @@ public class ApplicationThread extends Thread {
         BnBScheduler optimalScheduler;
 
         // Decides on which scheduler implementation to use based on the input graph attributes.
-        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1) {
+        if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
+            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            if (config.getVisualise()) {
+                mainController.setScheduler(scheduler);
+                mainController.addListener();
+            }
+            optimalSchedule = scheduler.getSchedule();
+
+        } else if (config.getNumOfCores() > 1 ) {
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
             if (config.getVisualise()) {
                 mainController.setScheduler(parallel);
@@ -35,14 +48,6 @@ public class ApplicationThread extends Thread {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
-            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
-            if (config.getVisualise()) {
-                mainController.setScheduler(scheduler);
-                mainController.addListener();
-            }
-            optimalSchedule = scheduler.getSchedule();
-
         } else {
             optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             if (config.getVisualise()) {

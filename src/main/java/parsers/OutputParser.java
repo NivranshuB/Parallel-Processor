@@ -1,5 +1,6 @@
-package app;
+package parsers;
 
+import app.BnBSchedule;
 import model.Edge;
 import model.Node;
 

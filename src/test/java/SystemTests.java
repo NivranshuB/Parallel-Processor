@@ -1,6 +1,10 @@
 import app.*;
 import org.junit.Before;
 import org.junit.Test;
+import parallelisation.ParallelScheduler;
+import parsers.ArgumentParser;
+import parsers.Config;
+import parsers.DotFileReader;
 
 import java.util.concurrent.ExecutionException;
 
@@ -45,11 +49,14 @@ public class SystemTests {
         System.out.println("Number of processors: " + config.getNumOfProcessors());
 
         BnBSchedule optimalSchedule = new BnBSchedule();
-        if (config.getNumOfCores() > 1 && dotFileReader.getRootNodeList().size() > 1 && dotFileReader.getEdgeMap().size() != 0) {
-            System.out.println("Using parallelisation");
+        // Decides on which scheduler implementation to use based on the input graph attributes.
+        if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
+            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
+            optimalSchedule = scheduler.getSchedule();
 
+        } else if (config.getNumOfCores() > 1 ) {
+            System.out.println("Using parallel");
             ParallelScheduler parallel = new ParallelScheduler(config, dotFileReader);
-
             try {
                 optimalSchedule = parallel.checkBestSchedule();
             } catch (InterruptedException e) {
@@ -57,18 +64,13 @@ public class SystemTests {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        } else if (dotFileReader.getEdgeMap().size() == 0 && config.getNumOfProcessors() == 1) {
-            SingleProcessorNoEdgesScheduler scheduler = new SingleProcessorNoEdgesScheduler(dotFileReader);
-            optimalSchedule = scheduler.getSchedule();
-        } else {
+        }  else {
             System.out.println("Using serial");
             BnBScheduler optimalScheduler = new BnBScheduler(dotFileReader, config, 0);
             optimalSchedule = optimalScheduler.getSchedule();
         }
 
-
 //        BnBScheduler optimalScheduler = BnBScheduler.getInstance(dotFileReader, config);
-
 
         optimalSchedule.printSchedule();
 
