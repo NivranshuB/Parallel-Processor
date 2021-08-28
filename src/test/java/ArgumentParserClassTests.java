@@ -13,8 +13,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class ArgumentParserClassTests {
 
-    //NEED TO CHECK ALL TESTS IN THIS CLASS
-
     private ArgumentParser testArgumentParser;
     private Config testConfigOutput;
 
