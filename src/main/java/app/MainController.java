@@ -332,8 +332,9 @@ public class MainController {
                             // looks through potential optimal schedule of each thread
                             for (String n : lastOptimalNode) {
                                 n = n.split("_")[0];
+                                // if string is empty, initialise to default max int value
                                 if (n.equals("")) {
-                                    n = "0";
+                                    n = String.valueOf(Integer.MAX_VALUE);
                                 }
                                 // checks that new value is less than all threads
                                 if (Integer.parseInt(n) < (int) (evt.getNewValue())) {
@@ -341,6 +342,7 @@ public class MainController {
                                 }
                             }
                             if (newOptimal) { // if true, updates value
+                                System.out.println("what");
                                 bestTime.setText(String.valueOf(evt.getNewValue()));
                             }
                         } else { // always updates value if single threaded
