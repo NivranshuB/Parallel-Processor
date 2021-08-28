@@ -49,6 +49,12 @@ public class ParallelScheduler extends Scheduler {
 
     }
 
+    /**
+     * Method that allocates tasks to the ExecutorService when there are less root nodes than cores.
+     * @param mainController Refers to the controller for visualisation
+     * @param config Config object to obtain information such as current file
+     * @param executor ExecutorService object to execute parallel tasks
+     */
     private void lessRootNodesThanCores(MainController mainController, Config config, ExecutorService executor) {
 
         List<List<String>> scheduleList = createParallelisationFreeNodeList();
@@ -71,7 +77,13 @@ public class ParallelScheduler extends Scheduler {
 
     }
 
-
+    /**
+     * Method that allocates tasks to the ExecutorService when there are more root nodes than cores
+     * @param mainController Refers to the controller for visualisation
+     * @param config Config object to obtain information such as current file
+     * @param executor ExecutorService object to execute parallel tasks
+     * @param numOfRoot Number of root nodes
+     */
     private void moreRootNodesThanCores(MainController mainController, Config config, ExecutorService executor, int numOfRoot) {
         int coreCounter = 0;
 
@@ -215,6 +227,11 @@ public class ParallelScheduler extends Scheduler {
 
     }
 
+    /**
+     * Helper function to convert list of list of Nodes into list of list of String.
+     * @param input List of List of Nodes to be converted
+     * @return Returns List of List of Strings representing the List of List of Nodes by name
+     */
     private List<List<String>> convertNodeToString(List<List<Node>> input) {
         List<List<String>> outputString = new ArrayList<>();
 
