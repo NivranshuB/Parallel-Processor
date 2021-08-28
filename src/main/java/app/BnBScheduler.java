@@ -255,6 +255,10 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
         return false;
     }
 
+    /**
+     * Method that searches for the optimal schedule based on a set of free nodes.
+     * @param freeNodes Set of free nodes
+     */
     private void optimalScheduleSearch(Set<Node> freeNodes) {
 
         // Only run if there are available nodes to schedule
@@ -369,7 +373,6 @@ public class BnBScheduler extends Scheduler implements Callable<BnBSchedule> {
                 max = Math.max(max, process.getAvailableStartTime());
             }
             if (max < optimalSchedule.getWeight() && numScheduled == nodeMap.values().size()) {
-                System.out.println("Num scheduled " + numScheduled);
                 optimalSchedule = new BnBSchedule(listOfProcessors);
                 for (PropertyChangeListener l : listeners) {
                     l.propertyChange(new PropertyChangeEvent(this, "update progress", "old", optimalSchedule.getWeight()));

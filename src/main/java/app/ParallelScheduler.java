@@ -5,7 +5,6 @@ import model.Node;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -54,11 +53,9 @@ public class ParallelScheduler extends Scheduler {
     private void lessRootNodesThanCores(MainController mainController, Config config, ExecutorService executor) {
 
         List<List<String>> scheduleList = createParallelisationFreeNodeList();
-        System.out.println("Complete generated list: " + scheduleList);
         int coreCounter = 0;
 
         for (List<String> startNodes : scheduleList) {
-            System.out.println("Current core: " + coreCounter + " Current input: " + startNodes);
             DotFileReader currentFileReader = new DotFileReader(config.getInputFile());
             BnBScheduler currScheduler = new BnBScheduler(currentFileReader, config, startNodes, coreCounter);
 
@@ -135,8 +132,6 @@ public class ParallelScheduler extends Scheduler {
 
         for (Future<BnBSchedule> currSchedule : futureList) {
             BnBSchedule current = currSchedule.get();
-            System.out.println("Current schedule");
-            current.printSchedule();
             if (current.getWeight() < max) {
                 max = current.getWeight();
                 lowestTime = current;

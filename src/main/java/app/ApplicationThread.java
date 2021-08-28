@@ -50,9 +50,7 @@ public class ApplicationThread extends Thread {
                 mainController.setScheduler(optimalScheduler);
                 mainController.addListener();
             }
-            System.out.println("Initiated");
             optimalSchedule = optimalScheduler.getSchedule();
-            System.out.println("Terminated");
         }
 
         //Parses the output and writes the optimum schedule to a new file.
