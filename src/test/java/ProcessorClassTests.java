@@ -93,29 +93,6 @@ public class ProcessorClassTests {
 
         testScheduledProcessor.unscheduleNodeAtTime(2);
 
-        List<Node> taskOrderList = new ArrayList<Node>();
-
-        Node taskNode = new Node();
-        taskNode.setName("Second Node to Schedule");
-        taskNode.setWeight(6);
-
-        taskOrderList.add(taskNode);
-
-        //Check task order list
-        //Check size
-        /**
-        if (taskOrderList.size() != testScheduledProcessor.getTaskOrder().size()) {
-            fail("Task order list is not the correct size");
-        }
-
-        for (int i = 0; i < taskOrderList.size(); i++) {
-            Node taskOrderListNode = taskOrderList.get(i);
-            Node retrievedTaskOrderListNode = testScheduledProcessor.getTaskOrder().get(i);
-
-            assertTrue(taskOrderListNode.equals(retrievedTaskOrderListNode));
-        }
-         */
-
         //Check available start time
         assertEquals(6, testScheduledProcessor.getAvailableStartTime());
 
@@ -134,23 +111,6 @@ public class ProcessorClassTests {
         testScheduledProcessor.scheduleNode(scheduledNode, 2);
 
         testScheduledProcessor.unscheduleNodeAtTime(2);
-
-        List<Node> taskOrderList = new ArrayList<Node>();
-
-        //Check task order list
-        //Check size
-        /**
-         if (taskOrderList.size() != testScheduledProcessor.getTaskOrder().size()) {
-         fail("Task order list is not the correct size");
-         }
-
-         for (int i = 0; i < taskOrderList.size(); i++) {
-         Node taskOrderListNode = taskOrderList.get(i);
-         Node retrievedTaskOrderListNode = testScheduledProcessor.getTaskOrder().get(i);
-
-         assertTrue(taskOrderListNode.equals(retrievedTaskOrderListNode));
-         }
-         */
 
         //Check available start time
         assertEquals(0, testScheduledProcessor.getAvailableStartTime());
