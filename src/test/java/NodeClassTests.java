@@ -1,4 +1,5 @@
 import app.Processor;
+import model.Edge;
 import model.Node;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import static org.junit.Assert.*;
 public class NodeClassTests {
 
     private Node testNode;
+    private Node secondTestNode;
     private Node parentNode;
     private Node childNode;
     private Node equivalentNode;
@@ -40,15 +42,25 @@ public class NodeClassTests {
         testNode.setProcessor(PROCESSOR);
         testNode.setBottomWeight(BOTTOM_WEIGHT);
 
+        secondTestNode = new Node();
+        secondTestNode.setName(NODE_NAME);
+        secondTestNode.setWeight(WEIGHT);
+        secondTestNode.setStart(START);
+        secondTestNode.setProcessor(PROCESSOR);
+        secondTestNode.setBottomWeight(BOTTOM_WEIGHT);
+
         parentNode = new Node();
+        parentNode.setName("Parent 1");
         parentNode.addChild(testNode);
         childNode = new Node();
+        childNode.setName("Child 1");
         childNode.addParent(testNode);
 
         testNode.addParent(parentNode);
         testNode.addChild(childNode);
 
         equivalentNode = new Node();
+        equivalentNode.setName("Equivalent 1");
         testNode.addEquivalentNodes(equivalentNode);
     }
 
@@ -126,7 +138,7 @@ public class NodeClassTests {
      */
     @Test
     public void testIsEquivalentFalse() {
-        assertFalse(testNode.isEquivalent(new Node()));
+        assertFalse(testNode.isEquivalent(parentNode));
     }
 
     /**
@@ -346,4 +358,199 @@ public class NodeClassTests {
 
         assertEquals(NEW_NODE_NAME, testNode.getName());
     }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is exactly the same
+     * object it is being compared to.
+     */
+    @Test
+    public void testEqualsSameObject() {
+        assertTrue(testNode.equals(testNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is not a Node object,
+     * it is a String.
+     */
+    @Test
+    public void testEqualsNotEdgeObject() {
+        assertFalse(testNode.equals("Hi there"));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different parent.
+     */
+    @Test
+    public void testEqualsDifferentParentNode() {
+        Node secondParentNode = new Node();
+        secondParentNode.setName("Another Parent");
+
+        secondTestNode.addParent(secondParentNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * an additional parent.
+     */
+    @Test
+    public void testEqualsAdditionalParentNode() {
+        Node secondParentNode = new Node();
+        secondParentNode.setName("Another Parent");
+
+        secondTestNode.addParent(parentNode);
+        secondTestNode.addParent(secondParentNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different child.
+     */
+    @Test
+    public void testEqualsDifferentChildNode() {
+        Node secondChildNode = new Node();
+        secondChildNode.setName("Another Child");
+
+        secondTestNode.addParent(parentNode);
+
+        secondTestNode.addChild(secondChildNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * an additional child.
+     */
+    @Test
+    public void testEqualsAdditionalChildNode() {
+        Node secondChildNode = new Node();
+        secondChildNode.setName("Another Child");
+
+        secondTestNode.addParent(parentNode);
+
+        secondTestNode.addChild(childNode);
+        secondTestNode.addChild(secondChildNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different equivalent node.
+     */
+    @Test
+    public void testEqualsDifferentEquivalentNode() {
+        Node secondEquivalentNode = new Node();
+        secondEquivalentNode.setName("Another Equivalent");
+
+        secondTestNode.addEquivalentNodes(secondEquivalentNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * an additional equivalent node.
+     */
+    @Test
+    public void testEqualsAdditionalEquivalentNode() {
+        Node secondEquivalentNode = new Node();
+        secondEquivalentNode.setName("Another Equivalent");
+
+        secondTestNode.addParent(parentNode);
+        secondTestNode.addChild(childNode);
+
+        secondTestNode.addEquivalentNodes(equivalentNode);
+        secondTestNode.addEquivalentNodes(secondEquivalentNode);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different name.
+     */
+    @Test
+    public void testEqualsDifferentName() {
+        secondTestNode.setName("I have a different name");
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different weight.
+     */
+    @Test
+    public void testEqualsDifferentWeight() {
+        secondTestNode.setWeight(50);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different start time.
+     */
+    @Test
+    public void testEqualsDifferentStartTime() {
+        secondTestNode.setStart(38);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different processor.
+     */
+    @Test
+    public void testEqualsDifferentProcessor() {
+        secondTestNode.setProcessor(8);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * a different bottom weight.
+     */
+    @Test
+    public void testEqualsDifferentBottomWeight() {
+        secondTestNode.setBottomWeight(60);
+
+        assertFalse(testNode.equals(secondTestNode));
+    }
+
+    /**
+     * This test checks to see if the equals method in Node class returns the correct boolean when
+     * an object to be compared is passed in. In this case, the object passed in is a Node object with
+     * the same characteristics, so the object is equal.
+     */
+    @Test
+    public void testEqualsDifferentEqualObject() {
+        secondTestNode.addParent(parentNode);
+        secondTestNode.addChild(childNode);
+        secondTestNode.addEquivalentNodes(equivalentNode);
+
+        assertTrue(testNode.equals(secondTestNode));
+    }
+
 }
