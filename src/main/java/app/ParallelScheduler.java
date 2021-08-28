@@ -46,7 +46,6 @@ public class ParallelScheduler extends Scheduler {
         } else {
             lessRootNodesThanCores(mainController, config, executor);
         }
-
     }
 
     /**
@@ -74,7 +73,6 @@ public class ParallelScheduler extends Scheduler {
                 break;
             }
         }
-
     }
 
     /**
@@ -156,12 +154,6 @@ public class ParallelScheduler extends Scheduler {
     }
 
     /**
-     * Method that checks if there are more root nodes than cores, or equal numbers.
-     * @return True if more or equal numbers of root nodes compared to cores, else returns false.
-     */
-    private boolean checkRootNodesMoreThanCores() { return (rootNodes.size() >= coreCount); }
-
-    /**
      * Method that creates a list of lists of Strings representing the nodes to be explored by the different threads.
      * @return List of List of Strings of nodes to be fed to scheduler objects.
      */
@@ -179,7 +171,6 @@ public class ParallelScheduler extends Scheduler {
                 tree.addAll(getChildSchedules(currentList, false, false));
                 scheduleCount = tree.size();
             }
-
 
             while (scheduleCount < coreCount && looper < 5) {
                 List<List<Node>> newTree = new ArrayList<List<Node>>();
@@ -202,7 +193,6 @@ public class ParallelScheduler extends Scheduler {
             tree.add(currentList);
             }
 
-
             for (Node n : rootNodes) {
                 if (scheduleCount < coreCount) {
                     List<Node> currentList = new ArrayList<Node>();
@@ -217,10 +207,8 @@ public class ParallelScheduler extends Scheduler {
                     if (!currentList.isEmpty()) {
                         tree.add(currentList);
                     }
-
                 }
             }
-
         }
 
         return convertNodeToString(tree);

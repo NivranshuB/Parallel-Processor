@@ -124,7 +124,6 @@ public class BnBSchedule {
                             node.setStart(start);
 
                             nodeList.add(node);
-
                         }
                     }
                 }
