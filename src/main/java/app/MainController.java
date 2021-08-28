@@ -436,7 +436,10 @@ public class MainController {
 		cpuChart.prefWidthProperty().bind(this.cpu.widthProperty());
 		cpuChart.prefHeightProperty().bind(this.cpu.heightProperty());
 	}
-
+	
+	/**
+	 * Create a blank schedule graph with the appropriate styling.
+	 */
     private void initialiseScheduleGraph() {
         sg = new SingleGraph("test_optimals");
         sg.setStrict(true);
@@ -481,7 +484,11 @@ public class MainController {
 
         o_graph.getChildren().add(panel);
     }
-
+    
+    /**
+	 * Instantiate and initialise the lastOptimalNode list for each core.
+	 * @param tCores A count of the number of cores in the program.
+	 */
     public void instantiateOptimalNodes(int tCores) {
         for (int i = 0; i < tCores; i++) {
             lastOptimalNode.add("");
