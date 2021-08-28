@@ -1,5 +1,6 @@
 package app;
 
+import model.Edge;
 import model.Node;
 
 import java.util.*;
@@ -135,6 +136,59 @@ public class BnBSchedule {
         max = criticalPath;
 
         return nodeList;
+    }
+
+    /**
+     * This method checks to see if an object passed in is equal to this BnBSchedule. This overrides
+     * the default equals method in the Object class.
+     * @param o Object that is being passed in to compare this object to.
+     * @return Returns True, if the two objects are equal, False otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        //Check if the object passed in is this object
+        if (o == this) {
+            return true;
+        }
+
+        //Check if the object passed in is a BnBSchedule object
+        if (!(o instanceof BnBSchedule)) {
+            return false;
+        }
+
+        //Cast object passed in to BnBSchedule object
+        BnBSchedule objectArg = (BnBSchedule) o;
+
+        //Check values in the object passed in
+        if (!(this.max == objectArg.max)) {
+            return false;
+        }
+
+        if (!(this.nodeMap.equals(objectArg.nodeMap))) {
+            return false;
+        }
+
+        //Check size of stringStorage
+        if (this.stringStorage.size() != objectArg.stringStorage.size()) {
+            return false;
+        }
+
+        //Check the values in stringStorage
+        for (int i = 0; i < stringStorage.size(); i++) {
+            String stringElement = this.stringStorage.get(i);
+            String objectStringElement = objectArg.stringStorage.get(i);
+
+            if (!(stringElement.equals(objectStringElement))) {
+                return false;
+            }
+        }
+
+        if (!(this.criticalPath == objectArg.criticalPath)) {
+            return false;
+        }
+
+        //Object is the same as this BnBSchedule object
+        return true;
     }
 
 }
