@@ -1,5 +1,5 @@
-import app.ArgumentParser;
-import app.Config;
+import parsers.ArgumentParser;
+import parsers.Config;
 import org.junit.Test;
 
 import java.io.File;

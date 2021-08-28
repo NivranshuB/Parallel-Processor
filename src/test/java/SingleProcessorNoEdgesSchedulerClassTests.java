@@ -1,5 +1,5 @@
 import app.BnBSchedule;
-import app.DotFileReader;
+import parsers.DotFileReader;
 import app.Processor;
 import app.SingleProcessorNoEdgesScheduler;
 import model.Node;

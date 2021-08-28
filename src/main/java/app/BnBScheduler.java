@@ -2,6 +2,9 @@ package app;
 
 import model.Edge;
 import model.Node;
+import parsers.Config;
+import parsers.DotFileReader;
+import visualisation.MainController;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

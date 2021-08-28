@@ -1,6 +1,12 @@
-package app;
+package parallelisation;
 
+import app.BnBSchedule;
+import app.BnBScheduler;
+import app.Scheduler;
 import model.Node;
+import parsers.Config;
+import parsers.DotFileReader;
+import visualisation.MainController;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

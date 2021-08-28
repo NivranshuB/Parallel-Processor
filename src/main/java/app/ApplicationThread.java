@@ -1,6 +1,11 @@
 package app;
 
 import javafx.application.Platform;
+import parallelisation.ParallelScheduler;
+import parsers.Config;
+import parsers.DotFileReader;
+import parsers.OutputParser;
+import visualisation.MainController;
 
 import java.util.concurrent.ExecutionException;
 

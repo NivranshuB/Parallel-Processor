@@ -1,4 +1,4 @@
-package app;
+package visualisation;
 
 /**
  * Author: Team Untested (13)

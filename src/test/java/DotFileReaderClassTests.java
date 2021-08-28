@@ -1,4 +1,4 @@
-import app.DotFileReader;
+import parsers.DotFileReader;
 import model.Edge;
 import model.Node;
 import org.junit.Before;
